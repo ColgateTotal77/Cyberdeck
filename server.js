@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
-const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const { Server } = require('socket.io');
 
 const RegisterController = require('./RegisterController.js');
@@ -14,7 +15,19 @@ const config = require('./config.json');
 const app = express();
 const sessionStore = new MySQLStore(config);
 
-const server = http.createServer(app);
+let sslOptions = null;
+try {
+    sslOptions = {
+        key: fs.readFileSync(__dirname + '/ssl/key.pem'),
+        cert: fs.readFileSync(__dirname + '/ssl/cert.pem')
+    };
+} 
+catch (err) {
+    console.error("Failed to load SSL certificate:", err.message);
+    process.exit(1);
+}
+
+const server = https.createServer(sslOptions, app);
 const io = new Server(server);
 
 io.on('connection', (socket) => {
@@ -34,7 +47,7 @@ app.use(session({
     rolling: true,
     cookie: {
         httpOnly: true,
-        secure: false,
+        secure: true,
         maxAge: 30 * 24 * 60 * 60 * 1000 * 12
     }
 }));
@@ -61,5 +74,5 @@ app.use((req, res) => {
 const port = 3001;
 
 server.listen(port, () => {
-    console.log(`Server running at http://localhost:3001/loginForm`);
+    console.log(`Server running at https://localhost:3001/loginForm`);
 });
