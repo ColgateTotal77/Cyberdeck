@@ -1,0 +1,7 @@
+{
+    "host": "localhost",
+    "user": "snazarenko",
+    "password": "securepass",
+    "database": "Race01",
+    "port": 3306
+}

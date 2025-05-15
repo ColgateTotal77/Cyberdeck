@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Login</title>
+</head>
+<body>
+    <div id="notificationContainer"></div>
+    <div id="loginContainer">
+        <form action="/login" method="post" id="loginForm">
+            <h1>Login form</h1>
+
+            <label for="login">Login:</label>
+            <input type="text" name="login" id="login" placeholder="Enter login">
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" placeholder="Enter password">
+
+            <button type="submit">Submit</button>
+        </form>
+        <div class="redirectField">
+            <div class="redirectButton" onclick="window.location.href='/restorePasswordForm'">Forgot password</div>
+            <div class="redirectButton" onclick="window.location.href='/registerForm'">Register</div>
+        </div>
+    </div>
+    <script type="module" src="/loginFormScript.js"></script>
+</body>
+</html>

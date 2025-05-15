@@ -1,0 +1,22 @@
+CREATE DATABASE IF NOT EXISTS Race01;
+CREATE USER IF NOT EXISTS 'snazarenko'@'localhost' IDENTIFIED BY 'securepass';
+GRANT ALL PRIVILEGES ON Race01.* TO 'snazarenko'@'localhost';
+
+-- DROP DATABASE Race01;
+-- DROP USER 'snazarenko'@'localhost';
+
+USE Race01;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    login VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    fullName VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL
+);
+
+ALTER TABLE users ADD isAdmin BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- UPDATE users SET isAdmin = TRUE WHERE login = 'login';
+
+--SHOW DATABASES;
