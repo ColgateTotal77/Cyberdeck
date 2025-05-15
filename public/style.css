@@ -100,3 +100,7 @@ html, body {
     top: 10px;
     left: 10px;
 }
+
+.hidden {
+    display:none;
+}

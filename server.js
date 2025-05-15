@@ -1,14 +1,30 @@
 const express = require('express');
 const session = require('express-session');
+const http = require('http');
+const { Server } = require('socket.io');
+
 const RegisterController = require('./RegisterController.js');
 const AuthController = require('./AuthController.js');
 const MainPageController = require('./MainPageController.js');
 const RestoreController = require('./RestoreController.js');
+
 const MySQLStore = require('express-mysql-session')(session);
 const config = require('./config.json');
 
 const app = express();
 const sessionStore = new MySQLStore(config);
+
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+
+    socket.on('test', (data) => {
+        console.log(`${socket.id} - ${data}`);
+    });
+
+});
 
 app.use(session({
     secret: '7167595f60bb18670c9dcce58a599ac4e94d4cc4aa958b776ff654a6ed7a0c1a4a206a5590db243b8212ad3ed38ff5c1ca2b27e42ded6fafbbc315978225825e',
@@ -43,6 +59,7 @@ app.use((req, res) => {
 });
 
 const port = 3001;
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}/loginForm`);
+
+server.listen(port, () => {
+    console.log(`Server running at http://localhost:3001/loginForm`);
 });

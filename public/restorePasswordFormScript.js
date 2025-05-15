@@ -11,7 +11,8 @@ document.getElementById('restorePasswordForm').addEventListener('submit', async(
     });
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.get("email"))) {
+    console.log(formData.get("email"));
+    if (!emailRegex.test(formData.get("email")) && (formData.get("code") && formData.get("email") !== null)) {
         Notifications.showNotification("Invalid email address", true);
     }
     
@@ -32,6 +33,15 @@ document.getElementById('restorePasswordForm').addEventListener('submit', async(
         } 
         else {
             Notifications.showNotification(text, false);
+            document.getElementById("restorePasswordForm").querySelectorAll('div').forEach(div => {
+                div.classList.toggle("hidden");
+                const inputs = div.querySelectorAll('input');
+                if (div.classList.contains("hidden")) {
+                    inputs.forEach(input => input.disabled = true);
+                } else {
+                    inputs.forEach(input => input.disabled = false);
+                }
+            });
         }
     }
     else {
