@@ -1,5 +1,6 @@
-const User = require('./models/user.js');
+const User = require('../models/user.js');
 const bcrypt = require('bcrypt');
+const path = require('path');
 
 class AuthController {
     
@@ -9,7 +10,7 @@ class AuthController {
             return;
         }
 
-        res.sendFile(__dirname + "/views/loginForm.html");
+        res.sendFile(path.join(__dirname, '../views/loginForm.html'));
     };
 
     static async login(req, res) {

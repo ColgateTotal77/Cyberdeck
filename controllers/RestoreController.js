@@ -1,5 +1,6 @@
-const User = require('./models/user.js');
+const User = require('../models/user.js');
 const nodemailer = require("nodemailer");
+const path = require('path');
 
 class RestoreController {
     static transporter = nodemailer.createTransport({
@@ -15,7 +16,7 @@ class RestoreController {
             res.redirect('/mainPage');
             return;
         }
-        res.sendFile(__dirname + '/views/restorePasswordForm.html');
+        res.sendFile(path.join(__dirname, '../views/restorePasswordForm.html'));
     }
 
     static async remindPassword(req, res) {

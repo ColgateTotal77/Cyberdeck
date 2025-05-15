@@ -1,10 +1,11 @@
-const User = require('./models/user.js');
+const User = require('../models/user.js');
 const bcrypt = require('bcrypt');
+const path = require('path');
 
 class RegisterController {
     
     static registerForm(req, res) {
-        res.sendFile(__dirname + '/views/registerForm.html');
+        res.sendFile(path.join(__dirname, '../views/registerForm.html'));
     }
 
     static async register(req, res) {

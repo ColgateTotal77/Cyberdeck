@@ -1,3 +1,5 @@
+const path = require('path');
+
 class MainPageController {
     
     static userData(req, res) {
@@ -14,7 +16,7 @@ class MainPageController {
             res.redirect('/loginForm');
             return;
         }
-        res.sendFile(__dirname + "/views/mainPage.html");
+        res.sendFile(path.join(__dirname, "../views/mainPage.html"));
     };
     
     static logOut(req, res) {

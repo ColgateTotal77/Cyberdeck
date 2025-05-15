@@ -1,13 +1,11 @@
 const express = require('express');
 const session = require('express-session');
-const https = require('https');
-const fs = require('fs');
-const { Server } = require('socket.io');
 
-const RegisterController = require('./RegisterController.js');
-const AuthController = require('./AuthController.js');
-const MainPageController = require('./MainPageController.js');
-const RestoreController = require('./RestoreController.js');
+const RegisterController = require('./controllers/RegisterController.js');
+const AuthController = require('./controllers/AuthController.js');
+const MainPageController = require('./controllers/MainPageController.js');
+const RestoreController = require('./controllers/RestoreController.js');
+const Socket = require('./Socket.js');
 
 const MySQLStore = require('express-mysql-session')(session);
 const config = require('./config.json');
@@ -15,29 +13,8 @@ const config = require('./config.json');
 const app = express();
 const sessionStore = new MySQLStore(config);
 
-let sslOptions = null;
-try {
-    sslOptions = {
-        key: fs.readFileSync(__dirname + '/ssl/key.pem'),
-        cert: fs.readFileSync(__dirname + '/ssl/cert.pem')
-    };
-} 
-catch (err) {
-    console.error("Failed to load SSL certificate:", err.message);
-    process.exit(1);
-}
-
-const server = https.createServer(sslOptions, app);
-const io = new Server(server);
-
-io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-
-    socket.on('test', (data) => {
-        console.log(`${socket.id} - ${data}`);
-    });
-
-});
+const server = Socket.inicialization(app);
+Socket.process();
 
 app.use(session({
     secret: '7167595f60bb18670c9dcce58a599ac4e94d4cc4aa958b776ff654a6ed7a0c1a4a206a5590db243b8212ad3ed38ff5c1ca2b27e42ded6fafbbc315978225825e',
@@ -71,8 +48,8 @@ app.use((req, res) => {
     res.status(404).sendFile(__dirname + '/views/404.html');
 });
 
-const port = 3001;
+const port = 3002;
 
 server.listen(port, () => {
-    console.log(`Server running at https://localhost:3001/loginForm`);
+    console.log(`Server running at https://localhost:3002/loginForm`);
 });
