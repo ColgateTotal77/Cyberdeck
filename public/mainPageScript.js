@@ -18,6 +18,7 @@ fetch('/userData', {method: 'POST'})
             <div>Full name: ${data.fullName}</div>
             <div>Is Admin: <span style="color:${data.isAdmin ? 'green' : 'red'};">${data.isAdmin ? "Yes" : "No"}</span></div>
             <div>Email: ${data.email}</div>`;
+            document.getElementById("login").innerHTML = data.login;
         document.getElementById("userData").innerHTML = html;
     })
     .catch(error => {
