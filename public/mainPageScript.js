@@ -1,4 +1,6 @@
 import { Notifications } from './Notifications.js';
+import  { navigate } from './navigate.js'
+window.navigate = navigate;
 
 if (localStorage.getItem("loginSuccess") === "true") {
     Notifications.showNotification("You have logged in successfully!", false);

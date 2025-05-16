@@ -1,4 +1,6 @@
 import { Notifications } from './Notifications.js';
+import  { navigate } from './navigate.js'
+window.navigate = navigate;
 
 document.getElementById('registerForm').addEventListener('submit', async(e) => {
     e.preventDefault();

@@ -1,5 +1,7 @@
 import { Notifications } from './Notifications.js';
 import  { testSocket } from './client.js'
+import  { navigate } from './navigate.js'
+window.navigate = navigate;
 
 if (localStorage.getItem("userCreateSuccess") === "true") {
     Notifications.showNotification("User registered successfully", false);
