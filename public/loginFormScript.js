@@ -1,7 +1,4 @@
 import { Notifications } from './Notifications.js';
-import  { testSocket } from './client.js'
-import  { navigate } from './navigate.js'
-window.navigate = navigate;
 
 if (localStorage.getItem("userCreateSuccess") === "true") {
     Notifications.showNotification("User registered successfully", false);
@@ -11,7 +8,6 @@ if (localStorage.getItem("userCreateSuccess") === "true") {
 document.getElementById('loginForm').addEventListener('submit', async(e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    testSocket();
     formData.forEach((value, key) => {
         if (value === "") {
             Notifications.showNotification(`${key} can't be empty`, true);

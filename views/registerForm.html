@@ -21,9 +21,6 @@
             <label for="confirmPassword">Confirm password:</label>
             <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Enter password again">
 
-            <label for="fullName">Full name:</label>
-            <input type="text" name="fullName" id="fullName" placeholder="Enter full name">
-
             <label for="email">Email:</label>
             <input type="email" name="email" id="email" placeholder="Enter email">
 
@@ -31,7 +28,7 @@
         </form>
         <div class="redirectField">
             <div></div>
-            <div class="redirectButton" onclick="navigate('/loginForm')">Login</div>
+            <div class="redirectButton" onclick="window.location.href='/loginForm'">Login</div>
         </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>

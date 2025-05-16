@@ -1,10 +1,14 @@
-const User = require('../models/user.js');
+const User = require('../models/User.js');
 const bcrypt = require('bcrypt');
 const path = require('path');
 
 class RegisterController {
     
     static registerForm(req, res) {
+        if (req.session.user) {
+            res.redirect('/mainPage');
+            return;
+        }
         res.sendFile(path.join(__dirname, '../views/registerForm.html'));
     }
 

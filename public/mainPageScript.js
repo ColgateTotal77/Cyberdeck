@@ -1,6 +1,5 @@
 import { Notifications } from './Notifications.js';
-import  { navigate } from './navigate.js'
-window.navigate = navigate;
+import  { testSocket } from './client.js'
 
 if (localStorage.getItem("loginSuccess") === "true") {
     Notifications.showNotification("You have logged in successfully!", false);
@@ -27,3 +26,7 @@ fetch('/userData', {method: 'POST'})
         console.log(error);
         Notifications.showNotification('There was a problem with the fetch operation: ' + error, true);
     });
+
+document.getElementById("testButton").addEventListener('click', () => {
+    testSocket();
+})

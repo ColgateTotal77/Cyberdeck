@@ -7,16 +7,25 @@ GRANT ALL PRIVILEGES ON Race01.* TO 'snazarenko'@'localhost';
 
 USE Race01;
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     login VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    fullName VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL
+    email VARCHAR(255) UNIQUE NOT NULL,
+    rating INT NOT NULL DEFAULT 100
 );
 
-ALTER TABLE users ADD isAdmin BOOLEAN NOT NULL DEFAULT FALSE;
-
--- UPDATE users SET isAdmin = TRUE WHERE login = 'login';
-
---SHOW DATABASES;
+CREATE TABLE IF NOT EXISTS MatchHistory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    player1_id INT NOT NULL,
+    player2_id INT NOT NULL,
+    player1_rating INT NOT NULL,
+    player2_rating INT NOT NULL,
+    winner_id INT NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    
+    FOREIGN KEY (player1_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (player2_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (winner_id) REFERENCES Users(id) ON DELETE CASCADE
+);

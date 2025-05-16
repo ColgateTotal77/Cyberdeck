@@ -1,6 +1,4 @@
 import { Notifications } from './Notifications.js';
-import  { navigate } from './navigate.js'
-window.navigate = navigate;
 
 document.getElementById('restorePasswordForm').addEventListener('submit', async(e) => {
     e.preventDefault();
@@ -13,7 +11,6 @@ document.getElementById('restorePasswordForm').addEventListener('submit', async(
     });
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    console.log(formData.get("email"));
     if (!emailRegex.test(formData.get("email")) && (formData.get("code") && formData.get("email") !== null)) {
         Notifications.showNotification("Invalid email address", true);
     }

@@ -3,11 +3,13 @@ const https = require('https');
 const { Server } = require('socket.io');
 const { RBTree } = require('bintrees');
 const sharedsession = require("express-socket.io-session");
+const MatchHistory = require('./models/MatchHistory.js');
 
 class Socket {
     static io = null;
     static waitingPlayers = new RBTree((a, b) => a.rating - b.rating);
-    
+    static rooms = new Map();
+
     static inicialization(app, sessionMiddleware) {
         let sslOptions = null;
         try {
@@ -33,23 +35,33 @@ class Socket {
 
     static process() {
         this.io.on('connection', (socket) => {
-            console.log('A user connected:', socket.id);
-            const user = socket.handshake.session.user;
-            if (!user) return;
+            const user = socket.handshake.session?.user;
+            if (!user) {
+                console.log(`Socket ${socket.id} has no session user`);
+                return;
+            }
+            
+            socket.on('reconnectToRoom', () => this.reconnectToRoom(socket));
 
             user.socket_id = socket.id;
-            console.log(user);
+
+            console.log('A user connected:', user);
+
+            socket.handshake.session.user.socket_id = socket.id;
 
             socket.on('test', (data) => {
-                console.log(`Test: ${socket.id} - ${data}`);
+                
             });
 
             socket.on('findMatch', () => this.findMatch(socket));
 
             socket.on('disconnect', () => {
                 console.log(socket.id, 'disconnect');
+                if (user?.roomId) {
+                    socket.to(user.roomId).emit('opponentDisconnected');
+                }
                 const curRating = this.waitingPlayers.find({ rating: user.rating });
-                deleteUserFromTree(this.waitingPlayers, curRating, socket.id);
+                this.deleteUserFromTree(curRating, socket.id);
             });
         });
     }
@@ -67,14 +79,14 @@ class Socket {
 
         let matched = false;
 
-        if(!this.waitingPlayers.isEmpty()) {
+        if(this.waitingPlayers.size > 0) {
             let curRating = this.waitingPlayers.find({ rating: user.rating });
 
             if(curRating) {
                 const opponent = Object.values(curRating.players).at(-1);
-                deleteUserFromTree(this.waitingPlayers, curRating, opponent.socket_id);
+                this.deleteUserFromTree(curRating, opponent.socket_id);
                 matched = true;
-                createRoom(this.io, socket, user, opponent);
+                this.createRoom(socket, opponent);
                 console.log(`${socket.id} matched with ${opponent.socket_id}`);
             } 
             else {
@@ -86,15 +98,15 @@ class Socket {
 
                 if (lowerDiff !== null && (higherDiff === null || lowerDiff < higherDiff) && lowerDiff < ratingBound) {
                     const opponent = Object.values(lower.players).at(-1);
-                    deleteUserFromTree(this.waitingPlayers, lower, opponent.socket_id);
+                    this.deleteUserFromTree(lower, opponent.socket_id);
                     matched = true;
-                    createRoom(this.io, socket, user, opponent);
+                    this.createRoom(socket, opponent);
                     console.log(`${socket.id} matched with ${opponent.socket_id}`);
                 } else if (higherDiff !== null && (lowerDiff === null || higherDiff < lowerDiff) && higherDiff < ratingBound) {
                     const opponent = Object.values(higher.players).at(-1);
-                    deleteUserFromTree(this.waitingPlayers, higher, opponent.socket_id);
+                    this.deleteUserFromTree(higher, opponent.socket_id);
                     matched = true;
-                    createRoom(this.io, socket, user, opponent);
+                    this.createRoom(socket, opponent);
                     console.log(`${socket.id} matched with ${opponent.socket_id}`);
                 }
             }
@@ -112,38 +124,103 @@ class Socket {
             }
         }
     }
-}
 
-function deleteUserFromTree(waitingPlayers, curRating, socket_id) {
-    if (curRating) {
-        delete curRating.players[socket_id];
+    static createRoom(user_socket, opponent) {
+        const user = user_socket.handshake.session.user;
+        console.log(opponent);
+        const opponentSocket = this.io.sockets.sockets.get(opponent.socket_id);
+        if (!opponentSocket) {
+            console.warn(`Opponent socket not found: ${opponent.socket_id}`);
+            return;
+        }
 
-        if (Object.keys(curRating.players).length) {
-            waitingPlayers.remove(curRating);
-            waitingPlayers.insert(curRating);
-        } else {
-            waitingPlayers.remove(curRating);
+        const roomId = `room-${user.socket_id}-${opponent.socket_id}`;
+
+        user_socket.join(roomId);
+        opponentSocket.join(roomId);
+
+        user.roomId = roomId;
+        user_socket.handshake.session.user.roomId = roomId;
+        user_socket.handshake.session.save();
+
+        opponent.roomId = roomId;
+        opponentSocket.handshake.session.user.roomId = roomId;
+        opponentSocket.handshake.session.save();
+
+        this.io.to(roomId).emit('startGame', {
+            roomId,
+            players: [user, opponent]
+        });
+
+        this.rooms.set(roomId, {
+            startTime: new Date(),
+            player1_id: user.id,
+            player2_id: opponent.id,
+        });
+        //player1_rating
+        //player2_rating
+        //who win
+        //endTime
+    }
+
+    static reconnectToRoom(socket) {
+        const user = socket.handshake.session.user;
+        if (user && user.roomId) {
+            socket.join(user.roomId);
+            this.io.to(user.roomId).emit('userReconnected', { user });
+            console.log(`${user.login} rejoined ${user.roomId}`);
         }
     }
-}
 
-function createRoom(io, user_socket, user, opponent) {
-    const roomId = `room-${user.socket_id}-${opponent.socket_id}`;
-    
-    const opponentSocket = io.sockets.sockets.get(opponent.socket_id);
-    if (!opponentSocket) {
-        console.warn(`Opponent socket not found: ${opponent.socket_id}`);
-        return;
+    static deleteUserFromTree(curRating, socket_id) {
+        if (curRating) {
+            delete curRating.players[socket_id];
+
+            if (Object.keys(curRating.players).length) {
+                this.waitingPlayers.remove(curRating);
+                this.waitingPlayers.insert(curRating);
+            } else {
+                this.waitingPlayers.remove(curRating);
+            }
+        }
     }
 
-    user_socket.join(roomId);
-    opponentSocket.join(roomId);
+    static destroyRoom(roomId) {
+        const roomSocket = this.io.sockets.adapter.rooms.get(roomId);
+        if (!roomSocket) {
+            console.warn(`No room found with ID ${roomId}`);
+            return;
+        }
 
-    io.to(roomId).emit('startGame', {
-        roomId,
-        players: [user, opponent]
-    });
+        for (const socketId of roomSocket) {
+            const socket = this.io.sockets.sockets.get(socketId);
+            if (!socket) continue;
+
+            const user = socket.handshake.session?.user;
+            if (user) {
+                delete user.roomId;
+                socket.handshake.session.save();
+            }
+            socket.leave(roomId);
+            socket.emit('roomEnded');
+        }
+        console.log(`${roomId} has been closed.`);
+    }
 }
 
+function calculateRatingChange(userRating, opponentRating, didWin) {
+    const result = didWin ? 1 : 0;
+    const k = 30;
+    const expected = 1 / (1 + Math.pow(10, (opponentRating - userRating) / 400));
+    const baseChange = k * (result - expected);
+    const randFactor = Math.random() * 2 + 1;
+    const totalChange = baseChange * randFactor;
+
+    return Math.round(totalChange);
+}
+
+//startGame
+//userReconnected
+//roomEnded
 
 module.exports = Socket;

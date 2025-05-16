@@ -1,11 +1,8 @@
 import { Notifications } from './Notifications.js';
-import  { navigate } from './navigate.js'
-window.navigate = navigate;
 
 document.getElementById('registerForm').addEventListener('submit', async(e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-
     formData.forEach((value, key) => {
         if(value === "") {
             Notifications.showNotification(`${key} can't be empty`, true);
@@ -23,7 +20,7 @@ document.getElementById('registerForm').addEventListener('submit', async(e) => {
         Notifications.showNotification("Invalid email address", true);
     }
     
-    if(Notifications.errorCount == 0) {
+    if(Notifications.errorCount === 0) {
         formData.delete('confirmPassword');
         const urlParams = new URLSearchParams(formData);
         
@@ -35,7 +32,6 @@ document.getElementById('registerForm').addEventListener('submit', async(e) => {
             body: urlParams.toString()
         });
         const text = await response.text();
-        console.log(text);
         if (!response.ok) {
             Notifications.showNotification(text, true);
         } 

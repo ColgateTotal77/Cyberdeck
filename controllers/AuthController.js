@@ -1,4 +1,4 @@
-const User = require('../models/user.js');
+const User = require('../models/User.js');
 const bcrypt = require('bcrypt');
 const path = require('path');
 
@@ -23,9 +23,8 @@ class AuthController {
                 req.session.user = {
                     id: user.id,
                     login: user.login,
-                    fullName: user.fullName,
-                    isAdmin: user.isAdmin,
-                    email: user.email
+                    email: user.email,
+                    rating: user.rating
                 };
                 res.redirect("/mainPage");
             } 

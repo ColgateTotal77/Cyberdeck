@@ -31,10 +31,6 @@ Socket.process();
 
 app.use(sessionMiddleware);
 
-// this.io.use(sharedsession(sessionMiddleware, {
-//     autoSave: true
-// }));
-
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(express.static(__dirname + '/public'));
