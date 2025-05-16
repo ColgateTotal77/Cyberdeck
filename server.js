@@ -13,10 +13,7 @@ const config = require('./config.json');
 const app = express();
 const sessionStore = new MySQLStore(config);
 
-const server = Socket.inicialization(app);
-Socket.process();
-
-app.use(session({
+const sessionMiddleware = session({
     secret: '7167595f60bb18670c9dcce58a599ac4e94d4cc4aa958b776ff654a6ed7a0c1a4a206a5590db243b8212ad3ed38ff5c1ca2b27e42ded6fafbbc315978225825e',
     store: sessionStore,
     resave: false,
@@ -27,7 +24,16 @@ app.use(session({
         secure: true,
         maxAge: 30 * 24 * 60 * 60 * 1000 * 12
     }
-}));
+});
+
+const server = Socket.inicialization(app, sessionMiddleware);
+Socket.process();
+
+app.use(sessionMiddleware);
+
+// this.io.use(sharedsession(sessionMiddleware, {
+//     autoSave: true
+// }));
 
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
