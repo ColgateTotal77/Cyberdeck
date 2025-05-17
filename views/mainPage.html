@@ -1,50 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styleMain.css">
     <title>MainPage</title>
 </head>
+
 <body>
     <div id="testButton"><img src="/image/battle.png"></div>
     <div id="notificationContainer"></div>
     <div id="accauntContainer">
         <div id="userData"></div>
-        
+
     </div>
     <!-- <div id="playButton">Play</div> -->
     <div id="rightSidebar">
-    <div class="sidebarTop">
-        <div class="avatar"></div>
-        <div id="login"></div>
-        <div class="settingButton">
-            <img src="/image/settings.svg" alt="Settings" class="settingIcon">
+        <div class="sidebarTop">
+            <div class="avatar"></div>
+            <div id="login"></div>
+            <div class="settingButton">
+                <img src="/image/settings.svg" alt="Settings" class="settingIcon">
+            </div>
+            <div class="ratingBox">1200</div>
         </div>
-        <div class="ratingBox">1200</div>
-    </div>
 
-    <div class="sidebarMiddle">
-        <div class="infoBox"></div>
-        <div class="friendsSection">
-        <input
-            type="text"
-            id="searchUser"
-            placeholder="Search users..."
-            autocomplete="off"
-            />
-        <ul id="searchResults"></ul>
-        <h3>Friends</h3>
-        <ul id="friendsList"></ul>
-    </div>
-    </div>
+        <div class="sidebarMiddle">
+            <div class="infoBox"></div>
+            <div class="friendsSection">
+                <input type="text" id="searchUser" placeholder="Search users..." autocomplete="off" />
+                <ul id="searchResults"></ul>
+                <h3>Friends</h3>
+                <ul id="friendsList"></ul>
+            </div>
+        </div>
 
-    <div class="sidebarBottom">
-        <form id="logoutForm" action="/logOut" method="POST" style="display:none;"></form>
-        <div class="redirectButton" id="logout" onclick="document.getElementById('logoutForm').submit()">Log Out</div>
+        <div class="sidebarBottom">
+            <form id="logoutForm" action="/logOut" method="POST" style="display:none;"></form>
+            <div class="redirectButton" id="logout" onclick="document.getElementById('logoutForm').submit()">Log Out
+            </div>
+        </div>
     </div>
-</div>
+    <div id="settingsModal" class="modal hidden">
+        <div class="settingsWindow">
+            <div class="settingsSidebar">
+                <button class="settingsTab active" data-tab="general">General</button>
+                <button class="settingsTab" data-tab="account">Account</button>
+                <button class="settingsTab" data-tab="sound">Sound</button>
+            </div>
+            <div class="settingsContent">
+                <button class="closeSettings">X</button>
+                <div id="generalSettings" class="settingsSection active">
+                    <h2>General Settings</h2>
+                    <p>Here you can change general preferences.</p>
+                </div>
+                <div id="accountSettings" class="settingsSection">
+                    <h2>Account Settings</h2>
+                    <p>Here you can manage your account.</p>
+                </div>
+                <div id="soundSettings" class="settingsSection">
+                    <h2>Sound Settings</h2>
+                    <p>Here you can manage sound preferences.</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="/mainPageScript.js"></script>
 </body>
+
 </html>
