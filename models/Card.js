@@ -1,10 +1,10 @@
 const Model = require('../model.js');
 
-class User extends Model {
+class Card extends Model {
     constructor (obj = {}) {
         super(obj)
-        this.tableName = "users";
+        this.tableName = "cards";
     }  
 }
 
-module.exports = User;
+module.exports = Card;

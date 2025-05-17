@@ -16,10 +16,10 @@ class BattleController {
     }
 
     static battleInfo(req, res) {
-        if (!req.session || !req.session.battleInfo) {
+        if (!req.session || !req.session.user || !req.session.user.roomId || !Socket.battles.has(req.session.user.roomId)) {
             return res.status(401).json({ error: 'No battle info' });
         }
-        res.json(req.session.battleInfo);
+        res.json({battleInfo: Socket.battles.get(req.session.user.roomId), userId: req.session.user.id});
     }
 }
 
