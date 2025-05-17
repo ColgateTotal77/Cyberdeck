@@ -9,6 +9,7 @@ class Socket {
     static io = null;
     static waitingPlayers = new RBTree((a, b) => a.rating - b.rating);
     static rooms = new Map();
+    static battles = new Map();
 
     static inicialization(app, sessionMiddleware) {
         let sslOptions = null;
@@ -48,15 +49,16 @@ class Socket {
             console.log('A user connected:', user);
 
             socket.handshake.session.user.socket_id = socket.id;
-
+            socket.handshake.session.save();
             socket.on('test', (data) => {
                 
             });
 
             socket.on('findMatch', () => this.findMatch(socket));
-
+            socket.on('destroyRoom', () => this.destroyRoom(socket.handshake.session.user.roomId));
             socket.on('disconnect', () => {
                 console.log(socket.id, 'disconnect');
+                const user = socket.handshake.session.user;
                 if (user?.roomId) {
                     socket.to(user.roomId).emit('opponentDisconnected');
                 }
@@ -146,7 +148,8 @@ class Socket {
         opponent.roomId = roomId;
         opponentSocket.handshake.session.user.roomId = roomId;
         opponentSocket.handshake.session.save();
-
+        console.log(user);
+        console.log(opponent);
         this.io.to(roomId).emit('startGame', {
             roomId,
             players: [user, opponent]
@@ -156,6 +159,14 @@ class Socket {
             startTime: new Date(),
             player1_id: user.id,
             player2_id: opponent.id,
+        });
+        this.battles.set(roomId, {
+            players: {
+                [user.socket_id]: {},
+                [opponent.socket_id]: {}
+            }
+            // turn:
+
         });
         //player1_rating
         //player2_rating
@@ -204,6 +215,8 @@ class Socket {
             socket.leave(roomId);
             socket.emit('roomEnded');
         }
+        this.rooms.delete(roomId);
+        this.battles.delete(roomId);
         console.log(`${roomId} has been closed.`);
     }
 }
@@ -218,9 +231,5 @@ function calculateRatingChange(userRating, opponentRating, didWin) {
 
     return Math.round(totalChange);
 }
-
-//startGame
-//userReconnected
-//roomEnded
 
 module.exports = Socket;

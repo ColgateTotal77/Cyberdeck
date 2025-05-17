@@ -5,6 +5,8 @@ const RegisterController = require('./controllers/RegisterController.js');
 const AuthController = require('./controllers/AuthController.js');
 const MainPageController = require('./controllers/MainPageController.js');
 const RestoreController = require('./controllers/RestoreController.js');
+const BattleController = require('./controllers/BattleController.js');
+
 const Socket = require('./Socket.js');
 
 const MySQLStore = require('express-mysql-session')(session);
@@ -45,7 +47,7 @@ app.get('/mainPage', (req, res) => MainPageController.mainPage(req, res));
 app.post('/logOut', (req, res) => MainPageController.logOut(req, res));
 app.get('/restorePasswordForm', (req, res) => RestoreController.restorePasswordForm(req, res));
 app.post('/remindPassword', (req, res) => RestoreController.remindPassword(req, res));
-
+app.get('/battle/:roomId', (req, res) => BattleController.BattlePage(req,res));
 app.use((req, res) => {
     res.status(404).sendFile(__dirname + '/views/404.html');
 });
