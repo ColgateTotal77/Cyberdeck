@@ -27,9 +27,17 @@ fetch('/userData', { method: 'POST' })
         Notifications.showNotification('There was a problem with the fetch operation: ' + error, true);
     });
 
-document.getElementById("testButton").addEventListener('click', () => {
+document.getElementById("playButton").addEventListener('click', () => {
     testSocket();
 })
+
+document.getElementById('changeButton').addEventListener('click', () => {
+    document.getElementById('carddeckModal').classList.remove('hidden');
+});
+
+document.getElementById('closeCarddeck').addEventListener('click', () => {
+    document.getElementById('carddeckModal').classList.add('hidden');
+});
 
 document.querySelector(".settingButton").addEventListener("click", () => {
     document.getElementById("settingsModal").classList.remove("hidden");

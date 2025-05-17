@@ -13,6 +13,30 @@ body {
     color: white;
 }
 
+
+
+#container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+#mainContent {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1e1e1e;
+    position: relative;
+}
+
+#sidebar {
+    width: 17vw; /* or whatever fixed width */
+    background-color: #eee;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
 #userData {
     display: flex;
     justify-content: center;
@@ -20,21 +44,216 @@ body {
     flex-direction: column;
 }
 
+#playButton {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#playButton:hover {
+    transform: translateX(-50%) scale(1.1);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
+#changeButton {
+  position: absolute;
+  top: 110px; /* Adjust vertical position as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  width: 48px;  /* Size of the button */
+  height: 48px;
+  
+  cursor: pointer;
+  
+  background-color: rgba(255, 255, 255, 0.1); /* subtle translucent background */
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  z-index: 10; /* make sure it’s above other elements */
+}
+
+#changeButton img {
+  width: 28px;
+  height: 28px;
+  user-select: none;
+  pointer-events: none; /* So clicks go to parent */
+}
+
+#changeButton:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateX(-50%) scale(1.1);
+}
+
+#cardsGrid {
+  transform: translateY(30px);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 16px;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 30px;
+  
+  /* Background styles */
+  background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  
+  /* Optional: add a subtle pattern or texture (using a semi-transparent overlay) */
+  position: relative;
+  overflow: hidden;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  background-image: url('/image/exampleCard.png'); /* replace with your actual image path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  
+  width: 100%; /* fill the grid cell */
+  aspect-ratio: 3 / 4; /* adjust ratio if needed, e.g. 3:4 for card shape */
+  
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 165, 0, 0.8);
+}
+
+/* Card sizing and layout adjustments */
+.cardItem {
+    position: relative;
+    background-color: #444;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    width: 120px;  /* Smaller fixed width */
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: top;
+    transition: transform 0.2s ease;
+}
+
+.cardItem:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(255, 165, 0, 0.4);
+}
+
+.cardItem img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    display: block; /* Only display first image */
+    margin-bottom: 5px;
+}
+
+/* Hide all images except the first one */
+.cardItem img:not(:first-child) {
+    display: none;
+}
+/* Modal base */
+#carddeckModal {
+    z-index: 2001;
+}
+
+.deckHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #1a1a1a;
+    color: white;
+    border-bottom: 1px solid #333;
+    position: relative; /* Add this for positioning the close button */
+}
+
+.closedeckBtn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+/* Fix overall window structure */
+.deckWindow {
+    background-color: #2b2b2b;
+    color: white;
+    width: 80vw;
+    height: 70vh;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px #000;
+    display: flex;
+    flex-direction: column; /* Change to column layout */
+}
+
+/* Adjust the cards container to be in a row */
+.cardsContainer {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Adjust active and inactive cards sections */
+.activeCards, .inactiveCards {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.activeCards {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.inactiveCards {
+    flex: 1;
+    background-color: #1a1a1a;
+}
+
+.cardItem{
+    
+}
+
+
+/* Rigth side container */
+
 #rightSidebar {
-    display: grid;
-    grid-template-rows: 60% 1fr auto;
-    /* 3 rows: top 60%, middle 1fr, bottom auto */
-    height: 100vh;
-    width: 17vw;
     position: fixed;
     right: 0;
     top: 0;
+    width: 17vw;
+    height: 100vh;
     background-color: #f2f2f2;
     border-left: 1px solid #ccc;
     padding: 10px;
     box-sizing: border-box;
-    color: black;
     z-index: 1000;
+    color: black;
+
+    display: grid;
+    grid-template-rows: 30% 60% 10%;
+    gap: 10px;
 }
 
 .sidebarTop {
@@ -42,23 +261,6 @@ body {
     justify-content: space-between;
     width: 100%;
     align-items: center;
-}
-
-#rightSidebar {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 17vw;
-    height: 100vh;
-    background-color: #f2f2f2;
-    border-left: 1px solid #ccc;
-    padding: 10px;
-    box-sizing: border-box;
-    z-index: 1000;
-
-    display: grid;
-    grid-template-rows: 30% 60% 10%;
-    gap: 10px;
 }
 
 .sidebarTop,
@@ -133,51 +335,36 @@ body {
 
 .avatar {
     width: 120px;
-    /* Adjust size as needed */
     height: 120px;
     border-radius: 50%;
-    /* Makes it a circle */
     background-color: #ccc;
-    /* Placeholder color */
     border: 2px solid #999;
-    /* Optional border */
     margin: 20px 0;
-    /* Spacing */
 }
 
 .ratingBox {
     width: 100px;
-    /* width of the rectangle */
     height: 40px;
-    /* height of the rectangle */
     border: 2px solid gold;
-    /* gold border */
     border-radius: 6px;
-    /* slightly rounded corners */
     display: flex;
     justify-content: center;
     align-items: center;
     color: gold;
-    /* gold text color */
     font-weight: bold;
     font-size: 18px;
     background-color: #222;
-    /* dark background */
     user-select: none;
-    /* prevent text selection */
     margin-top: 10px;
 }
 
 .friendsSection {
     width: 100%;
-    /* full width in sidebar */
     flex: 1;
-    /* fill available vertical space */
     display: flex;
     flex-direction: column;
     padding: 10px 0;
     color: black;
-    /* text color for sidebar content */
 }
 
 #searchUser {
@@ -195,7 +382,6 @@ body {
     margin: 0 0 10px 0;
     overflow-y: auto;
     max-height: 150px;
-    /* scroll if too tall */
     border: 1px solid #ccc;
     border-radius: 5px;
     background: white;
@@ -215,18 +401,6 @@ body {
     background-color: #e7e7e7;
     margin-bottom: 4px;
     border-radius: 4px;
-}
-
-/* 
-#playButton{
-        width: 100px;   
-    height: 40px; 
-    color: white;
-    background-color:black;
-} */
-
-.testButton {
-    cursor: pointer;
 }
 
 .modal {
