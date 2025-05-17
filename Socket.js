@@ -3,7 +3,9 @@ const https = require('https');
 const { Server } = require('socket.io');
 const { RBTree } = require('bintrees');
 const sharedsession = require("express-socket.io-session");
-const MatchHistory = require('./models/MatchHistory.js');
+
+const Game = require('./models/Game.js');
+const Card = require('./models/Card.js');
 
 class Socket {
     static io = null;
@@ -127,9 +129,8 @@ class Socket {
         }
     }
 
-    static createRoom(user_socket, opponent) {
+    static async createRoom(user_socket, opponent) {
         const user = user_socket.handshake.session.user;
-        console.log(opponent);
         const opponentSocket = this.io.sockets.sockets.get(opponent.socket_id);
         if (!opponentSocket) {
             console.warn(`Opponent socket not found: ${opponent.socket_id}`);
@@ -141,25 +142,25 @@ class Socket {
         user_socket.join(roomId);
         opponentSocket.join(roomId);
 
+        const game = await new Game({player1_id: user.id, player2_id: opponentSocket.handshake.session.user.id}).save();
+
+        const current_turn_player_id = Math.random() < 0.5 ? user.id : opponentSocket.handshake.session.user.id;
+
         this.rooms.set(roomId, {
-            startTime: new Date(),
             player1_id: user.id,
             player2_id: opponent.id,
+            gameId: game.id
         });
 
-        user_socket.handshake.session.battleInfo = {
-            user: {userData: user, hp:30},
-            opponent: {userData: opponent, hp:30},
-            roomId
-        };
+        this.battles.set(roomId, {
+            player1: {userData: user, hp:30},
+            player2: {userData: opponent, hp:30},
+            roomId: roomId,
+            current_turn_player_id : current_turn_player_id
+        });
+        
         user_socket.handshake.session.user.roomId = roomId;
         user_socket.handshake.session.save();
-
-        opponentSocket.handshake.session.battleInfo = {
-            user: {userData: opponent, hp:30},
-            opponent: {userData: user, hp:30},
-            roomId: roomId
-        };
         opponentSocket.handshake.session.user.roomId = roomId;
         opponentSocket.handshake.session.save();
 
@@ -207,6 +208,9 @@ class Socket {
             socket.leave(roomId);
             socket.emit('roomEnded');
         }
+
+        Game.setEndTime(this.rooms.get(roomId).gameId);
+
         this.rooms.delete(roomId);
         this.battles.delete(roomId);
         console.log(`${roomId} has been closed.`);
@@ -225,3 +229,8 @@ function calculateRatingChange(userRating, opponentRating, didWin) {
 }
 
 module.exports = Socket;
+
+//need:
+//check rating before start match
+//update rating after match
+//
