@@ -12,10 +12,7 @@ socket.on('connect', () => {
     socket.emit('reconnectToRoom');
 });
 
-socket.on('startGame', async ({roomId, players}) => {
-    console.log('Game started in room:', roomId);
-    console.log('Players:', players);
-    
+socket.on('startGame', async (roomId) => {
     window.location.href = `/battle/${roomId}`;
 });
 

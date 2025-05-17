@@ -141,37 +141,29 @@ class Socket {
         user_socket.join(roomId);
         opponentSocket.join(roomId);
 
-        user.roomId = roomId;
-        user_socket.handshake.session.user.roomId = roomId;
-        user_socket.handshake.session.save();
-
-        opponent.roomId = roomId;
-        opponentSocket.handshake.session.user.roomId = roomId;
-        opponentSocket.handshake.session.save();
-        console.log(user);
-        console.log(opponent);
-        this.io.to(roomId).emit('startGame', {
-            roomId,
-            players: [user, opponent]
-        });
-
         this.rooms.set(roomId, {
             startTime: new Date(),
             player1_id: user.id,
             player2_id: opponent.id,
         });
-        this.battles.set(roomId, {
-            players: {
-                [user.socket_id]: {},
-                [opponent.socket_id]: {}
-            }
-            // turn:
 
-        });
-        //player1_rating
-        //player2_rating
-        //who win
-        //endTime
+        user_socket.handshake.session.battleInfo = {
+            user: {userData: user, hp:30},
+            opponent: {userData: opponent, hp:30},
+            roomId
+        };
+        user_socket.handshake.session.user.roomId = roomId;
+        user_socket.handshake.session.save();
+
+        opponentSocket.handshake.session.battleInfo = {
+            user: {userData: opponent, hp:30},
+            opponent: {userData: user, hp:30},
+            roomId: roomId
+        };
+        opponentSocket.handshake.session.user.roomId = roomId;
+        opponentSocket.handshake.session.save();
+
+        this.io.to(roomId).emit('startGame', roomId);
     }
 
     static reconnectToRoom(socket) {

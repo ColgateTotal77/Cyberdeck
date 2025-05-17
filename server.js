@@ -48,6 +48,8 @@ app.post('/logOut', (req, res) => MainPageController.logOut(req, res));
 app.get('/restorePasswordForm', (req, res) => RestoreController.restorePasswordForm(req, res));
 app.post('/remindPassword', (req, res) => RestoreController.remindPassword(req, res));
 app.get('/battle/:roomId', (req, res) => BattleController.BattlePage(req,res));
+app.get('/api/battleInfo', (req, res) => BattleController.battleInfo(req,res));
+
 app.use((req, res) => {
     res.status(404).sendFile(__dirname + '/views/404.html');
 });

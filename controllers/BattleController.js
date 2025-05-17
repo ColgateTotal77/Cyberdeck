@@ -8,13 +8,18 @@ class BattleController {
         const user = req.session.user;
 
         if(!user || !Socket.rooms.has(roomId) || user.roomId != roomId) {
-            req.session.save();
             res.redirect('/mainPage');
-            return;
         }
         else {
             res.sendFile(path.join(__dirname, "../views/battlePage.html"));
         }
+    }
+
+    static battleInfo(req, res) {
+        if (!req.session || !req.session.battleInfo) {
+            return res.status(401).json({ error: 'No battle info' });
+        }
+        res.json(req.session.battleInfo);
     }
 }
 

@@ -1,3 +1,53 @@
-.giveUpButton {
+html,
+body {
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    background-color: #1f1f1f;
+    position: relative;
+    color: white;
+}
+
+#giveUpButton {
     cursor: pointer;
+
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+#mainContainer {
+    display: grid;
+    grid-template-rows: 50% 50%;
+    height: 100%;
+}
+
+#opponentSide {
+    display: grid;
+    grid-template-rows: 20% 80%;
+}
+
+#opponentInfo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#opponentCarts {
+
+}
+
+#userSide {
+    display: grid;
+    grid-template-rows: 80% 20%;
+}
+
+#userInfo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#userCarts {
+
 }
