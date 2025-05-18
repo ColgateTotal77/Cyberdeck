@@ -28,3 +28,9 @@ socket.on('roomEnded', () => {
     console.log('Room has ended');
     window.location.href = `/mainPage`;
 });
+
+import { CardStore } from './CardStore.js';
+
+socket.on('allCards', (allCards) => {
+    CardStore.setCards(allCards);
+});

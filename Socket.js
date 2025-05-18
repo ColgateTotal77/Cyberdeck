@@ -37,13 +37,17 @@ class Socket {
     }
 
     static process() {
-        this.io.on('connection', (socket) => {
+        this.io.on('connection', async (socket) => {
             const user = socket.handshake.session?.user;
             if (!user) {
                 console.log(`Socket ${socket.id} has no session user`);
                 return;
             }
-            
+
+            const AllCards = await Card.takeAllCards();
+
+            socket.emit('allCards', AllCards);            
+
             socket.on('reconnectToRoom', () => this.reconnectToRoom(socket));
 
             user.socket_id = socket.id;
@@ -153,8 +157,8 @@ class Socket {
         });
 
         this.battles.set(roomId, {
-            player1: {userData: user, hp:30},
-            player2: {userData: opponent, hp:30},
+            player1: {userData: user, hp:30, hand_cards: [], table_cards: []},
+            player2: {userData: opponent, hp:30, hand_cards: [], table_cards: []},
             roomId: roomId,
             current_turn_player_id : current_turn_player_id
         });
