@@ -25,6 +25,11 @@ function setupClearDeckButton() {
     });
 }import { Notifications } from './Notifications.js';
 import { testSocket } from './client.js'
+import { CardStore } from './CardStore.js';
+
+const cards = await CardStore.waitForCards();
+console.log('Ready to use cards:', cards);
+
 
 if (localStorage.getItem("loginSuccess") === "true") {
     Notifications.showNotification("You have logged in successfully!", false);
