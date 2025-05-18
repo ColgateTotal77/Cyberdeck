@@ -1,4 +1,39 @@
-// Add a button to clear the deck
+import { Notifications } from './Notifications.js';
+import { testSocket } from './client.js'
+import { CardStore } from './CardStore.js';
+
+
+// if (localStorage.getItem("loginSuccess") === "true") {
+//     Notifications.showNotification("You have logged in successfully!", false);
+//     localStorage.removeItem("loginSuccess");
+// }
+
+fetch('/userData', { method: 'POST' })
+    .then(response => {
+        if (!response.ok) {
+            // Notifications.showNotification("Network response was not ok", true);
+        }
+        return response.json();
+    })
+    .then(data => {
+        const html = `
+            <div>Login: ${data.login}</div>
+            <div>Full name: ${data.fullName}</div>
+            <div>Is Admin: <span style="color:${data.isAdmin ? 'green' : 'red'};">${data.isAdmin ? "Yes" : "No"}</span></div>
+            <div>Email: ${data.email}</div>`;
+        document.getElementById("login").innerHTML = data.login;
+        // document.getElementById("userData").innerHTML = html;
+    })
+    .catch(error => {
+        console.log(error);
+        // Notifications.showNotification('There was a problem with the fetch operation: ' + error, true);
+    });
+
+document.getElementById("playButton").addEventListener('click', () => {
+    testSocket();
+})
+
+
 function setupClearDeckButton() {
     // Add clear deck button to deck modal
     const deckHeader = document.querySelector('.deckHeader');
@@ -23,43 +58,14 @@ function setupClearDeckButton() {
             Notifications.showNotification("Deck is already empty", false);
         }
     });
-}import { Notifications } from './Notifications.js';
-import { testSocket } from './client.js'
-import { CardStore } from './CardStore.js';
-
-const cards = await CardStore.waitForCards();
-console.log('Ready to use cards:', cards);
-
-
-if (localStorage.getItem("loginSuccess") === "true") {
-    Notifications.showNotification("You have logged in successfully!", false);
-    localStorage.removeItem("loginSuccess");
 }
 
-fetch('/userData', { method: 'POST' })
-    .then(response => {
-        if (!response.ok) {
-            Notifications.showNotification("Network response was not ok", true);
-        }
-        return response.json();
-    })
-    .then(data => {
-        const html = `
-            <div>Login: ${data.login}</div>
-            <div>Full name: ${data.fullName}</div>
-            <div>Is Admin: <span style="color:${data.isAdmin ? 'green' : 'red'};">${data.isAdmin ? "Yes" : "No"}</span></div>
-            <div>Email: ${data.email}</div>`;
-        document.getElementById("login").innerHTML = data.login;
-        document.getElementById("userData").innerHTML = html;
-    })
-    .catch(error => {
-        console.log(error);
-        Notifications.showNotification('There was a problem with the fetch operation: ' + error, true);
-    });
+CardStore.waitForCards().then(cards => {
+    console.log('Ready to use cards:', cards);
 
-document.getElementById("playButton").addEventListener('click', () => {
-    testSocket();
-})
+
+});
+
 
 // All available card names (can be replaced with real names or loaded from server)
 const allCards = [
@@ -71,39 +77,30 @@ const allCards = [
 ];
 
 // Separate into active and inactive
-let activeCards = []; // Start with empty active deck
-let inactiveCards = [...allCards]; // All cards start as inactive
+let activeCards = allCards.slice(0, 12); // Start with first 12 cards active
+let inactiveCards = allCards.slice(12);  // Rest are inactive
 
 // Initial render for main grid
 function renderMainGrid() {
     const cardsGrid = document.getElementById("cardsGrid");
     cardsGrid.innerHTML = ""; // Clear existing cards
     
-    if (activeCards.length === 0) {
-        // If deck is empty, display all empty slots
-        for (let i = 0; i < 12; i++) {
-            const emptyCard = document.createElement("div");
-            emptyCard.className = "card empty-card";
-            cardsGrid.appendChild(emptyCard);
-        }
-    } else {
-        // Add active cards to the main grid
-        activeCards.forEach((cardName, index) => {
-            const cardDiv = document.createElement("div");
-            cardDiv.className = "card";
-            cardDiv.style.backgroundImage = `url('/image/exampleCard.png')`;
-            cardDiv.dataset.cardName = cardName;
-            cardDiv.title = cardName;
-            cardsGrid.appendChild(cardDiv);
-        });
-        
-        // If we have fewer than 12 active cards, fill with empty slots
-        const emptySlots = 12 - activeCards.length;
-        for (let i = 0; i < emptySlots; i++) {
-            const emptyCard = document.createElement("div");
-            emptyCard.className = "card empty-card";
-            cardsGrid.appendChild(emptyCard);
-        }
+    // Add active cards to the main grid
+    activeCards.forEach((cardName, index) => {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "card";
+        cardDiv.style.backgroundImage = `url('/image/exampleCard.png')`;
+        cardDiv.dataset.cardName = cardName;
+        cardDiv.title = cardName;
+        cardsGrid.appendChild(cardDiv);
+    });
+    
+    // If we have fewer than 12 active cards, fill with empty slots
+    const emptySlots = 12 - activeCards.length;
+    for (let i = 0; i < emptySlots; i++) {
+        const emptyCard = document.createElement("div");
+        emptyCard.className = "card";
+        cardsGrid.appendChild(emptyCard);
     }
 }
 
@@ -158,10 +155,6 @@ function loadCardState() {
     if (savedActiveCards && savedInactiveCards) {
         activeCards = JSON.parse(savedActiveCards);
         inactiveCards = JSON.parse(savedInactiveCards);
-    } else {
-        // If no saved state, start with empty deck
-        activeCards = [];
-        inactiveCards = [...allCards];
     }
 }
 
@@ -181,12 +174,10 @@ function setupDeckModalListeners() {
     document.getElementById('activeCardGrid').addEventListener('click', (e) => {
         if (e.target.classList.contains('removeCard')) {
             const index = parseInt(e.target.dataset.index);
-            const removedCard = activeCards[index];
-            inactiveCards.push(removedCard);
+            inactiveCards.push(activeCards[index]);
             activeCards.splice(index, 1);
             renderDeckModal();
             renderMainGrid(); // Update main grid when removing cards
-            Notifications.showNotification(`Removed ${removedCard} from your deck`, false);
         }
     });
 
@@ -198,7 +189,6 @@ function setupDeckModalListeners() {
                 inactiveCards.splice(index, 1);
                 renderDeckModal();
                 renderMainGrid(); // Update main grid when adding cards
-                Notifications.showNotification(`Added ${activeCards[activeCards.length-1]} to your deck`, false);
             } else {
                 Notifications.showNotification("Maximum 12 active cards allowed!", true);
             }
@@ -226,13 +216,15 @@ document.querySelectorAll(".settingsTab").forEach(tab => {
     });
 });
 
-
+// Initialize everything when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
+    // Load saved card state
     loadCardState();
     
+    // Initial render
     renderMainGrid();
     
-    setupDeckModalListeners();
-    
     setupClearDeckButton();
+    // Setup modal listeners
+    setupDeckModalListeners();
 });
