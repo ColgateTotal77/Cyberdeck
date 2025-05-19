@@ -27,21 +27,12 @@ document.getElementById("userLogin").innerHTML = user.userData.login;
 document.getElementById("opponentLogin").innerHTML = opponent.userData.login;
 
 const userCardsContainer = document.getElementById('userHand');
-user.handCards.forEach(cardId => {
-    const cardData = allCards.find(card => card.id === cardId);
-    if (cardData) {
-        const cardElement = renderCard(cardData);
-        userCardsContainer.appendChild(cardElement);
-    }
-});
-
 const opponentCardsContainer = document.getElementById('opponentHand');
-opponent.handCards.forEach(() => {
-    const cardBack = document.createElement('div');
-    cardBack.classList.add('card-back');
-    cardBack.innerHTML = `<img src="/image/cardBack.jpg" alt="cardBack" class="card-img" />`;
-    opponentCardsContainer.appendChild(cardBack);
-});
+const userTable = document.getElementById('userTable');
+
+function isUserTurn() {
+    return current_turn_player_id === user.userData.id;
+}
 
 function renderCard(cardData) {
     const card = document.createElement('div');
@@ -51,8 +42,67 @@ function renderCard(cardData) {
         <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
         <div class="card-name">${cardData.name}</div>
     `;
+
+    if (isUserTurn()) {
+        card.setAttribute('draggable', true);
+        card.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('cardId', cardData.id);
+        });
+    }
+
     return card;
-}        
+}
+
+function renderUserHand() {
+    userCardsContainer.innerHTML = '';
+    user.handCards.forEach(cardId => {
+        const cardData = allCards.find(card => card.id === cardId);
+        if (cardData) {
+            const cardElement = renderCard(cardData);
+            userCardsContainer.appendChild(cardElement);
+        }
+    });
+}
+
+function renderOpponentHand() {
+    opponentCardsContainer.innerHTML = '';
+    opponent.handCards.forEach(() => {
+        const cardBack = document.createElement('div');
+        cardBack.classList.add('card-back');
+        cardBack.innerHTML = `<img src="/image/cardBack.jpg" alt="cardBack" class="card-img" />`;
+        opponentCardsContainer.appendChild(cardBack);
+    });
+}
+
+// Drop zone setup
+userTable.addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+userTable.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (!isUserTurn()) return;
+
+    const cardId = e.dataTransfer.getData('cardId');
+    const cardData = allCards.find(card => card.id == cardId);
+
+    if (cardData) {
+        const cardElement = renderCard(cardData);
+        userTable.appendChild(cardElement);
+
+        const handCard = [...userCardsContainer.children].find(child =>
+            child.querySelector('.card-name')?.textContent === cardData.name
+        );
+        if (handCard) handCard.remove();
+
+        // TODO: Inform server that card was played
+    }
+});
+
+// Initial render
+renderUserHand();
+renderOpponentHand();
+ 
 
 document.getElementById('giveUpButton').addEventListener('click', () => {
     if (confirm("Are you sure you want to give up this battle?")) {
