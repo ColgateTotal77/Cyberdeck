@@ -2,8 +2,8 @@ import { showSearchingIndicator } from './mainPageScript.js';
 
 const socket = io();
 
-export function testSocket() {
-    socket.emit('findMatch');
+export function startFindOpponent(deck) {
+    socket.emit('findMatch', deck);
 }
 
 socket.on('connect', () => {

@@ -10,12 +10,24 @@
     <button id="giveUpButton">Give Up</button>
     <div id="mainContainer">
         <div id="opponentSide">
-            <div id="opponentInfo"></div>
-            <div id="opponentCards"></div>
+            <div id="opponentInfo">
+                <div id="opponent">
+                    <div id="opponentAvatar"></div>
+                    <div id="opponentLogin"></div>
+                </div>
+                <div id="opponentHand"></div>
+            </div>
+            <div id="opponentTable"></div>
         </div>
         <div id="userSide">
-            <div id="userCards"></div>
-            <div id="userInfo"></div>
+            <div id="userTable"></div>
+            <div id="userInfo">
+                <div id="user">
+                    <div id="userAvatar"></div>
+                    <div id="userLogin"></div>
+                </div>
+                <div id="userHand"></div>
+            </div>
         </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>

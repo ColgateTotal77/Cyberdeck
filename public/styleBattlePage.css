@@ -22,32 +22,71 @@ body {
     height: 100%;
 }
 
-#opponentSide {
+#opponentSide{
     display: grid;
-    grid-template-rows: 20% 80%;
-}
-
-#opponentInfo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#opponentCards {
-
+    grid-template-rows: 65% 35%;
+    height: 100%;
 }
 
 #userSide {
     display: grid;
+    grid-template-rows: 35% 65%;
+    height: 100%;
+}
+
+#opponentInfo{
+    display: grid;
+    grid-template-rows: 40% 60%;
+    width: fit-content; 
+    margin: 0 auto;
+}
+
+ #userInfo {
+    display: grid;
+    grid-template-rows: 40% 60%;
+    width: fit-content; 
+    margin: 0 auto;
+}
+
+#userLogin, #opponentLogin {
+    text-align: center;
+}
+
+#opponentHand {
+    height: 150px;
+}
+
+#userHand {
+    height: 160px;
+}
+
+#opponent {
+    display: grid;
     grid-template-rows: 80% 20%;
 }
 
-#userInfo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#user {
+    display: grid;
+    grid-template-rows: 80% 20%;
 }
 
-#userCards {
+#userTable, #opponentTable {
 
+}
+
+.card, .card-back{
+    display: inline-block;
+    height: 150px;
+    margin: 0 10px;
+        
+}
+
+.card-img {
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-name {
+    font-weight: bold;
+    text-align: center;
 }

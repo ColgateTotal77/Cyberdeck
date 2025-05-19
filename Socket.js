@@ -60,7 +60,7 @@ class Socket {
                 
             });
 
-            socket.on('findMatch', () => this.findMatch(socket));
+            socket.on('findMatch', (deck) => this.findMatch(socket, deck));
             
             // Add handler for canceling match search
             socket.on('cancelMatch', () => this.cancelMatch(socket));
@@ -93,7 +93,7 @@ class Socket {
         socket.emit('matchCancelled');
     }
 
-    static findMatch(socket) {
+    static findMatch(socket, deck) {
         const ratingBound = 300;
         const user = socket.handshake.session.user;
 
@@ -102,15 +102,7 @@ class Socket {
             return;
         }
 
-        //for test
-        let deck = [ 
-            1, 7,
-            2, 8,
-            3, 9,
-            4, 10,
-            5, 11,
-            6, 12
-            ]
+        console.log(deck);
 
         if(!checkDeckBeforeStart(deck, this.allCardsId)) {
             console.log("deck problems, matchCancelled");
@@ -206,8 +198,8 @@ class Socket {
         const opponentHandCards = opponentDeck.slice(0, 4);
 
         this.battles.set(roomId, {
-            player1: {userData: user, hp:30, handCards: userHandCards, tableCards: [], deck: userDeck},
-            player2: {userData: opponent, hp:30, handCards: opponentHandCards, tableCards: [], deck: opponentDeck},
+            player1: {userData: user, hp:30, mana: 4, handCards: userHandCards, tableCards: [], deck: userDeck},
+            player2: {userData: opponent, hp:30, mana: 4, handCards: opponentHandCards, tableCards: [], deck: opponentDeck},
             roomId: roomId,
             current_turn_player_id : current_turn_player_id
         });

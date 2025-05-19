@@ -1,6 +1,6 @@
 // Modified mainPageScript.js to implement deck blocking and use DB cards
 import { Notifications } from './Notifications.js';
-import { testSocket, cancelMatch } from './mainPageClient.js'
+import { startFindOpponent, cancelMatch } from './mainPageClient.js'
 
 // Initialize deck blocking state
 window.isDeckBlocked = false;
@@ -81,8 +81,11 @@ document.getElementById("playButton").addEventListener('click', () => {
         Notifications.showNotification("You need exactly 12 cards in your deck to battle!", true);
         return;
     }
-    
-    testSocket();
+    console.log(activeCards);
+
+    startFindOpponent(activeCards.map((card) => {
+        return card.id;
+    }));
     setDeckBlockedStatus(true);
     showSearchingIndicator(true);
 })
