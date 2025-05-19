@@ -1,7 +1,6 @@
 // Modifications to mainPageScript.js to implement deck blocking
 import { Notifications } from './Notifications.js';
 import { testSocket, cancelMatch } from './mainPageClient.js'
-import { CardStore } from './CardStore.js';
 
 // Initialize deck blocking state
 window.isDeckBlocked = false;
@@ -111,10 +110,6 @@ function setupClearDeckButton() {
         }
     });
 }
-
-CardStore.waitForCards().then(cards => {
-    console.log('Ready to use cards:', cards);
-});
 
 // All available card names (can be replaced with real names or loaded from server)
 const allCards = [
@@ -278,7 +273,10 @@ document.querySelectorAll(".settingsTab").forEach(tab => {
 });
 
 // Initialize everything when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+
+    let allCards = await fetch('/api/getAllCards').then(res => res.json());
+
     // Load saved card state
     loadCardState();
     

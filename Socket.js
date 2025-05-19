@@ -12,10 +12,8 @@ class Socket {
     static waitingPlayers = new RBTree((a, b) => a.rating - b.rating);
     static rooms = new Map();
     static battles = new Map();
-    static allCards = null;
     static allCardsId = null;
     static async loadCards() {
-        this.allCards = await Card.takeAllCards();
         this.allCardsId = await Card.takeAllCardsId();
     }
 
@@ -49,8 +47,6 @@ class Socket {
                 console.log(`Socket ${socket.id} has no session user`);
                 return;
             }
-            console.log(this.allCards);
-            socket.emit('allCards', this.allCards);            
 
             socket.on('reconnectToRoom', () => this.reconnectToRoom(socket));
 
@@ -105,7 +101,9 @@ class Socket {
             console.log(`${socket.id} is not logged in`);
             return;
         }
-        let deck = [
+
+        //for test
+        let deck = [ 
             1, 7,
             2, 8,
             3, 9,

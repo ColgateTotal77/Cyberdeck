@@ -6,6 +6,7 @@ const AuthController = require('./controllers/AuthController.js');
 const MainPageController = require('./controllers/MainPageController.js');
 const RestoreController = require('./controllers/RestoreController.js');
 const BattleController = require('./controllers/BattleController.js');
+const APIController = require('./controllers/APIController.js');
 
 const Socket = require('./Socket.js');
 
@@ -33,31 +34,33 @@ const sessionMiddleware = session({
     const server = Socket.inicialization(app, sessionMiddleware);
     Socket.process();
 
+    const apiController = await new APIController().init();
+
+    app.use(sessionMiddleware);
+    app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
+    app.use(express.static(__dirname + '/public'));
+
+    app.get('/registerForm', (req, res) => RegisterController.registerForm(req, res));
+    app.post('/register', (req, res) => RegisterController.register(req, res));
+    app.get('/loginForm', (req, res) => AuthController.loginForm(req, res));
+    app.post('/login', (req, res) => AuthController.login(req, res));
+    app.post('/toRegisterForm', (req, res) => AuthController.toRegisterForm(req, res));
+    app.post('/userData', (req, res) => MainPageController.userData(req, res));
+    app.get('/mainPage', (req, res) => MainPageController.mainPage(req, res));
+    app.post('/logOut', (req, res) => MainPageController.logOut(req, res));
+    app.get('/restorePasswordForm', (req, res) => RestoreController.restorePasswordForm(req, res));
+    app.post('/remindPassword', (req, res) => RestoreController.remindPassword(req, res));
+    app.get('/battle/:roomId', (req, res) => BattleController.BattlePage(req, res));
+    app.get('/api/getBattleInfo', (req, res) => apiController.getBattleInfo(req, res));
+    app.get('/api/getAllCards', (req, res) => apiController.getAllCards(req, res));
+
+    app.use((req, res) => {
+        res.status(404).sendFile(__dirname + '/views/404.html');
+    });
+
     const port = 3000;
     server.listen(port, () => {
         console.log(`Server running at https://localhost:${port}/loginForm`);
     });
 })();
-
-app.use(sessionMiddleware);
-
-app.use(express.urlencoded({extended:true}));
-app.use(express.json());
-app.use(express.static(__dirname + '/public'));
-
-app.get('/registerForm', (req, res) => RegisterController.registerForm(req, res));
-app.post('/register', (req, res) => RegisterController.register(req, res));
-app.get('/loginForm', (req, res) => AuthController.loginForm(req, res));
-app.post('/login', (req, res) => AuthController.login(req, res));
-app.post('/toRegisterForm', (req, res) => AuthController.toRegisterForm(req, res));
-app.post('/userData', (req, res) => MainPageController.userData(req, res));
-app.get('/mainPage', (req, res) => MainPageController.mainPage(req, res));
-app.post('/logOut', (req, res) => MainPageController.logOut(req, res));
-app.get('/restorePasswordForm', (req, res) => RestoreController.restorePasswordForm(req, res));
-app.post('/remindPassword', (req, res) => RestoreController.remindPassword(req, res));
-app.get('/battle/:roomId', (req, res) => BattleController.BattlePage(req,res));
-app.get('/api/battleInfo', (req, res) => BattleController.battleInfo(req,res));
-
-app.use((req, res) => {
-    res.status(404).sendFile(__dirname + '/views/404.html');
-});

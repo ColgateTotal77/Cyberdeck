@@ -22,9 +22,3 @@ socket.on('matchCancelled', () => {
     console.log('Match search cancelled');
     showSearchingIndicator(false);
 });
-
-import { CardStore } from './CardStore.js';
-
-socket.on('allCards', (allCards) => {
-    CardStore.setCards(allCards);
-});

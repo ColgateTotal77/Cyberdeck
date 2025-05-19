@@ -1,12 +1,8 @@
 import { destroyRoom } from './battlePageClient.js'
 
-let dataObj;
-await fetch('/api/battleInfo')
-    .then(res => res.json())
-    .then(data => {
-        console.log('Fetched battle info:', data);
-        dataObj = data;
-    });
+
+const dataObj = await fetch('/api/getBattleInfo').then(res => res.json());
+const allCards = await fetch('/api/getAllCards').then(res => res.json());
 
 const battleInfo = dataObj.battleInfo;
 const userId = dataObj.userId;
@@ -17,15 +13,14 @@ const current_turn_player_id = battleInfo.current_turn_player_id;
 
 console.log(user);
 console.log(opponent);
+console.log(allCards);
 
 document.getElementById("userInfo").innerHTML = user.userData.login;
 document.getElementById("opponentInfo").innerHTML = opponent.userData.login;
-        // this.battles.set(roomId, {
-        //     player1: {userData: user, hp:30, hand_cards: [], table_cards: []},
-        //     player2: {userData: opponent, hp:30, hand_cards: [], table_cards: []},
+        //     player1: {userData: user, hp:30, handCards: userHandCards, tableCards: [], deck: userDeck},
+        //     player2: {userData: opponent, hp:30, handCards: opponentHandCards, tableCards: [], deck: opponentDeck},
         //     roomId: roomId,
         //     current_turn_player_id : current_turn_player_id
-        // });
 
 
 document.getElementById('giveUpButton').addEventListener('click', () => {
