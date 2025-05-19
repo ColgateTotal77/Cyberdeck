@@ -59,7 +59,7 @@ const sessionMiddleware = session({
         res.status(404).sendFile(__dirname + '/views/404.html');
     });
 
-    const port = 3000;
+    const port = 3001;
     server.listen(port, () => {
         console.log(`Server running at https://localhost:${port}/loginForm`);
     });

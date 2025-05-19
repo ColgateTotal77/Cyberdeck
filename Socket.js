@@ -13,8 +13,15 @@ class Socket {
     static rooms = new Map();
     static battles = new Map();
     static allCardsId = null;
+    static allCards = null;
     static async loadCards() {
         this.allCardsId = await Card.takeAllCardsId();
+        const rows = await Card.takeAllCards();
+        const cardMap = new Map();
+            for (const row of rows) {
+                cardMap.set(row.id, row);
+            }
+        this.allCards = cardMap;
     }
 
     static inicialization(app, sessionMiddleware) {
@@ -56,9 +63,8 @@ class Socket {
 
             socket.handshake.session.user.socket_id = socket.id;
             socket.handshake.session.save();
-            socket.on('test', (data) => {
-                
-            });
+
+            socket.on('cardPlaced', (cardId) => this.cardPlaced(socket, cardId));
 
             socket.on('findMatch', (deck) => this.findMatch(socket, deck));
             
@@ -220,6 +226,43 @@ class Socket {
             console.log(`${user.login} rejoined ${user.roomId}`);
         }
     }
+
+    static cardPlaced(socket, cardId) {
+        console.log("!")
+        const user = socket.handshake.session.user;
+        const roomId = user.roomId;
+        if (!user || !cardId){
+            console.log("!user || !cardId");
+            return;
+        }
+
+        cardId = Number(cardId);
+        const battle = this.battles.get(roomId);
+        const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+
+        if (battle.current_turn_player_id !== user.id){ 
+            console.log("battle.current_turn_player_id !== user.id");
+            return;
+        }
+
+        const cardIndex = battle[who].handCards.indexOf(cardId);
+        console.log(battle[who].handCards);
+        console.log(cardId);
+        if (cardIndex === -1) {
+            console.log("cardIndex === -1");
+            return;
+        }
+        battle[who].handCards.splice(cardIndex, 1);
+        battle[who].tableCards.push(this.allCards.get(cardId));
+        this.battles.set(roomId, battle);
+        console.log("send!")
+        this.io.to(roomId).emit('cardPlaced', {
+            by: user.id,
+            cardId: cardId
+        });
+        console.log("send!!!!")
+    }
+
 
     static deleteUserFromTree(curRating, socket_id) {
         if (curRating) {

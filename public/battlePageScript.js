@@ -1,6 +1,5 @@
 import { destroyRoom } from './battlePageClient.js'
 
-
 const dataObj = await fetch('/api/getBattleInfo').then(res => res.json());
 const allCards = await fetch('/api/getAllCards').then(res => res.json());
 
@@ -29,7 +28,7 @@ document.getElementById("opponentLogin").innerHTML = opponent.userData.login;
 const userCardsContainer = document.getElementById('userHand');
 const opponentCardsContainer = document.getElementById('opponentHand');
 const userTable = document.getElementById('userTable');
-
+const opponentTable = document.getElementById('opponentTable');
 function isUserTurn() {
     return current_turn_player_id === user.userData.id;
 }
@@ -74,7 +73,8 @@ function renderOpponentHand() {
     });
 }
 
-// Drop zone setup
+const socket = io();
+
 userTable.addEventListener('dragover', (e) => {
     e.preventDefault();
 });
@@ -84,18 +84,34 @@ userTable.addEventListener('drop', (e) => {
     if (!isUserTurn()) return;
 
     const cardId = e.dataTransfer.getData('cardId');
-    const cardData = allCards.find(card => card.id == cardId);
+    socket.emit('cardPlaced', cardId);
+});
 
-    if (cardData) {
-        const cardElement = renderCard(cardData);
-        userTable.appendChild(cardElement);
-
+socket.on('cardPlaced', ({ by, cardId }) => {
+    console.log("!");
+    const cardData = allCards.find(card => card.id === cardId);
+    if (!cardData) return;
+    console.log("cardData");
+    const cardElement = renderCard(cardData);
+    if (by === user.userData.id) {
+        console.log("by === user.userData.id");
         const handCard = [...userCardsContainer.children].find(child =>
             child.querySelector('.card-name')?.textContent === cardData.name
         );
-        if (handCard) handCard.remove();
-
-        // TODO: Inform server that card was played
+        if (handCard) {
+            handCard.remove();
+        }
+        userTable.appendChild(cardElement);
+    } 
+    else {
+        console.log("else");
+        const handCard = [...opponentCardsContainer.children].find(child =>
+            child.querySelector('.card-name')?.textContent === cardData.name
+        );
+        if (handCard) {
+            handCard.remove();
+        }
+        opponentTable.appendChild(cardElement);
     }
 });
 
