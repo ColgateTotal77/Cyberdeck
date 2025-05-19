@@ -12,6 +12,12 @@ class Socket {
     static waitingPlayers = new RBTree((a, b) => a.rating - b.rating);
     static rooms = new Map();
     static battles = new Map();
+    static AllCards = [];
+
+    static async loadCards() {
+        this.AllCards = await Card.takeAllCards();
+        console.log("AllCards loaded:", this.AllCards.length);
+    }
 
     static inicialization(app, sessionMiddleware) {
         let sslOptions = null;
@@ -44,9 +50,7 @@ class Socket {
                 return;
             }
 
-            const AllCards = await Card.takeAllCards();
-
-            socket.emit('allCards', AllCards);            
+            socket.emit('allCards', this.AllCards);            
 
             socket.on('reconnectToRoom', () => this.reconnectToRoom(socket));
 
@@ -101,6 +105,24 @@ class Socket {
             console.log(`${socket.id} is not logged in`);
             return;
         }
+        let deck = [
+            'Iron Man',
+            'Thor',
+            'Black Widow',
+            'Doctor Strange',
+            'Vision',
+            'Ant-Man',
+            'Falcon',
+            'Captain Marvel',
+            'Loki',
+            'Gamora',
+            'Spider-Man',
+            'Star-Lord'
+        ];
+
+        if(checkDeckBeforeStart(deck)) {
+            
+        }
 
         console.log(`${socket.id} is looking for a match`);
         let matched = false;
@@ -128,7 +150,8 @@ class Socket {
                     matched = true;
                     this.createRoom(socket, opponent);
                     console.log(`${socket.id} matched with ${opponent.socket_id}`);
-                } else if (higherDiff !== null && (lowerDiff === null || higherDiff < lowerDiff) && higherDiff < ratingBound) {
+                } 
+                else if (higherDiff !== null && (lowerDiff === null || higherDiff < lowerDiff) && higherDiff < ratingBound) {
                     const opponent = Object.values(higher.players).at(-1);
                     this.deleteUserFromTree(higher, opponent.socket_id);
                     matched = true;
@@ -145,7 +168,8 @@ class Socket {
                 node.players[socket.id] = user;
                 this.waitingPlayers.remove(node);
                 this.waitingPlayers.insert(node);
-            } else {
+            } 
+            else {
                 this.waitingPlayers.insert({ rating: user.rating, players: { [socket.id]: user } });
             }
         }
@@ -173,6 +197,8 @@ class Socket {
             player2_id: opponent.id,
             gameId: game.id
         });
+
+
 
         this.battles.set(roomId, {
             player1: {userData: user, hp:30, hand_cards: [], table_cards: []},
@@ -205,7 +231,8 @@ class Socket {
             if (Object.keys(curRating.players).length) {
                 this.waitingPlayers.remove(curRating);
                 this.waitingPlayers.insert(curRating);
-            } else {
+            } 
+            else {
                 this.waitingPlayers.remove(curRating);
             }
         }
@@ -248,6 +275,10 @@ function calculateRatingChange(userRating, opponentRating, didWin) {
     const totalChange = baseChange * randFactor;
 
     return Math.round(totalChange);
+}
+
+function checkDeckBeforeStart(deck) {
+
 }
 
 module.exports = Socket;

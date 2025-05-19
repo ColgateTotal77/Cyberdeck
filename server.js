@@ -28,8 +28,16 @@ const sessionMiddleware = session({
     }
 });
 
-const server = Socket.inicialization(app, sessionMiddleware);
-Socket.process();
+(async () => {
+    await Socket.loadCards();
+    const server = Socket.inicialization(app, sessionMiddleware);
+    Socket.process();
+
+    const port = 3000;
+    server.listen(port, () => {
+        console.log(`Server running at https://localhost:${port}/loginForm`);
+    });
+})();
 
 app.use(sessionMiddleware);
 
@@ -52,10 +60,4 @@ app.get('/api/battleInfo', (req, res) => BattleController.battleInfo(req,res));
 
 app.use((req, res) => {
     res.status(404).sendFile(__dirname + '/views/404.html');
-});
-
-const port = 3002;
-
-server.listen(port, () => {
-    console.log(`Server running at https://localhost:3002/loginForm`);
 });
