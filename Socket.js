@@ -61,6 +61,10 @@ class Socket {
             });
 
             socket.on('findMatch', () => this.findMatch(socket));
+            
+            // Add handler for canceling match search
+            socket.on('cancelMatch', () => this.cancelMatch(socket));
+            
             socket.on('destroyRoom', () => this.destroyRoom(socket.handshake.session.user.roomId));
             socket.on('disconnect', () => {
                 console.log(socket.id, 'disconnect');
@@ -74,6 +78,21 @@ class Socket {
         });
     }
 
+    static cancelMatch(socket) {
+        const user = socket.handshake.session.user;
+        if (!user) {
+            console.log(`${socket.id} is not logged in`);
+            return;
+        }
+
+        console.log(`${socket.id} canceled match search`);
+        
+        const curRating = this.waitingPlayers.find({ rating: user.rating });
+        this.deleteUserFromTree(curRating, socket.id);
+        
+        socket.emit('matchCancelled');
+    }
+
     static findMatch(socket) {
         const ratingBound = 300;
         const user = socket.handshake.session.user;
@@ -84,6 +103,22 @@ class Socket {
         }
 
         console.log(`${socket.id} is looking for a match`);
+        
+        // Add timeout for match search (e.g., 60 seconds)
+        const searchTimeout = 60000; // 60 seconds
+        const timeoutId = setTimeout(() => {
+            // If user is still in waiting list after timeout
+            const curRating = this.waitingPlayers.find({ rating: user.rating });
+            if (curRating && curRating.players[socket.id]) {
+                this.deleteUserFromTree(curRating, socket.id);
+                socket.emit('noMatchFound');
+                console.log(`No match found for ${socket.id} after timeout`);
+            }
+        }, searchTimeout);
+        
+        // Store timeout ID to clear it if match is found
+        if (!socket.matchTimeouts) socket.matchTimeouts = {};
+        socket.matchTimeouts[user.id] = timeoutId;
 
         let matched = false;
 
@@ -96,6 +131,19 @@ class Socket {
                 matched = true;
                 this.createRoom(socket, opponent);
                 console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                
+                // Clear timeout as match was found
+                if (socket.matchTimeouts && socket.matchTimeouts[user.id]) {
+                    clearTimeout(socket.matchTimeouts[user.id]);
+                    delete socket.matchTimeouts[user.id];
+                }
+                
+                // Clear opponent's timeout if it exists
+                const opponentSocket = this.io.sockets.sockets.get(opponent.socket_id);
+                if (opponentSocket && opponentSocket.matchTimeouts && opponentSocket.matchTimeouts[opponent.id]) {
+                    clearTimeout(opponentSocket.matchTimeouts[opponent.id]);
+                    delete opponentSocket.matchTimeouts[opponent.id];
+                }
             } 
             else {
                 const lower = this.waitingPlayers.lower({ rating: user.rating });
@@ -110,12 +158,38 @@ class Socket {
                     matched = true;
                     this.createRoom(socket, opponent);
                     console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                    
+                    // Clear timeout as match was found
+                    if (socket.matchTimeouts && socket.matchTimeouts[user.id]) {
+                        clearTimeout(socket.matchTimeouts[user.id]);
+                        delete socket.matchTimeouts[user.id];
+                    }
+                    
+                    // Clear opponent's timeout if it exists
+                    const opponentSocket = this.io.sockets.sockets.get(opponent.socket_id);
+                    if (opponentSocket && opponentSocket.matchTimeouts && opponentSocket.matchTimeouts[opponent.id]) {
+                        clearTimeout(opponentSocket.matchTimeouts[opponent.id]);
+                        delete opponentSocket.matchTimeouts[opponent.id];
+                    }
                 } else if (higherDiff !== null && (lowerDiff === null || higherDiff < lowerDiff) && higherDiff < ratingBound) {
                     const opponent = Object.values(higher.players).at(-1);
                     this.deleteUserFromTree(higher, opponent.socket_id);
                     matched = true;
                     this.createRoom(socket, opponent);
                     console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                    
+                    // Clear timeout as match was found
+                    if (socket.matchTimeouts && socket.matchTimeouts[user.id]) {
+                        clearTimeout(socket.matchTimeouts[user.id]);
+                        delete socket.matchTimeouts[user.id];
+                    }
+                    
+                    // Clear opponent's timeout if it exists
+                    const opponentSocket = this.io.sockets.sockets.get(opponent.socket_id);
+                    if (opponentSocket && opponentSocket.matchTimeouts && opponentSocket.matchTimeouts[opponent.id]) {
+                        clearTimeout(opponentSocket.matchTimeouts[opponent.id]);
+                        delete opponentSocket.matchTimeouts[opponent.id];
+                    }
                 }
             }
         }

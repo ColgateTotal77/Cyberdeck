@@ -4,7 +4,11 @@ export function testSocket() {
     socket.emit('findMatch');
 }
 
-export function destroyRoom() { //temporary
+export function cancelMatch() {
+    socket.emit('cancelMatch');
+}
+
+export function destroyRoom() { 
     socket.emit('destroyRoom');
 }
 
@@ -14,6 +18,10 @@ socket.on('connect', () => {
 
 socket.on('startGame', async (roomId) => {
     window.location.href = `/battle/${roomId}`;
+});
+
+socket.on('matchCancelled', () => {
+    console.log('Match search cancelled');
 });
 
 socket.on('userReconnected', ({ user }) => {

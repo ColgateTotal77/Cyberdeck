@@ -1,7 +1,10 @@
+// Modifications to mainPageScript.js to implement deck blocking
 import { Notifications } from './Notifications.js';
-import { testSocket } from './client.js'
+import { testSocket, cancelMatch } from './client.js'
 import { CardStore } from './CardStore.js';
 
+// Initialize deck blocking state
+window.isDeckBlocked = false;
 
 // if (localStorage.getItem("loginSuccess") === "true") {
 //     Notifications.showNotification("You have logged in successfully!", false);
@@ -16,8 +19,8 @@ fetch('/userData', { method: 'POST' })
         return response.json();
     })
     .then(data => {
-        const html = `
-            <div>Login: ${data.login}</div>
+        const html = 
+            `<div>Login: ${data.login}</div>
             <div>Full name: ${data.fullName}</div>
             <div>Is Admin: <span style="color:${data.isAdmin ? 'green' : 'red'};">${data.isAdmin ? "Yes" : "No"}</span></div>
             <div>Email: ${data.email}</div>`;
@@ -29,10 +32,59 @@ fetch('/userData', { method: 'POST' })
         // Notifications.showNotification('There was a problem with the fetch operation: ' + error, true);
     });
 
+// Add a searching indicator for better UX
+function showSearchingIndicator(isSearching) {
+    const playButton = document.getElementById("playButton");
+    if (isSearching) {
+        playButton.classList.add("searching");
+        playButton.innerHTML = `
+            <div class="searching-indicator">
+                <span>Searching...</span>
+                <button id="cancelSearch">Cancel</button>
+            </div>
+        `;
+        // Add cancel search event listener
+        document.getElementById("cancelSearch").addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering playButton's event
+            cancelMatch();
+            showSearchingIndicator(false);
+        });
+    } else {
+        playButton.classList.remove("searching");
+        playButton.innerHTML = '<img src="/image/battle.png">';
+    }
+}
+
+// Add a new function to handle deck blocked status
+function setDeckBlockedStatus(isBlocked) {
+    window.isDeckBlocked = isBlocked;
+    const changeButton = document.getElementById('changeButton');
+    
+    if (isBlocked) {
+        changeButton.classList.add('blocked');
+        // Add visual indication that deck is locked
+        const existingLock = changeButton.querySelector('.lockIcon');
+        if (!existingLock) {
+            const lockIcon = document.createElement('div');
+            lockIcon.className = 'lockIcon';
+            lockIcon.innerHTML = '🔒';
+            changeButton.appendChild(lockIcon);
+        }
+    } else {
+        changeButton.classList.remove('blocked');
+        // Remove lock icon if it exists
+        const lockIcon = changeButton.querySelector('.lockIcon');
+        if (lockIcon) {
+            changeButton.removeChild(lockIcon);
+        }
+    }
+}
+
 document.getElementById("playButton").addEventListener('click', () => {
     testSocket();
+    setDeckBlockedStatus(true);
+    showSearchingIndicator(true);
 })
-
 
 function setupClearDeckButton() {
     // Add clear deck button to deck modal
@@ -62,10 +114,7 @@ function setupClearDeckButton() {
 
 CardStore.waitForCards().then(cards => {
     console.log('Ready to use cards:', cards);
-
-
 });
-
 
 // All available card names (can be replaced with real names or loaded from server)
 const allCards = [
@@ -120,7 +169,7 @@ function renderDeckModal() {
         card.innerHTML = `
             <img src="/image/exampleCard.png" alt="${name}">
             <span>${name}</span>
-            <button class="removeCard" data-index="${index}">✖</button>
+            <button class="removeCard" data-index="${index}"${window.isDeckBlocked ? ' disabled' : ''}>✖</button>
         `;
         activeGrid.appendChild(card);
     });
@@ -132,10 +181,16 @@ function renderDeckModal() {
         card.innerHTML = `
             <img src="/image/exampleCard.png" alt="${name}">
             <span>${name}</span>
-            <button class="addCard" data-index="${index}">＋</button>
+            <button class="addCard" data-index="${index}"${window.isDeckBlocked ? ' disabled' : ''}>＋</button>
         `;
         inactiveList.appendChild(card);
     });
+
+    // Update the Clear Deck button state
+    const clearDeckBtn = document.getElementById('clearDeck');
+    if (clearDeckBtn) {
+        clearDeckBtn.disabled = window.isDeckBlocked;
+    }
 
     // Save deck state to localStorage for persistence
     saveCardState();
@@ -162,6 +217,12 @@ function loadCardState() {
 function setupDeckModalListeners() {
     // Open/close modal
     document.getElementById('changeButton').addEventListener('click', () => {
+        // Prevent opening deck editor if blocked
+        if (window.isDeckBlocked) {
+            Notifications.showNotification("Cannot change deck while searching for a match!", true);
+            return;
+        }
+        
         renderDeckModal();
         document.getElementById('carddeckModal').classList.remove('hidden');
     });
@@ -172,7 +233,7 @@ function setupDeckModalListeners() {
 
     // Event delegation for add/remove card buttons
     document.getElementById('activeCardGrid').addEventListener('click', (e) => {
-        if (e.target.classList.contains('removeCard')) {
+        if (e.target.classList.contains('removeCard') && !window.isDeckBlocked) {
             const index = parseInt(e.target.dataset.index);
             inactiveCards.push(activeCards[index]);
             activeCards.splice(index, 1);
@@ -182,7 +243,7 @@ function setupDeckModalListeners() {
     });
 
     document.getElementById('inactiveCardList').addEventListener('click', (e) => {
-        if (e.target.classList.contains('addCard')) {
+        if (e.target.classList.contains('addCard') && !window.isDeckBlocked) {
             const index = parseInt(e.target.dataset.index);
             if (activeCards.length < 12) {
                 activeCards.push(inactiveCards[index]);
