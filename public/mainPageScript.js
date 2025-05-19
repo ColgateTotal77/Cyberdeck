@@ -45,6 +45,7 @@ export function showSearchingIndicator(isSearching) {
         // Add cancel search event listener
         document.getElementById("cancelSearch").addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent triggering playButton's event
+            setDeckBlockedStatus(false);
             cancelMatch();
             showSearchingIndicator(false);
         });

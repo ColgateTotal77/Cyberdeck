@@ -122,55 +122,80 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="/mainPageScript.js"></script>
-<audio id="bgMusic" preload="auto" loop>
-    <source src="/audio/bg-music.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-</audio>
+    <audio id="bgMusic" preload="auto" loop>
+        <source src="/audio/bg-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const music = document.getElementById("bgMusic");
+            const toggleBtn = document.getElementById("musicToggle");
+            const volumeSlider = document.getElementById("volumeSlider");
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const music = document.getElementById("bgMusic");
-        const toggleBtn = document.getElementById("musicToggle");
-        const volumeSlider = document.getElementById("volumeSlider");
+            // Get saved settings or use defaults
+            let savedVolume = localStorage.getItem("musicVolume");
+            let savedPlaying = localStorage.getItem("musicPlaying");
 
-        let isMusicPlaying = false;
-
-        music.load();
-        music.volume = volumeSlider.value;
-
-        toggleBtn.addEventListener("click", () => {
-            if (isMusicPlaying) {
-                music.pause();
-                toggleBtn.textContent = "🔈 Off";
-                isMusicPlaying = false;
-            } else {
-                music.play().then(() => {
-                    toggleBtn.textContent = "🔊 On";
-                    isMusicPlaying = true;
-                }).catch(err => {
-                    console.warn("Music play error:", err.message);
-                });
+            if (savedVolume === null) {
+                savedVolume = "0.1"; // default volume
+                localStorage.setItem("musicVolume", savedVolume);
             }
-        });
-
-        volumeSlider.addEventListener("input", () => {
-            music.volume = volumeSlider.value;
-        });
-
-        const unlockAudio = () => {
-            if (!isMusicPlaying) {
-                music.play().then(() => {
-                    toggleBtn.textContent = "🔊 On";
-                    isMusicPlaying = true;
-                }).catch(err => {
-                    console.warn("Music not allowed yet:", err.message);
-                });
+            if (savedPlaying === null) {
+                savedPlaying = "true"; // default to ON
+                localStorage.setItem("musicPlaying", savedPlaying);
             }
-            document.removeEventListener("click", unlockAudio);
-        };
 
-        document.addEventListener("click", unlockAudio);
-    });
+            music.load();
+            music.volume = parseFloat(savedVolume);
+            volumeSlider.value = savedVolume;
+            let isMusicPlaying = false;
+
+            // Update toggle button UI
+            const updateToggleText = () => {
+                toggleBtn.textContent = isMusicPlaying ? "🔊 On" : "🔈 Off";
+            };
+
+            // Handle toggle button
+            toggleBtn.addEventListener("click", () => {
+                if (isMusicPlaying) {
+                    music.pause();
+                    isMusicPlaying = false;
+                    localStorage.setItem("musicPlaying", "false");
+                } else {
+                    music.play().then(() => {
+                        isMusicPlaying = true;
+                        localStorage.setItem("musicPlaying", "true");
+                    }).catch(err => {
+                        console.warn("Playback failed:", err.message);
+                    });
+                }
+                updateToggleText();
+            });
+
+            // Handle volume changes
+            volumeSlider.addEventListener("input", () => {
+                music.volume = volumeSlider.value;
+                localStorage.setItem("musicVolume", volumeSlider.value);
+            });
+
+            // Play music after first user interaction if enabled
+            const unlockAudio = () => {
+                if (localStorage.getItem("musicPlaying") === "true") {
+                    music.play().then(() => {
+                        isMusicPlaying = true;
+                        updateToggleText();
+                    }).catch(err => {
+                        console.warn("Autoplay blocked:", err.message);
+                    });
+                }
+                document.removeEventListener("click", unlockAudio);
+            };
+
+            document.addEventListener("click", unlockAudio, { once: true });
+
+            // Set initial button text
+            updateToggleText();
+        });
 </script>
 </body>
 
