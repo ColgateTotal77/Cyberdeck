@@ -22,7 +22,11 @@ document.getElementById("opponentInfo").innerHTML = opponent.userData.login;
         //     roomId: roomId,
         //     current_turn_player_id : current_turn_player_id
 
+        user.handCards
 
 document.getElementById('giveUpButton').addEventListener('click', () => {
-    destroyRoom();
+        if (confirm("Are you sure you want to give up this battle?")) {
+            destroyRoom();
+            window.location.href = "/mainpage";
+        }
 })

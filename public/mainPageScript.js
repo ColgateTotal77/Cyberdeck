@@ -1,14 +1,9 @@
-// Modifications to mainPageScript.js to implement deck blocking
+// Modified mainPageScript.js to implement deck blocking and use DB cards
 import { Notifications } from './Notifications.js';
 import { testSocket, cancelMatch } from './mainPageClient.js'
 
 // Initialize deck blocking state
 window.isDeckBlocked = false;
-
-// if (localStorage.getItem("loginSuccess") === "true") {
-//     Notifications.showNotification("You have logged in successfully!", false);
-//     localStorage.removeItem("loginSuccess");
-// }
 
 fetch('/userData', { method: 'POST' })
     .then(response => {
@@ -81,6 +76,12 @@ function setDeckBlockedStatus(isBlocked) {
 }
 
 document.getElementById("playButton").addEventListener('click', () => {
+    // Check if there are 12 cards in the active deck
+    if (activeCards.length < 12) {
+        Notifications.showNotification("You need exactly 12 cards in your deck to battle!", true);
+        return;
+    }
+    
     testSocket();
     setDeckBlockedStatus(true);
     showSearchingIndicator(true);
@@ -112,18 +113,10 @@ function setupClearDeckButton() {
     });
 }
 
-// All available card names (can be replaced with real names or loaded from server)
-const allCards = [
-    "Card 1", "Card 2", "Card 3", "Card 4", "Card 5", "Card 6",
-    "Card 7", "Card 8", "Card 9", "Card 10", "Card 11", "Card 12",
-    "Card 13","Card 14", "Card 15", "Card 16", "Card 17", "Card 18",
-    "Card 19","Card 20", "Card 21", "Card 22", "Card 23", "Card 24", 
-    "Card 25", "Card 26", "Card 27", "Card 28", "Card 29", "Card 30"
-];
-
-// Separate into active and inactive
-let activeCards = allCards.slice(0, 12); // Start with first 12 cards active
-let inactiveCards = allCards.slice(12);  // Rest are inactive
+// Initialize empty card arrays
+let allCards = []; 
+let activeCards = []; 
+let inactiveCards = [];
 
 // Initial render for main grid
 function renderMainGrid() {
@@ -131,12 +124,26 @@ function renderMainGrid() {
     cardsGrid.innerHTML = ""; // Clear existing cards
     
     // Add active cards to the main grid
-    activeCards.forEach((cardName, index) => {
+    activeCards.forEach((card) => {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card";
-        cardDiv.style.backgroundImage = `url('/image/exampleCard.png')`;
-        cardDiv.dataset.cardName = cardName;
-        cardDiv.title = cardName;
+        cardDiv.style.backgroundImage = card.image_url ? 
+            `url('${card.image_url}')` : 
+            `url('/image/exampleCard.png')`;
+        cardDiv.dataset.cardId = card.id;
+        
+        // Add card stats overlay
+        const cardStats = document.createElement("div");
+        cardStats.className = "cardStats";
+        cardStats.innerHTML = `
+            <div class="cardName">${card.name}</div>
+            <div class="cardCost">${card.cost}</div>
+            <div class="cardAttack">${card.attack}</div>
+            <div class="cardDefense">${card.defense}</div>
+        `;
+        cardDiv.appendChild(cardStats);
+        
+        cardDiv.title = `${card.name}: ${card.description}`;
         cardsGrid.appendChild(cardDiv);
     });
     
@@ -159,27 +166,43 @@ function renderDeckModal() {
     inactiveList.innerHTML = "";
 
     // Render active cards
-    activeCards.forEach((name, index) => {
-        const card = document.createElement("div");
-        card.className = "cardItem";
-        card.innerHTML = `
-            <img src="/image/exampleCard.png" alt="${name}">
-            <span>${name}</span>
+    activeCards.forEach((card, index) => {
+        const cardElement = document.createElement("div");
+        cardElement.className = "cardItem";
+        cardElement.innerHTML = `
+            <img src="${card.image_url || '/image/exampleCard.png'}" alt="${card.name}">
+            <div class="cardDetails">
+                <span class="cardName">${card.name}</span>
+                <div class="cardStats">
+                    <span class="statItem cost">Cost: ${card.cost}</span>
+                    <span class="statItem attack">ATK: ${card.attack}</span>
+                    <span class="statItem defense">DEF: ${card.defense}</span>
+                </div>
+                <span class="cardDescription">${card.description}</span>
+            </div>
             <button class="removeCard" data-index="${index}"${window.isDeckBlocked ? ' disabled' : ''}>✖</button>
         `;
-        activeGrid.appendChild(card);
+        activeGrid.appendChild(cardElement);
     });
 
     // Render inactive cards
-    inactiveCards.forEach((name, index) => {
-        const card = document.createElement("div");
-        card.className = "cardItem";
-        card.innerHTML = `
-            <img src="/image/exampleCard.png" alt="${name}">
-            <span>${name}</span>
+    inactiveCards.forEach((card, index) => {
+        const cardElement = document.createElement("div");
+        cardElement.className = "cardItem";
+        cardElement.innerHTML = `
+            <img src="${card.image_url || '/image/exampleCard.png'}" alt="${card.name}">
+            <div class="cardDetails">
+                <span class="cardName">${card.name}</span>
+                <div class="cardStats">
+                    <span class="statItem cost">Cost: ${card.cost}</span>
+                    <span class="statItem attack">ATK: ${card.attack}</span>
+                    <span class="statItem defense">DEF: ${card.defense}</span>
+                </div>
+                <span class="cardDescription">${card.description}</span>
+            </div>
             <button class="addCard" data-index="${index}"${window.isDeckBlocked ? ' disabled' : ''}>＋</button>
         `;
-        inactiveList.appendChild(card);
+        inactiveList.appendChild(cardElement);
     });
 
     // Update the Clear Deck button state
@@ -204,8 +227,28 @@ function loadCardState() {
     const savedInactiveCards = localStorage.getItem('inactiveCards');
     
     if (savedActiveCards && savedInactiveCards) {
-        activeCards = JSON.parse(savedActiveCards);
-        inactiveCards = JSON.parse(savedInactiveCards);
+        const parsedActiveCards = JSON.parse(savedActiveCards);
+        const parsedInactiveCards = JSON.parse(savedInactiveCards);
+        
+        // Make sure the cards exist in our full list (in case the DB was updated)
+        const activeCardIds = new Set(parsedActiveCards.map(card => card.id));
+        const inactiveCardIds = new Set(parsedInactiveCards.map(card => card.id));
+        
+        // Filter active cards to ensure they still exist in DB
+        activeCards = allCards.filter(card => activeCardIds.has(card.id));
+        
+        // Add any cards that were active before but aren't in our filtered active list
+        const missingActiveCardIds = Array.from(activeCardIds).filter(
+            id => !activeCards.some(card => card.id === id)
+        );
+        
+        // Handle any DB changes by ensuring all cards exist
+        inactiveCards = allCards.filter(card => 
+            !activeCardIds.has(card.id) || missingActiveCardIds.includes(card.id)
+        );
+    } else {
+        // Default - all cards are inactive
+        inactiveCards = [...allCards];
     }
 }
 
@@ -275,16 +318,28 @@ document.querySelectorAll(".settingsTab").forEach(tab => {
 
 // Initialize everything when DOM is loaded
 document.addEventListener("DOMContentLoaded", async () => {
-
-    let allCards = await fetch('/api/getAllCards').then(res => res.json());
-
-    // Load saved card state
-    loadCardState();
-    
-    // Initial render
-    renderMainGrid();
-    
-    setupClearDeckButton();
-    // Setup modal listeners
-    setupDeckModalListeners();
+    try {
+        // Fetch cards from API
+        const response = await fetch('/api/getAllCards');
+        if (!response.ok) {
+            throw new Error('Failed to fetch cards');
+        }
+        
+        // Store all cards from the database
+        allCards = await response.json();
+        console.log('Loaded cards from database:', allCards);
+        
+        // Load saved card state
+        loadCardState();
+        
+        // Initial render
+        renderMainGrid();
+        
+        setupClearDeckButton();
+        // Setup modal listeners
+        setupDeckModalListeners();
+    } catch (error) {
+        console.error('Error initializing card data:', error);
+        Notifications.showNotification('Failed to load cards. Please refresh the page.', true);
+    }
 });

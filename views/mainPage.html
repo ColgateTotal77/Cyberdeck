@@ -132,7 +132,6 @@
             const toggleBtn = document.getElementById("musicToggle");
             const volumeSlider = document.getElementById("volumeSlider");
 
-            // Get saved settings or use defaults
             let savedVolume = localStorage.getItem("musicVolume");
             let savedPlaying = localStorage.getItem("musicPlaying");
 
@@ -148,14 +147,18 @@
             music.load();
             music.volume = parseFloat(savedVolume);
             volumeSlider.value = savedVolume;
-            let isMusicPlaying = false;
+
+            // Fix: Initialize music playing status from saved data
+            let isMusicPlaying = savedPlaying === "true";
 
             // Update toggle button UI
             const updateToggleText = () => {
                 toggleBtn.textContent = isMusicPlaying ? "🔊 On" : "🔈 Off";
             };
 
-            // Handle toggle button
+            // Set initial button text immediately
+            updateToggleText();
+
             toggleBtn.addEventListener("click", () => {
                 if (isMusicPlaying) {
                     music.pause();
@@ -172,13 +175,11 @@
                 updateToggleText();
             });
 
-            // Handle volume changes
             volumeSlider.addEventListener("input", () => {
                 music.volume = volumeSlider.value;
                 localStorage.setItem("musicVolume", volumeSlider.value);
             });
 
-            // Play music after first user interaction if enabled
             const unlockAudio = () => {
                 if (localStorage.getItem("musicPlaying") === "true") {
                     music.play().then(() => {
@@ -193,7 +194,6 @@
 
             document.addEventListener("click", unlockAudio, { once: true });
 
-            // Set initial button text
             updateToggleText();
         });
 </script>
