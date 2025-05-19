@@ -16,6 +16,15 @@ class Card extends Model {
             return null;
         }
     }
+
+    static async takeAllCardsId() {
+        const [rows] = await db.execute(`SELECT id FROM cards`);
+        if (rows.length > 0) {
+            return new Set(rows.map(row => row.id));
+        } else {
+            return new Set();
+        }
+    }
 }
 
 module.exports = Card;

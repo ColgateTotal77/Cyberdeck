@@ -1,44 +1,47 @@
-const socket = io();
+// import { showSearchingIndicator } from './mainPageScript.js';
 
-export function testSocket() {
-    socket.emit('findMatch');
-}
+// const socket = io();
 
-export function cancelMatch() {
-    socket.emit('cancelMatch');
-}
+// export function testSocket() {
+//     socket.emit('findMatch');
+// }
 
-export function destroyRoom() { 
-    socket.emit('destroyRoom');
-}
+// export function cancelMatch() {
+//     socket.emit('cancelMatch');
+// }
 
-socket.on('connect', () => {
-    socket.emit('reconnectToRoom');
-});
+// export function destroyRoom() { 
+//     socket.emit('destroyRoom');
+// }
 
-socket.on('startGame', async (roomId) => {
-    window.location.href = `/battle/${roomId}`;
-});
+// socket.on('connect', () => {
+//     socket.emit('reconnectToRoom');
+// });
 
-socket.on('matchCancelled', () => {
-    console.log('Match search cancelled');
-});
+// socket.on('startGame', async (roomId) => {
+//     window.location.href = `/battle/${roomId}`;
+// });
 
-socket.on('userReconnected', ({ user }) => {
-    console.log(`${user.login} has rejoined the room`);
-});
+// socket.on('matchCancelled', () => {
+//     console.log('Match search cancelled');
+//     // showSearchingIndicator(false);
+// });
 
-socket.on('opponentDisconnected', () => {
-    console.log('Your opponent has disconnected.');
-});
+// socket.on('userReconnected', ({ user }) => {
+//     console.log(`${user.login} has rejoined the room`);
+// });
 
-socket.on('roomEnded', () => {
-    console.log('Room has ended');
-    window.location.href = `/mainPage`;
-});
+// socket.on('opponentDisconnected', () => {
+//     console.log('Your opponent has disconnected.');
+// });
 
-import { CardStore } from './CardStore.js';
+// socket.on('roomEnded', () => {
+//     console.log('Room has ended');
+//     window.location.href = `/mainPage`;
+// });
 
-socket.on('allCards', (allCards) => {
-    CardStore.setCards(allCards);
-});
+// import { CardStore } from './CardStore.js';
+
+// socket.on('allCards', (allCards) => {
+//     CardStore.setCards(allCards);
+// });

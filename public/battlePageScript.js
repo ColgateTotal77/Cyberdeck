@@ -1,13 +1,11 @@
-import { destroyRoom } from './client.js'
+import { destroyRoom } from './battlePageClient.js'
 
 let dataObj;
 await fetch('/api/battleInfo')
     .then(res => res.json())
     .then(data => {
         console.log('Fetched battle info:', data);
-        console.log(data);
         dataObj = data;
-
     });
 
 const battleInfo = dataObj.battleInfo;
@@ -16,6 +14,9 @@ const roomId = battleInfo.roomId;
 const user = battleInfo.player1.userData.id === userId ? battleInfo.player1 : battleInfo.player2;
 const opponent = battleInfo.player2.userData.id === userId ? battleInfo.player1 : battleInfo.player2;
 const current_turn_player_id = battleInfo.current_turn_player_id;
+
+console.log(user);
+console.log(opponent);
 
 document.getElementById("userInfo").innerHTML = user.userData.login;
 document.getElementById("opponentInfo").innerHTML = opponent.userData.login;

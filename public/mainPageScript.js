@@ -1,6 +1,6 @@
 // Modifications to mainPageScript.js to implement deck blocking
 import { Notifications } from './Notifications.js';
-import { testSocket, cancelMatch } from './client.js'
+import { testSocket, cancelMatch } from './mainPageClient.js'
 import { CardStore } from './CardStore.js';
 
 // Initialize deck blocking state
@@ -33,7 +33,7 @@ fetch('/userData', { method: 'POST' })
     });
 
 // Add a searching indicator for better UX
-function showSearchingIndicator(isSearching) {
+export function showSearchingIndicator(isSearching) {
     const playButton = document.getElementById("playButton");
     if (isSearching) {
         playButton.classList.add("searching");

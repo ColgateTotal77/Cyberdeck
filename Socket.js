@@ -12,11 +12,11 @@ class Socket {
     static waitingPlayers = new RBTree((a, b) => a.rating - b.rating);
     static rooms = new Map();
     static battles = new Map();
-    static AllCards = [];
-
+    static allCards = null;
+    static allCardsId = null;
     static async loadCards() {
-        this.AllCards = await Card.takeAllCards();
-        console.log("AllCards loaded:", this.AllCards.length);
+        this.allCards = await Card.takeAllCards();
+        this.allCardsId = await Card.takeAllCardsId();
     }
 
     static inicialization(app, sessionMiddleware) {
@@ -49,8 +49,8 @@ class Socket {
                 console.log(`Socket ${socket.id} has no session user`);
                 return;
             }
-
-            socket.emit('allCards', this.AllCards);            
+            console.log(this.allCards);
+            socket.emit('allCards', this.allCards);            
 
             socket.on('reconnectToRoom', () => this.reconnectToRoom(socket));
 
@@ -106,23 +106,22 @@ class Socket {
             return;
         }
         let deck = [
-            'Iron Man',
-            'Thor',
-            'Black Widow',
-            'Doctor Strange',
-            'Vision',
-            'Ant-Man',
-            'Falcon',
-            'Captain Marvel',
-            'Loki',
-            'Gamora',
-            'Spider-Man',
-            'Star-Lord'
-        ];
+            1, 7,
+            2, 8,
+            3, 9,
+            4, 10,
+            5, 11,
+            6, 12
+            ]
 
-        if(checkDeckBeforeStart(deck)) {
-            
+        if(!checkDeckBeforeStart(deck, this.allCardsId)) {
+            console.log("deck problems, matchCancelled");
+            socket.emit('matchCancelled');
+            return;
         }
+        
+        socket.handshake.session.deck = deck;
+        socket.handshake.session.save();
 
         console.log(`${socket.id} is looking for a match`);
         let matched = false;
@@ -198,11 +197,19 @@ class Socket {
             gameId: game.id
         });
 
+        function getRandomFour(arr) {
+            const shuffled = [...arr].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, 4);
+        }
 
+        const userDeck = [...user_socket.handshake.session.deck].sort(() => 0.5 - Math.random());
+        const opponentDeck = [...opponentSocket.handshake.session.deck].sort(() => 0.5 - Math.random());
+        const userHandCards = userDeck.slice(0, 4);
+        const opponentHandCards = opponentDeck.slice(0, 4);
 
         this.battles.set(roomId, {
-            player1: {userData: user, hp:30, hand_cards: [], table_cards: []},
-            player2: {userData: opponent, hp:30, hand_cards: [], table_cards: []},
+            player1: {userData: user, hp:30, handCards: userHandCards, tableCards: [], deck: userDeck},
+            player2: {userData: opponent, hp:30, handCards: opponentHandCards, tableCards: [], deck: opponentDeck},
             roomId: roomId,
             current_turn_player_id : current_turn_player_id
         });
@@ -277,8 +284,18 @@ function calculateRatingChange(userRating, opponentRating, didWin) {
     return Math.round(totalChange);
 }
 
-function checkDeckBeforeStart(deck) {
+function checkDeckBeforeStart(deck, allCardsId) {
+    let deckSet = new Set(deck);
+    if(deckSet.size !== 12) {
+        return false;
+    }
 
+    for (const value of deckSet) {
+        if(!allCardsId.has(value)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 module.exports = Socket;
