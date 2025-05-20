@@ -39,10 +39,12 @@ function renderCard(cardData) {
     card.innerHTML = `
         <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
         <div class="card-name">${cardData.name}</div>
+        <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
     `;
 
     card.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('cardId', card.dataset.cardId);
+        e.dataTransfer.setData('attackerInstanceId', card.dataset.instanceId);
     });
 
     return card;
@@ -156,10 +158,10 @@ Socket.socket.on('attackResult', ({ attackerInstanceId, defenderInstanceId, newD
         card.remove();
     } 
     else {
-        // const hpElement = card.querySelector('.card-hp');
-        // if (hpElement) {
-        //     hpElement.innerText = `HP: ${newDefenderHp}`;
-        // }
+        const hpElement = card.querySelector('.card-hp');
+        if (hpElement) {
+            hpElement.innerText = `HP: ${newDefenderHp}`;
+        }
     }
 });
 

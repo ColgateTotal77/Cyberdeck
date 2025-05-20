@@ -68,7 +68,7 @@ class Socket {
             socket.on('cardPlaced', (cardId) => this.cardPlaced(socket, cardId));
 
             socket.on('findMatch', (deck) => this.findMatch(socket, deck));
-            socket.on('cardAttack', ({ attackerId, defenderId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
+            socket.on('cardAttack', ({ attackerInstanceId, defenderInstanceId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
             // Add handler for canceling match search
             socket.on('endTurn', (roomId) => {
                 if(socket.handshake.session.user.id === this.battles.get(roomId).current_turn_player_id) {
@@ -283,8 +283,12 @@ static startTurn(roomId) {
 
 static endTurn(roomId) {
     const room = this.rooms.get(roomId);
-    clearTimeout(room.turnTimeout);
 
+    if(!room || !room.turnTimeout) {
+        return;
+    }
+
+    clearTimeout(room.turnTimeout);
     const battle = this.battles.get(roomId);
     const nextPlayerId = battle.player1.userData.id === battle.current_turn_player_id ? battle.player2.userData.id : battle.player1.userData.id;
 
@@ -295,7 +299,7 @@ static endTurn(roomId) {
 static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
     const user = socket.handshake.session.user;
     const roomId = user.roomId;
-
+    console.log("cardAttack");
     if (!user || !roomId) {
         console.log("!user || !roomId");
         return;

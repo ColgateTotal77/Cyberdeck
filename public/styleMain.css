@@ -230,13 +230,6 @@ body {
     background-color: #1a1a1a;
 }
 
-.cardItem{
-    
-}
-
-
-/* Rigth side container */
-
 #rightSidebar {
     position: fixed;
     right: 0;
