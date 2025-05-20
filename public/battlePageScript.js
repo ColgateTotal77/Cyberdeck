@@ -74,20 +74,14 @@ function renderUserTable() {
     });
 }
 
+            // Socket.socket.emit('cardAttack', {
+            //     attackerInstanceId: selectedCardInstanceId,
+            //     defenderInstanceId: card.instanceId,
+            // });
+
 function renderOpponentTable() {
     opponent.tableCards.forEach(cardData => {
         const card = renderCard(cardData);
-        card.addEventListener('click', () => {
-            if (!selectedCardInstanceId) return;
-
-            Socket.socket.emit('cardAttack', {
-                attackerInstanceId: selectedCardInstanceId,
-                defenderInstanceId: card.instanceId,
-            });
-
-            selectedCardInstanceId = null;
-            [...userTable.children].forEach(c => c.classList.remove('selected'));
-        });
         opponentTable.appendChild(card);
     });
 }
@@ -105,13 +99,10 @@ userTable.addEventListener('drop', (e) => {
 });
 
 Socket.socket.on('cardPlaced', ({ by, cardId }) => {
-    console.log("!");
     const cardData = allCards.find(card => card.id === cardId);
     if (!cardData) return;
-    console.log("cardData");
     const cardElement = renderCard(cardData);
     if (by === user.userData.id) {
-        console.log("by === user.userData.id");
         const handCard = [...userCardsContainer.children].find(child =>
             child.dataset.cardId === String(cardId)
         );
@@ -121,7 +112,6 @@ Socket.socket.on('cardPlaced', ({ by, cardId }) => {
         userTable.appendChild(cardElement);
     } 
     else {
-        console.log("else");
         const handCard = [...opponentCardsContainer.children][0];
         if (handCard) {
             handCard.remove();
@@ -144,6 +134,10 @@ function startCountdown(seconds) {
         }
     }, 1000);
 }
+
+document.getElementById("endTurn").addEventListener("click", () => {
+    Socket.endTurn(roomId);
+});
 
 Socket.socket.on('turnStarted', ({ currentPlayerId, timeLimit }) => {
     isMyTurn = user.userData.id === currentPlayerId;
@@ -177,17 +171,6 @@ renderOpponentTable()
 
 document.getElementById('giveUpButton').addEventListener('click', () => {
     if (confirm("Are you sure you want to give up this battle?")) {
-        Socket.destroyRoom();
+        Socket.destroyRoom(roomId);
     }
 })
-
-let selectedCardInstanceId = null;
-
-userTable.addEventListener('click', (e) => {
-    const clickedCard = e.target.closest('.card');
-    if (!clickedCard) return;
-
-    selectedCardInstanceId = clickedCard.dataset.instanceId;
-    [...userTable.children].forEach(c => c.classList.remove('selected'));
-    clickedCard.classList.add('selected');
-});

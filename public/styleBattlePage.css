@@ -16,6 +16,14 @@ body {
     right: 20px;
 }
 
+#endTurn {
+    cursor: pointer;
+
+    position: fixed;
+    bottom: 50px;
+    right: 20px;    
+}
+
 #mainContainer {
     display: grid;
     grid-template-rows: 50% 50%;
@@ -89,9 +97,4 @@ body {
 .card-name {
     font-weight: bold;
     text-align: center;
-}
-
-.card.selected {
-    border: 2px solid gold;
-    transform: scale(1.05);
 }

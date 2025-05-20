@@ -70,10 +70,14 @@ class Socket {
             socket.on('findMatch', (deck) => this.findMatch(socket, deck));
             socket.on('cardAttack', ({ attackerId, defenderId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
             // Add handler for canceling match search
-            socket.on('endTurn', () => this.endTurn(socket.handshake.session.user.roomId));
+            socket.on('endTurn', (roomId) => {
+                if(socket.handshake.session.user.id === this.battles.get(roomId).current_turn_player_id) {
+                    this.endTurn(roomId);
+                }
+            });
             socket.on('cancelMatch', () => this.cancelMatch(socket));
             
-            socket.on('destroyRoom', () => this.destroyRoom(socket.handshake.session.user.roomId));
+            socket.on('destroyRoom', (roomId) => this.destroyRoom(roomId));
             socket.on('disconnect', () => {
                 console.log(socket.id, 'disconnect');
                 const user = socket.handshake.session.user;
@@ -320,9 +324,9 @@ static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
     }
 
     defenderCard.hp -= attackerCard.attack;
-
+    console.log("hp remain:", defenderCard.hp);
     if (defenderCard.hp <= 0) {
-        thisbattle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
+        this.battle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
     }
 
     this.battles.set(roomId, battle);
