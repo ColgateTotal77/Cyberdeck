@@ -12,6 +12,12 @@
     <div id="turnTimer">30</div>
     <button id="endTurn">End Turn</button>
     <button id="giveUpButton">Give Up</button>
+    <div class="musicControlContainer">
+    <button id="musicToggle" class="music-button">🔊</button>
+    <div class="volume-popup hidden" id="volumePopup">
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+    </div>
+    </div>
     <div id="mainContainer">
         <div id="opponentSide">
             <div id="opponentInfo">
@@ -36,5 +42,102 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="/battlePageScript.js"></script>
+    <audio id="bgMusic" preload="auto" loop>
+        <source src="/audio/battlebg-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const music = document.getElementById("bgMusic");
+        const toggleBtn = document.getElementById("musicToggle");
+        const volumeSlider = document.getElementById("volumeSlider");
+        const volumePopup = document.getElementById("volumePopup");
+
+        let savedVolume = localStorage.getItem("musicVolume") || "0.5";
+        let savedPlaying = localStorage.getItem("musicPlaying") || "true";
+
+        music.volume = parseFloat(savedVolume);
+        volumeSlider.value = savedVolume;
+
+        let isMuted = savedPlaying === "false";
+
+        const updateIcon = () => {
+            toggleBtn.textContent = isMuted ? "🔈" : (music.volume == 0 ? "🔈" : "🔊");
+        };
+
+        // Variables to track hover state for button and popup
+        let isOverButton = false;
+        let isOverPopup = false;
+
+        // Show popup when hovering the button
+        toggleBtn.addEventListener("mouseenter", () => {
+            isOverButton = true;
+            volumePopup.classList.remove("hidden");
+        });
+
+        // Hide popup when leaving the button (if not over popup)
+        toggleBtn.addEventListener("mouseleave", () => {
+            isOverButton = false;
+            setTimeout(() => {
+                if (!isOverPopup && !isOverButton) {
+                    volumePopup.classList.add("hidden");
+                }
+            }, 100);
+        });
+
+        // Keep popup visible if mouse is over it
+        volumePopup.addEventListener("mouseenter", () => {
+            isOverPopup = true;
+            volumePopup.classList.remove("hidden");
+        });
+
+        // Hide popup when leaving popup (if not over button)
+        volumePopup.addEventListener("mouseleave", () => {
+            isOverPopup = false;
+            setTimeout(() => {
+                if (!isOverPopup && !isOverButton) {
+                    volumePopup.classList.add("hidden");
+                }
+            }, 100);
+        });
+
+        // Toggle mute/unmute on button click
+        toggleBtn.addEventListener("click", () => {
+            isMuted = !isMuted;
+            if (isMuted) {
+                music.pause();
+                localStorage.setItem("musicPlaying", "false");
+            } else {
+                music.play().catch(err => console.warn("Playback failed:", err));
+                localStorage.setItem("musicPlaying", "true");
+            }
+            updateIcon();
+        });
+
+        // Change volume on slider input
+        volumeSlider.addEventListener("input", () => {
+            const volume = parseFloat(volumeSlider.value);
+            music.volume = volume;
+            localStorage.setItem("musicVolume", volume);
+            updateIcon();
+        });
+
+        // Try to autoplay music if allowed
+        const unlockAudio = () => {
+            if (localStorage.getItem("musicPlaying") === "true") {
+                music.play().catch(err => console.warn("Autoplay blocked:", err));
+            }
+            document.removeEventListener("click", unlockAudio);
+        };
+        document.addEventListener("click", unlockAudio, { once: true });
+
+        if (!isMuted && savedPlaying === "true") {
+            music.play().catch(() => {}); // Silent fail on autoplay block
+        }
+
+        updateIcon();
+    });
+
+    </script>
 </body>
 </html>

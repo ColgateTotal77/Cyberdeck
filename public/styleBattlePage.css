@@ -124,3 +124,46 @@ body {
 #turnAnnouncement.hidden {
     display: none;
 }
+
+.musicControlContainer {
+    position: fixed;         /* Make it fixed to always stay in the corner */
+    top: 20px;               /* Distance from top */
+    right: 20px;             /* Distance from right */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;           /* Ensure it's above other elements */
+}
+
+.music-button {
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: white;
+}
+
+.volume-popup {
+    margin-top: 8px;
+    background-color: #444;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.volume-popup input[type="range"] {
+    appearance: slider-vertical;    /* Firefox */
+    writing-mode: vertical-lr;      /* Chrome, Edge, Safari */
+    height: 100px;
+    width: 8px;
+    margin: 0;
+    cursor: pointer;
+    transform: rotate(180deg); /* Flip it to make higher value at the top */
+}
+
+.hidden {
+    display: none !important;
+}
