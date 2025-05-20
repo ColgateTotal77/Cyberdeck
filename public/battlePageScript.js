@@ -174,3 +174,27 @@ document.getElementById('giveUpButton').addEventListener('click', () => {
         Socket.destroyRoom(roomId);
     }
 })
+
+// Inside battlePageScript.js, after defining user and opponent
+const turnAnnouncement = document.getElementById("turnAnnouncement");
+
+if (battleInfo.current_turn_player_id === user.userData.id) {
+    showTurnMessage("Your turn!");
+} else {
+    showTurnMessage(`${opponent.userData.login}'s turn!`);
+}
+
+function showTurnMessage(message) {
+    turnAnnouncement.textContent = message;
+    turnAnnouncement.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        turnAnnouncement.classList.add('show');
+    });
+
+    setTimeout(() => {
+        turnAnnouncement.classList.remove('show');
+        setTimeout(() => {
+            turnAnnouncement.classList.add('hidden');
+        }, 500);
+    }, 2500);
+}
