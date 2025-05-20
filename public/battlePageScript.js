@@ -8,7 +8,7 @@ const userId = dataObj.userId;
 const roomId = battleInfo.roomId;
 const user = battleInfo.player1.userData.id === userId ? battleInfo.player1 : battleInfo.player2;
 const opponent = battleInfo.player2.userData.id === userId ? battleInfo.player1 : battleInfo.player2;
-const current_turn_player_id = battleInfo.current_turn_player_id;
+let isMyTurn = user.userData.id === battleInfo.current_turn_player_id;
 
 console.log(user);
 console.log(opponent);
@@ -128,6 +128,29 @@ Socket.socket.on('cardPlaced', ({ by, cardId }) => {
         }
         opponentTable.appendChild(cardElement);
     }
+});
+
+let timerInterval;
+function startCountdown(seconds) {
+    clearInterval(timerInterval);
+    let timeLeft = seconds;
+    document.getElementById("turnTimer").innerText = timeLeft;
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("turnTimer").innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+        }
+    }, 1000);
+}
+
+Socket.socket.on('turnStarted', ({ currentPlayerId, timeLimit }) => {
+    isMyTurn = user.userData.id === currentPlayerId;
+
+    document.getElementById("turnStatus").innerText = isMyTurn ? "Your Turn!" : "Opponent's Turn...";
+
+    startCountdown(timeLimit);
 });
 
 Socket.socket.on('attackResult', ({ attackerInstanceId, defenderInstanceId, newDefenderHp, isDefenderDead, by }) => {

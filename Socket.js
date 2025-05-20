@@ -6,6 +6,7 @@ const sharedsession = require("express-socket.io-session");
 
 const Game = require('./models/Game.js');
 const Card = require('./models/Card.js');
+const { Console } = require('console');
 
 class Socket {
     static io = null;
@@ -69,6 +70,7 @@ class Socket {
             socket.on('findMatch', (deck) => this.findMatch(socket, deck));
             socket.on('cardAttack', ({ attackerId, defenderId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
             // Add handler for canceling match search
+            socket.on('endTurn', () => this.endTurn(socket.handshake.session.user.roomId));
             socket.on('cancelMatch', () => this.cancelMatch(socket));
             
             socket.on('destroyRoom', () => this.destroyRoom(socket.handshake.session.user.roomId));
@@ -211,6 +213,7 @@ class Socket {
         opponentSocket.handshake.session.save();
 
         this.io.to(roomId).emit('startGame', roomId);
+        this.startTurn(roomId);
     }
 
     static reconnectToRoom(socket) {
@@ -259,6 +262,31 @@ class Socket {
         });
         console.log("send!!!!")
     }
+
+static startTurn(roomId) {
+    const room = this.rooms.get(roomId);
+    const playerId = this.battles.get(roomId).current_turn_player_id;
+
+    this.io.to(roomId).emit("turnStarted", {
+        currentPlayerId: playerId,
+        timeLimit: 30 
+    });
+    console.log("turn started!");
+    room.turnTimeout = setTimeout(() => {
+        this.endTurn(roomId);
+    }, 30000);   
+}
+
+static endTurn(roomId) {
+    const room = this.rooms.get(roomId);
+    clearTimeout(room.turnTimeout);
+
+    const battle = this.battles.get(roomId);
+    const nextPlayerId = battle.player1.userData.id === battle.current_turn_player_id ? battle.player2.userData.id : battle.player1.userData.id;
+
+    battle.current_turn_player_id = nextPlayerId;
+    this.startTurn(roomId);
+}
 
 static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
     const user = socket.handshake.session.user;

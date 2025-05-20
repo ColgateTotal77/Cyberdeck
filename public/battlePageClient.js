@@ -4,6 +4,10 @@ export class Socket {
     static destroyRoom() { 
         this.socket.emit('destroyRoom');
     }
+
+    static endTurn() { 
+        this.socket.emit('endTurn');
+    }
 }
 
 Socket.socket.on('connect', () => {
