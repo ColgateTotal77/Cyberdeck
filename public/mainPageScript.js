@@ -142,7 +142,7 @@ function renderMainGrid() {
             <div class="cardName">${card.name}</div>
             <div class="cardCost">${card.cost}</div>
             <div class="cardAttack">${card.attack}</div>
-            <div class="cardDefense">${card.defense}</div>
+            <div class="cardHp">${card.hp}</div>
         `;
         cardDiv.appendChild(cardStats);
         
@@ -179,7 +179,7 @@ function renderDeckModal() {
                 <div class="cardStats">
                     <span class="statItem cost">Cost: ${card.cost}</span>
                     <span class="statItem attack">ATK: ${card.attack}</span>
-                    <span class="statItem defense">DEF: ${card.defense}</span>
+                    <span class="statItem hp">DEF: ${card.hp}</span>
                 </div>
                 <span class="cardDescription">${card.description}</span>
             </div>
@@ -199,7 +199,7 @@ function renderDeckModal() {
                 <div class="cardStats">
                     <span class="statItem cost">Cost: ${card.cost}</span>
                     <span class="statItem attack">ATK: ${card.attack}</span>
-                    <span class="statItem defense">DEF: ${card.defense}</span>
+                    <span class="statItem hp">DEF: ${card.hp}</span>
                 </div>
                 <span class="cardDescription">${card.description}</span>
             </div>

@@ -30,12 +30,12 @@ CREATE TABLE IF NOT EXISTS cards (
     name VARCHAR(50),
     description TEXT,
     attack INT,
-    defense INT,
+    hp INT,
     cost INT,
     image_url TEXT DEFAULT NULL
 );
 
-INSERT INTO cards (id, name, description, attack, defense, cost) VALUES
+INSERT INTO cards (id, name, description, attack, hp, cost) VALUES
 (1, 'Iron Man', 'Fires repulsor blasts from his suit.', 7, 5, 4),
 (2, 'Captain America', 'Blocks attacks with his vibranium shield.', 5, 8, 3),
 (3, 'Thor', 'Strikes enemies with Mjolnir.', 9, 6, 5),

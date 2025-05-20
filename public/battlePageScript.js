@@ -34,6 +34,7 @@ function renderCard(cardData) {
     card.classList.add('card');
     card.setAttribute('draggable', true);
     card.dataset.cardId = cardData.id;
+    card.dataset.instanceId = cardData.instanceId || null;
 
     card.innerHTML = `
         <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
@@ -76,6 +77,17 @@ function renderUserTable() {
 function renderOpponentTable() {
     opponent.tableCards.forEach(cardData => {
         const card = renderCard(cardData);
+        card.addEventListener('click', () => {
+            if (!selectedCardInstanceId) return;
+
+            Socket.socket.emit('cardAttack', {
+                attackerInstanceId: selectedCardInstanceId,
+                defenderInstanceId: card.instanceId,
+            });
+
+            selectedCardInstanceId = null;
+            [...userTable.children].forEach(c => c.classList.remove('selected'));
+        });
         opponentTable.appendChild(card);
     });
 }
@@ -118,6 +130,22 @@ Socket.socket.on('cardPlaced', ({ by, cardId }) => {
     }
 });
 
+Socket.socket.on('attackResult', ({ attackerInstanceId, defenderInstanceId, newDefenderHp, isDefenderDead, by }) => {
+    const tableToUpdate = by === user.userData.id ? opponentTable : userTable;
+    const card = [...tableToUpdate.children].find(c => c.dataset.instanceId === String(defenderInstanceId));
+    if (!card) return;
+
+    if (isDefenderDead) {
+        card.remove();
+    } 
+    else {
+        // const hpElement = card.querySelector('.card-hp');
+        // if (hpElement) {
+        //     hpElement.innerText = `HP: ${newDefenderHp}`;
+        // }
+    }
+});
+
 // Initial render
 renderUserHand();
 renderOpponentHand();
@@ -129,3 +157,14 @@ document.getElementById('giveUpButton').addEventListener('click', () => {
         Socket.destroyRoom();
     }
 })
+
+let selectedCardInstanceId = null;
+
+userTable.addEventListener('click', (e) => {
+    const clickedCard = e.target.closest('.card');
+    if (!clickedCard) return;
+
+    selectedCardInstanceId = clickedCard.dataset.instanceId;
+    [...userTable.children].forEach(c => c.classList.remove('selected'));
+    clickedCard.classList.add('selected');
+});

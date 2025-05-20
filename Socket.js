@@ -67,7 +67,7 @@ class Socket {
             socket.on('cardPlaced', (cardId) => this.cardPlaced(socket, cardId));
 
             socket.on('findMatch', (deck) => this.findMatch(socket, deck));
-            
+            socket.on('cardAttack', ({ attackerId, defenderId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
             // Add handler for canceling match search
             socket.on('cancelMatch', () => this.cancelMatch(socket));
             
@@ -193,11 +193,6 @@ class Socket {
             gameId: game.id
         });
 
-        function getRandomFour(arr) {
-            const shuffled = [...arr].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 4);
-        }
-
         const userDeck = [...user_socket.handshake.session.deck].sort(() => 0.5 - Math.random());
         const opponentDeck = [...opponentSocket.handshake.session.deck].sort(() => 0.5 - Math.random());
         const userHandCards = userDeck.slice(0, 4);
@@ -241,7 +236,7 @@ class Socket {
         const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
 
         if (battle.current_turn_player_id !== user.id){ 
-            console.log("battle.current_turn_player_id !== user.id");
+            console.log("Not this player's turn");
             return;
         }
 
@@ -253,6 +248,8 @@ class Socket {
             return;
         }
         battle[who].handCards.splice(cardIndex, 1);
+        let cardToPush = this.allCards.get(cardId);
+        cardToPush.instanceId = Math.random().toString(36).substr(2, 9);
         battle[who].tableCards.push(this.allCards.get(cardId));
         this.battles.set(roomId, battle);
         console.log("send!")
@@ -262,6 +259,54 @@ class Socket {
         });
         console.log("send!!!!")
     }
+
+static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
+    const user = socket.handshake.session.user;
+    const roomId = user.roomId;
+
+    if (!user || !roomId) {
+        console.log("!user || !roomId");
+        return;
+    }
+
+    const battle = this.battles.get(roomId);
+    if (!battle) {
+        console.log("Battle not found");
+        return;
+    }
+
+    if (battle.current_turn_player_id !== user.id) {
+        console.log("Not this player's turn");
+        return;
+    }
+
+    const attackerPlayer = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+    const defenderPlayer = attackerPlayer === 'player1' ? 'player2' : 'player1';
+
+    const attackerCard = battle[attackerPlayer].tableCards.find(card => card.instanceId === attackerInstanceId);
+    const defenderCard = battle[defenderPlayer].tableCards.find(card => card.instanceId === defenderInstanceId);
+
+    if (!attackerCard || !defenderCard) {
+        console.log("Attacker or defender card not found");
+        return;
+    }
+
+    defenderCard.hp -= attackerCard.attack;
+
+    if (defenderCard.hp <= 0) {
+        thisbattle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
+    }
+
+    this.battles.set(roomId, battle);
+
+    this.io.to(roomId).emit('attackResult', {
+        attackerInstanceId,
+        defenderInstanceId,
+        newDefenderHp: defenderCard.hp,
+        isDefenderDead: defenderCard.hp <= 0,
+        by: user.id
+    });
+}
 
 
     static deleteUserFromTree(curRating, socket_id) {
