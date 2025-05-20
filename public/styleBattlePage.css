@@ -90,3 +90,8 @@ body {
     font-weight: bold;
     text-align: center;
 }
+
+.card.selected {
+    border: 2px solid gold;
+    transform: scale(1.05);
+}

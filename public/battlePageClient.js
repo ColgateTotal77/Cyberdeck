@@ -1,22 +1,24 @@
-const socket = io();
+export class Socket {
+    static socket = io();
 
-export function destroyRoom() { 
-    socket.emit('destroyRoom');
+    static destroyRoom() { 
+        this.socket.emit('destroyRoom');
+    }
 }
 
-socket.on('connect', () => {
-    socket.emit('reconnectToRoom');
+Socket.socket.on('connect', () => {
+    Socket.socket.emit('reconnectToRoom');
 });
 
-socket.on('userReconnected', ({ user }) => {
+Socket.socket.on('userReconnected', ({ user }) => {
     console.log(`${user.login} has rejoined the room`);
 });
 
-socket.on('opponentDisconnected', () => {
+Socket.socket.on('opponentDisconnected', () => {
     console.log('Your opponent has disconnected.');
 });
 
-socket.on('roomEnded', () => {
+Socket.socket.on('roomEnded', () => {
     console.log('Room has ended');
     window.location.href = `/mainPage`;
 });

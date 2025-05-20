@@ -1,4 +1,4 @@
-import { destroyRoom } from './battlePageClient.js'
+import { Socket } from './battlePageClient.js'
 
 const dataObj = await fetch('/api/getBattleInfo').then(res => res.json());
 const allCards = await fetch('/api/getAllCards').then(res => res.json());
@@ -21,7 +21,6 @@ console.log(allCards);
         //     roomId: roomId,
         //     current_turn_player_id : current_turn_player_id
 
-
 document.getElementById("userLogin").innerHTML = user.userData.login;
 document.getElementById("opponentLogin").innerHTML = opponent.userData.login;
 
@@ -29,31 +28,26 @@ const userCardsContainer = document.getElementById('userHand');
 const opponentCardsContainer = document.getElementById('opponentHand');
 const userTable = document.getElementById('userTable');
 const opponentTable = document.getElementById('opponentTable');
-function isUserTurn() {
-    return current_turn_player_id === user.userData.id;
-}
 
 function renderCard(cardData) {
     const card = document.createElement('div');
     card.classList.add('card');
+    card.setAttribute('draggable', true);
+    card.dataset.cardId = cardData.id;
 
     card.innerHTML = `
         <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
         <div class="card-name">${cardData.name}</div>
     `;
 
-    if (isUserTurn()) {
-        card.setAttribute('draggable', true);
-        card.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('cardId', cardData.id);
-        });
-    }
+    card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('cardId', card.dataset.cardId);
+    });
 
     return card;
 }
 
 function renderUserHand() {
-    userCardsContainer.innerHTML = '';
     user.handCards.forEach(cardId => {
         const cardData = allCards.find(card => card.id === cardId);
         if (cardData) {
@@ -64,7 +58,6 @@ function renderUserHand() {
 }
 
 function renderOpponentHand() {
-    opponentCardsContainer.innerHTML = '';
     opponent.handCards.forEach(() => {
         const cardBack = document.createElement('div');
         cardBack.classList.add('card-back');
@@ -73,7 +66,20 @@ function renderOpponentHand() {
     });
 }
 
-const socket = io();
+function renderUserTable() {
+    user.tableCards.forEach(cardData => {
+        const card = renderCard(cardData);
+        userTable.appendChild(card); 
+    });
+}
+
+function renderOpponentTable() {
+    opponent.tableCards.forEach(cardData => {
+        const card = renderCard(cardData);
+        opponentTable.appendChild(card);
+    });
+}
+
 
 userTable.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -81,13 +87,12 @@ userTable.addEventListener('dragover', (e) => {
 
 userTable.addEventListener('drop', (e) => {
     e.preventDefault();
-    if (!isUserTurn()) return;
 
     const cardId = e.dataTransfer.getData('cardId');
-    socket.emit('cardPlaced', cardId);
+    Socket.socket.emit('cardPlaced', cardId);
 });
 
-socket.on('cardPlaced', ({ by, cardId }) => {
+Socket.socket.on('cardPlaced', ({ by, cardId }) => {
     console.log("!");
     const cardData = allCards.find(card => card.id === cardId);
     if (!cardData) return;
@@ -96,7 +101,7 @@ socket.on('cardPlaced', ({ by, cardId }) => {
     if (by === user.userData.id) {
         console.log("by === user.userData.id");
         const handCard = [...userCardsContainer.children].find(child =>
-            child.querySelector('.card-name')?.textContent === cardData.name
+            child.dataset.cardId === String(cardId)
         );
         if (handCard) {
             handCard.remove();
@@ -105,9 +110,7 @@ socket.on('cardPlaced', ({ by, cardId }) => {
     } 
     else {
         console.log("else");
-        const handCard = [...opponentCardsContainer.children].find(child =>
-            child.querySelector('.card-name')?.textContent === cardData.name
-        );
+        const handCard = [...opponentCardsContainer.children][0];
         if (handCard) {
             handCard.remove();
         }
@@ -118,10 +121,11 @@ socket.on('cardPlaced', ({ by, cardId }) => {
 // Initial render
 renderUserHand();
 renderOpponentHand();
- 
+renderUserTable()
+renderOpponentTable()
 
 document.getElementById('giveUpButton').addEventListener('click', () => {
     if (confirm("Are you sure you want to give up this battle?")) {
-        destroyRoom();
+        Socket.destroyRoom();
     }
 })
