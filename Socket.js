@@ -299,10 +299,17 @@ static startTurn(roomId) {
                 break;
             }
         }
+
+        const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
+        const arrayLen = (battle[who].cardsToChoose).length;
+        if(arrayLen > 0) {
+            socket.emit("newHandCard", battle[who].cardsToChoose[Math.floor(Math.random() * arrayLen)]);
+            battle[who].cardsToChoose = [];
+        }
+
         if(socket) {
-            const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
             const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
-            battle[who].cardsToChoose = cardsToChoose
+            battle[who].cardsToChoose = cardsToChoose;
             socket.emit("newCards", cardsToChoose);
         }
     }

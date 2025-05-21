@@ -242,11 +242,6 @@ function renderCardsToChoose(array) {
             `;
             card.addEventListener("click", () => {
                 Socket.socket.emit("choosenCard", card.dataset.cardId);
-                newCardsDiv.classList.remove('show');
-                setTimeout(() => {
-                    newCardsDiv.style.display = "none";
-                }, 500);
-                newCardsDiv.innerHTML = "";
             })
 
             newCardsDiv.appendChild(card);
@@ -257,6 +252,10 @@ function renderCardsToChoose(array) {
 }
 
 Socket.socket.on('newHandCard', (cardId) => {
+    newCardsDiv.classList.remove('show');
+    newCardsDiv.style.display = "none";
+    newCardsDiv.innerHTML = "";
+
     const cardData = allCards.find(card => card.id === cardId);
     const cardElement = renderHandCard(cardData);
     userCardsContainer.appendChild(cardElement);
