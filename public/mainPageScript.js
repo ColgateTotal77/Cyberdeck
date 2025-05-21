@@ -20,6 +20,7 @@ fetch('/userData', { method: 'POST' })
             <div>Email: ${data.email}</div>`;
         document.getElementById("login").innerHTML = data.login;
         // document.getElementById("userData").innerHTML = html;
+        document.querySelector(".ratingBox").textContent = data.rating;
     })
     .catch(error => {
         console.log(error);

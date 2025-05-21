@@ -10,6 +10,12 @@ socket.on('connect', () => {
     socket.emit('reconnectToRoom');
 });
 
+socket.on('ratingUpdate', (data) => {
+    if (data.rating !== undefined) {
+        document.querySelector(".ratingBox").textContent = data.rating;
+    }
+});
+
 export function cancelMatch() {
     socket.emit('cancelMatch');
 }
