@@ -509,6 +509,7 @@ body {
   height: 75px;
   line-height: 75px;
   transition: background 0.2s;
+  text-align: center;
 }
 .cybr-btn:hover {
   --primary: hsl(var(--primary-hue), 85%, calc(var(--primary-lightness, 50) * 0.8%));

@@ -24,34 +24,37 @@ console.log(allCards);
 document.getElementById("userLogin").innerHTML = user.userData.login;
 document.getElementById("opponentLogin").innerHTML = opponent.userData.login;
 
+console.log(user.hp, opponent.hp, user.mana)
+
 document.getElementById("userHP").innerText = `HP: ${user.hp}`;
 document.getElementById("opponentHP").innerText = `HP: ${opponent.hp}`;
+document.getElementById("userMana").innerText = `Mana: ${user.mana}`;
 
 const userCardsContainer = document.getElementById('userHand');
 const opponentCardsContainer = document.getElementById('opponentHand');
 const userTable = document.getElementById('userTable');
 const opponentTable = document.getElementById('opponentTable');
 
-function renderCard(cardData) {
-    const card = document.createElement('div');
-    card.classList.add('card');
-    card.setAttribute('draggable', true);
-    card.dataset.cardId = cardData.id;
-    card.dataset.instanceId = cardData.instanceId || null;
+// function renderCard(cardData) {
+//     const card = document.createElement('div');
+//     card.classList.add('card');
+//     card.setAttribute('draggable', true);
+//     card.dataset.cardId = cardData.id;
+//     card.dataset.instanceId = cardData.instanceId || null;
 
-    card.innerHTML = `
-        <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
-        <div class="card-name">${cardData.name}</div>
-        <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
-    `;
+//     card.innerHTML = `
+//         <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
+//         <div class="card-name">${cardData.name}</div>
+//         <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
+//     `;
 
-    card.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('cardId', card.dataset.cardId);
-        e.dataTransfer.setData('attackerInstanceId', card.dataset.instanceId);
-    });
+//     card.addEventListener('dragstart', (e) => {
+//         e.dataTransfer.setData('cardId', card.dataset.cardId);
+//         e.dataTransfer.setData('attackerInstanceId', card.dataset.instanceId);
+//     });
 
-    return card;
-}
+//     return card;
+// }
 
 function renderHandCard(cardData) {
     const card = document.createElement('div');
@@ -98,7 +101,6 @@ function renderTableCard(cardData, cardInstanceId, isOpponent = false) {
             e.preventDefault();
             const attackerInstanceId = e.dataTransfer.getData('attackerInstanceId');
             const defenderInstanceId = card.dataset.instanceId;
-            console.log(attackerInstanceId, defenderInstanceId);
             if (isMyTurn && attackerInstanceId && defenderInstanceId) {
                 Socket.socket.emit('cardAttack', {attackerInstanceId: attackerInstanceId, defenderInstanceId: defenderInstanceId});
             }
@@ -154,7 +156,7 @@ userTable.addEventListener('drop', (e) => {
     Socket.socket.emit('cardPlaced', cardId);
 });
 
-Socket.socket.on('cardPlaced', ({ by, cardId, cardInstanceId }) => {
+Socket.socket.on('cardPlaced', ({ by, cardId, cardInstanceId}) => {
     const cardData = allCards.find(card => card.id === cardId);
     if (!cardData) return;
     if (by === user.userData.id) {
@@ -177,6 +179,10 @@ Socket.socket.on('cardPlaced', ({ by, cardId, cardInstanceId }) => {
     }
 });
 
+Socket.socket.on('newMana', (mana) => {
+    document.getElementById("userMana").innerText = `Mana: ${mana}`;
+});
+
 let timerInterval;
 function startCountdown(seconds) {
     clearInterval(timerInterval);
@@ -196,9 +202,8 @@ document.getElementById("endTurn").addEventListener("click", () => {
     Socket.endTurn(roomId);
 });
 
-Socket.socket.on('turnStarted', ({ currentPlayerId, timeLimit }) => {
+Socket.socket.on('turnStarted', ({ currentPlayerId, timeLimit}) => {
     isMyTurn = user.userData.id === currentPlayerId;
-
     document.getElementById("turnStatus").innerText = isMyTurn ? "Your Turn!" : "Opponent's Turn...";
 
     startCountdown(timeLimit);
