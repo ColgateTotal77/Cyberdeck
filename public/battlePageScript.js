@@ -24,6 +24,9 @@ console.log(allCards);
 document.getElementById("userLogin").innerHTML = user.userData.login;
 document.getElementById("opponentLogin").innerHTML = opponent.userData.login;
 
+document.getElementById("userHP").innerText = `HP: ${user.hp}`;
+document.getElementById("opponentHP").innerText = `HP: ${opponent.hp}`;
+
 const userCardsContainer = document.getElementById('userHand');
 const opponentCardsContainer = document.getElementById('opponentHand');
 const userTable = document.getElementById('userTable');

@@ -189,3 +189,25 @@ body {
 .hidden {
     display: none !important;
 }
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px; /* Pushes cards down */
+}
+
+.player-hp {
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    object-fit: cover;
+    margin-bottom: 5px;
+}
