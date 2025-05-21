@@ -46,7 +46,7 @@ export function showSearchingIndicator(isSearching) {
         });
     } else {
         playButton.classList.remove("searching");
-        playButton.innerHTML = '<img src="/image/battle.png">';
+        playButton.innerHTML = '<span aria-hidden>PLAY</span> <span aria-hidden class="cybr-btn__glitch">PLAY</span>';
     }
 }
 
