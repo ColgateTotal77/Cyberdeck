@@ -50,11 +50,67 @@ function renderCard(cardData) {
     return card;
 }
 
+function renderHandCard(cardData) {
+    const card = document.createElement('div');
+    card.classList.add('card');
+    card.setAttribute('draggable', true);
+    card.dataset.cardId = cardData.id;
+
+    card.innerHTML = `
+        <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
+        <div class="card-name">${cardData.name}</div>
+        <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
+    `;
+
+    card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('cardId', cardData.id);
+    });
+
+    return card;
+}
+
+function renderTableCard(cardData, cardInstanceId, isOpponent = false) {
+    const card = document.createElement('div');
+    card.classList.add('card');
+    card.dataset.cardId = cardData.id;
+    card.dataset.instanceId = cardInstanceId;
+
+    card.innerHTML = `
+        <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
+        <div class="card-name">${cardData.name}</div>
+        <div class="card-hp">HP: ${cardData.hp} ATK: ${cardData.attack}</div>
+    `;
+
+    if (!isOpponent) {
+        card.setAttribute('draggable', true);
+        card.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('attackerInstanceId', card.dataset.instanceId);
+        });
+    } 
+    else {
+        card.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        card.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const attackerInstanceId = e.dataTransfer.getData('attackerInstanceId');
+            const defenderInstanceId = card.dataset.instanceId;
+            console.log(attackerInstanceId, defenderInstanceId);
+            if (isMyTurn && attackerInstanceId && defenderInstanceId) {
+                Socket.socket.emit('cardAttack', {attackerInstanceId: attackerInstanceId, defenderInstanceId: defenderInstanceId});
+            }
+        });
+    }
+
+    return card;
+}
+
+
 function renderUserHand() {
     user.handCards.forEach(cardId => {
         const cardData = allCards.find(card => card.id === cardId);
         if (cardData) {
-            const cardElement = renderCard(cardData);
+            const cardElement = renderHandCard(cardData);
             userCardsContainer.appendChild(cardElement);
         }
     });
@@ -71,20 +127,15 @@ function renderOpponentHand() {
 
 function renderUserTable() {
     user.tableCards.forEach(cardData => {
-        const card = renderCard(cardData);
-        userTable.appendChild(card); 
+        const cardElement = renderTableCard(cardData, cardData.instanceId);
+        userTable.appendChild(cardElement);
     });
 }
 
-            // Socket.socket.emit('cardAttack', {
-            //     attackerInstanceId: selectedCardInstanceId,
-            //     defenderInstanceId: card.instanceId,
-            // });
-
 function renderOpponentTable() {
     opponent.tableCards.forEach(cardData => {
-        const card = renderCard(cardData);
-        opponentTable.appendChild(card);
+        const cardElement = renderTableCard(cardData, cardData.instanceId, true);
+        opponentTable.appendChild(cardElement);
     });
 }
 
@@ -100,11 +151,11 @@ userTable.addEventListener('drop', (e) => {
     Socket.socket.emit('cardPlaced', cardId);
 });
 
-Socket.socket.on('cardPlaced', ({ by, cardId }) => {
+Socket.socket.on('cardPlaced', ({ by, cardId, cardInstanceId }) => {
     const cardData = allCards.find(card => card.id === cardId);
     if (!cardData) return;
-    const cardElement = renderCard(cardData);
     if (by === user.userData.id) {
+        const cardElement = renderTableCard(cardData, cardInstanceId);
         const handCard = [...userCardsContainer.children].find(child =>
             child.dataset.cardId === String(cardId)
         );
@@ -114,6 +165,7 @@ Socket.socket.on('cardPlaced', ({ by, cardId }) => {
         userTable.appendChild(cardElement);
     } 
     else {
+        const cardElement = renderTableCard(cardData, cardInstanceId, true);
         const handCard = [...opponentCardsContainer.children][0];
         if (handCard) {
             handCard.remove();

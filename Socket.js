@@ -65,9 +65,9 @@ class Socket {
             socket.handshake.session.user.socket_id = socket.id;
             socket.handshake.session.save();
 
-            socket.on('cardPlaced', (cardId) => this.cardPlaced(socket, cardId));
-
             socket.on('findMatch', (deck) => this.findMatch(socket, deck));
+
+            socket.on('cardPlaced', (cardId) => this.cardPlaced(socket, cardId));
             socket.on('cardAttack', ({ attackerInstanceId, defenderInstanceId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
             // Add handler for canceling match search
             socket.on('endTurn', (roomId) => {
@@ -113,8 +113,6 @@ class Socket {
             console.log(`${socket.id} is not logged in`);
             return;
         }
-
-        console.log(deck);
 
         if(!checkDeckBeforeStart(deck, this.allCardsId)) {
             console.log("deck problems, matchCancelled");
@@ -230,7 +228,6 @@ class Socket {
     }
 
     static cardPlaced(socket, cardId) {
-        console.log("!")
         const user = socket.handshake.session.user;
         const roomId = user.roomId;
         if (!user || !cardId){
@@ -248,23 +245,21 @@ class Socket {
         }
 
         const cardIndex = battle[who].handCards.indexOf(cardId);
-        console.log(battle[who].handCards);
-        console.log(cardId);
         if (cardIndex === -1) {
             console.log("cardIndex === -1");
             return;
         }
         battle[who].handCards.splice(cardIndex, 1);
-        let cardToPush = this.allCards.get(cardId);
-        cardToPush.instanceId = Math.random().toString(36).substr(2, 9);
-        battle[who].tableCards.push(this.allCards.get(cardId));
+        let cardToPush = Object.assign({}, this.allCards.get(cardId));
+        const cardInstanceId = Math.random().toString(36).substr(2, 9)
+        cardToPush.instanceId = cardInstanceId;
+        battle[who].tableCards.push(cardToPush);
         this.battles.set(roomId, battle);
-        console.log("send!")
         this.io.to(roomId).emit('cardPlaced', {
             by: user.id,
-            cardId: cardId
+            cardId: cardId,
+            cardInstanceId: cardInstanceId
         });
-        console.log("send!!!!")
     }
 
 static startTurn(roomId) {
@@ -318,19 +313,24 @@ static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
 
     const attackerPlayer = battle.player1.userData.id === user.id ? 'player1' : 'player2';
     const defenderPlayer = attackerPlayer === 'player1' ? 'player2' : 'player1';
+    console.log(attackerInstanceId);
+    console.log(defenderInstanceId);
 
     const attackerCard = battle[attackerPlayer].tableCards.find(card => card.instanceId === attackerInstanceId);
     const defenderCard = battle[defenderPlayer].tableCards.find(card => card.instanceId === defenderInstanceId);
 
     if (!attackerCard || !defenderCard) {
-        console.log("Attacker or defender card not found");
+        console.log(battle[attackerPlayer].tableCards)
+        console.log(battle[defenderPlayer].tableCards)
         return;
     }
+    console.log("defenderCard hp: ", defenderCard.hp)
+    console.log("attackerCard attack: ", attackerCard.attack)
 
     defenderCard.hp -= attackerCard.attack;
     console.log("hp remain:", defenderCard.hp);
     if (defenderCard.hp <= 0) {
-        this.battle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
+        battle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
     }
 
     this.battles.set(roomId, battle);
@@ -361,7 +361,9 @@ static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
 
     static destroyRoom(roomId) {
         const roomSocket = this.io.sockets.adapter.rooms.get(roomId);
-        if (!roomSocket) {
+        const room = this.rooms.get(roomId);
+
+        if (!roomSocket || !room) {
             console.warn(`No room found with ID ${roomId}`);
             return;
         }
@@ -379,7 +381,7 @@ static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
             socket.emit('roomEnded');
         }
 
-        Game.setEndTime(this.rooms.get(roomId).gameId);
+        Game.setEndTime(room.gameId);
 
         this.rooms.delete(roomId);
         this.battles.delete(roomId);
