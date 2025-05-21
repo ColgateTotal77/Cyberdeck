@@ -256,9 +256,13 @@ class Socket {
             console.log("!user || !cardId");
             return;
         }
-
         cardId = Number(cardId);
         const battle = this.battles.get(roomId);
+        if(!battle) {
+            console.log("battle is undefined")
+            return;
+        }
+
         const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
 
         if (battle.current_turn_player_id !== user.id){ 
@@ -271,36 +275,44 @@ class Socket {
             console.log("cardIndex === -1");
             return;
         }
+
+        const newMana = battle[who].mana - (this.allCards.get(cardId)).cost;
+        if(newMana < 0) {
+            return;
+        }
+
         battle[who].handCards.splice(cardIndex, 1);
         let cardToPush = Object.assign({}, this.allCards.get(cardId));
         const cardInstanceId = Math.random().toString(36).substr(2, 9)
         cardToPush.instanceId = cardInstanceId;
         battle[who].tableCards.push(cardToPush);
+        battle[who].mana = newMana;
         // this.battles.set(roomId, battle);
         this.io.to(roomId).emit('cardPlaced', {
             by: user.id,
             cardId: cardId,
-            cardInstanceId: cardInstanceId
+            cardInstanceId: cardInstanceId,
         });
+
+        socket.emit("newMana", newMana);
     }
 
 static startTurn(roomId) {
     const room = this.rooms.get(roomId);
     const battle = this.battles.get(roomId);
     const playerId = battle.current_turn_player_id;
+    const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
+    let socket = null;
+    for (const socketId of room.socketIds) {
+        socket = this.io.sockets.sockets.get(socketId);
+
+        if (socket?.handshake.session.user.id === playerId) {
+            break;
+        }
+    }
 
     room.turn++;
     if(room.turn > 2) {
-        let socket = null;
-        for (const socketId of room.socketIds) {
-            socket = this.io.sockets.sockets.get(socketId);
-
-            if (socket?.handshake.session.user.id === playerId) {
-                break;
-            }
-        }
-
-        const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
         const arrayLen = (battle[who].cardsToChoose).length;
         if(arrayLen > 0) {
             socket.emit("newHandCard", battle[who].cardsToChoose[Math.floor(Math.random() * arrayLen)]);
@@ -311,13 +323,18 @@ static startTurn(roomId) {
             const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
             battle[who].cardsToChoose = cardsToChoose;
             socket.emit("newCards", cardsToChoose);
+
+            const supposeMana = battle[who].mana + Math.floor(room.turn / 2) + 4;
+            battle[who].mana = supposeMana > 10 ? 10 : supposeMana;
+            socket.emit("newMana", battle[who].mana);     
         }
     }
 
     this.io.to(roomId).emit("turnStarted", {
         currentPlayerId: playerId,
-        timeLimit: 30 
+        timeLimit: 30, 
     });
+
     console.log("turn started!");
     room.turnTimeout = setTimeout(() => {
         this.endTurn(roomId);
@@ -377,19 +394,14 @@ static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
 
     const attackerPlayer = battle.player1.userData.id === user.id ? 'player1' : 'player2';
     const defenderPlayer = attackerPlayer === 'player1' ? 'player2' : 'player1';
-    console.log(attackerInstanceId);
-    console.log(defenderInstanceId);
 
     const attackerCard = battle[attackerPlayer].tableCards.find(card => card.instanceId === attackerInstanceId);
     const defenderCard = battle[defenderPlayer].tableCards.find(card => card.instanceId === defenderInstanceId);
 
     if (!attackerCard || !defenderCard) {
-        console.log(battle[attackerPlayer].tableCards)
-        console.log(battle[defenderPlayer].tableCards)
+        console.log("!attackerCard || !defenderCard");
         return;
     }
-    console.log("defenderCard hp: ", defenderCard.hp)
-    console.log("attackerCard attack: ", attackerCard.attack)
 
     defenderCard.hp -= attackerCard.attack;
     console.log("hp remain:", defenderCard.hp);

@@ -56,8 +56,9 @@ body {
     margin: 0 auto;
 }
 
-#userLogin, #opponentLogin {
-    text-align: center;
+#userData, #opponentData {
+    display: flex;
+    flex-direction: row;
 }
 
 #opponentHand {
@@ -201,6 +202,12 @@ body {
 
 .player-hp {
     color: red;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.player-mana {
+    color: blue;
     font-size: 18px;
     font-weight: bold;
 }
