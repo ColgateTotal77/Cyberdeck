@@ -165,7 +165,7 @@ body {
 }
 
 #newCards {
-    /* display: none;
+    display: none;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -174,16 +174,18 @@ body {
     color: white;
     padding: 20px 40px;
     border-radius: 12px;
-    font-size: 2rem;
+    font-size: 1.5rem;
     z-index: 2000;
     opacity: 0;
     transition: opacity 0.5s ease;
     text-align: center;
-    pointer-events: none; */
+    pointer-events: none;
 }
 
 #newCards.show {
+    display: block;
     opacity: 1;
+    pointer-events: auto;
 }
 
 .hidden {

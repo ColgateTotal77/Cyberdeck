@@ -166,17 +166,17 @@
                     music.pause();
                     isMusicPlaying = false;
                     localStorage.setItem("musicPlaying", "false");
+                    updateToggleText(); // ✅ safe to update immediately
                 } else {
                     music.play().then(() => {
                         isMusicPlaying = true;
                         localStorage.setItem("musicPlaying", "true");
+                        updateToggleText(); // ✅ only update after music starts
                     }).catch(err => {
                         console.warn("Playback failed:", err.message);
                     });
                 }
-                updateToggleText();
             });
-
             volumeSlider.addEventListener("input", () => {
                 music.volume = volumeSlider.value;
                 localStorage.setItem("musicVolume", volumeSlider.value);
