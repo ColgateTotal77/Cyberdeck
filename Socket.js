@@ -7,6 +7,7 @@ const sharedsession = require("express-socket.io-session");
 const Game = require('./models/Game.js');
 const Card = require('./models/Card.js');
 const { Console } = require('console');
+const session = require('express-session');
 
 class Socket {
     static io = null;
@@ -69,12 +70,15 @@ class Socket {
 
             socket.on('cardPlaced', (cardId) => this.cardPlaced(socket, cardId));
             socket.on('cardAttack', ({ attackerInstanceId, defenderInstanceId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
-            // Add handler for canceling match search
+            socket.on('choosenCard', (cardId) => this.choosenCard(socket, cardId));
+
             socket.on('endTurn', (roomId) => {
-                if(socket.handshake.session.user.id === this.battles.get(roomId).current_turn_player_id) {
+                const battle = this.battles.get(roomId);
+                if(battle && socket.handshake.session.user.id === battle.current_turn_player_id) {
                     this.endTurn(roomId);
                 }
             });
+
             socket.on('cancelMatch', () => this.cancelMatch(socket));
             
             socket.on('destroyRoom', (roomId) => this.destroyRoom(roomId));
@@ -82,9 +86,17 @@ class Socket {
                 console.log(socket.id, 'disconnect');
                 const user = socket.handshake.session.user;
                 if (user?.roomId) {
-                    socket.to(user.roomId).emit('opponentDisconnected');
+                    const room = this.rooms.get(user.roomId);
+                    if (room) {
+                        room.socketIds = room.socketIds.filter(id => id !== socket.id);
+                        socket.to(user.roomId).emit('opponentDisconnected');
+                        // room.disconnectTimeout = setTimeout(() => {
+                        //     this.destroyRoom(user.roomId);
+                        // }, 60000);
+                    }
                 }
-                const curRating = this.waitingPlayers.find({ rating: user.rating });
+
+                const curRating = this.waitingPlayers.find({ rating: user?.rating });
                 this.deleteUserFromTree(curRating, socket.id);
             });
         });
@@ -194,7 +206,9 @@ class Socket {
         this.rooms.set(roomId, {
             player1_id: user.id,
             player2_id: opponent.id,
-            gameId: game.id
+            gameId: game.id,
+            turn: 0,
+            socketIds: [user_socket.id ,opponent.socket_id]
         });
 
         const userDeck = [...user_socket.handshake.session.deck].sort(() => 0.5 - Math.random());
@@ -203,8 +217,8 @@ class Socket {
         const opponentHandCards = opponentDeck.slice(0, 4);
 
         this.battles.set(roomId, {
-            player1: {userData: user, hp:30, mana: 4, handCards: userHandCards, tableCards: [], deck: userDeck},
-            player2: {userData: opponent, hp:30, mana: 4, handCards: opponentHandCards, tableCards: [], deck: opponentDeck},
+            player1: {userData: user, hp:30, mana: 4, handCards: userHandCards, tableCards: [], deck: userDeck, cardsToChoose: []},
+            player2: {userData: opponent, hp:30, mana: 4, handCards: opponentHandCards, tableCards: [], deck: opponentDeck, cardsToChoose: []},
             roomId: roomId,
             current_turn_player_id : current_turn_player_id
         });
@@ -221,9 +235,17 @@ class Socket {
     static reconnectToRoom(socket) {
         const user = socket.handshake.session.user;
         if (user && user.roomId) {
-            socket.join(user.roomId);
-            this.io.to(user.roomId).emit('userReconnected', { user });
-            console.log(`${user.login} rejoined ${user.roomId}`);
+            if(this.rooms.has(user.roomId)) {
+                socket.join(user.roomId);
+                this.io.to(user.roomId).emit('userReconnected', { user });
+                const room = this.rooms.get(user.roomId);
+                room.socketIds.push(socket.id);
+                // if (room.disconnectTimeout) {
+                //     clearTimeout(room.disconnectTimeout);
+                //     delete room.disconnectTimeout;
+                // }
+                console.log(`${user.login} rejoined ${user.roomId}`);
+            }
         }
     }
 
@@ -254,7 +276,7 @@ class Socket {
         const cardInstanceId = Math.random().toString(36).substr(2, 9)
         cardToPush.instanceId = cardInstanceId;
         battle[who].tableCards.push(cardToPush);
-        this.battles.set(roomId, battle);
+        // this.battles.set(roomId, battle);
         this.io.to(roomId).emit('cardPlaced', {
             by: user.id,
             cardId: cardId,
@@ -264,7 +286,26 @@ class Socket {
 
 static startTurn(roomId) {
     const room = this.rooms.get(roomId);
-    const playerId = this.battles.get(roomId).current_turn_player_id;
+    const battle = this.battles.get(roomId);
+    const playerId = battle.current_turn_player_id;
+
+    room.turn++;
+    if(room.turn > 2) {
+        let socket = null;
+        for (const socketId of room.socketIds) {
+            socket = this.io.sockets.sockets.get(socketId);
+
+            if (socket?.handshake.session.user.id === playerId) {
+                break;
+            }
+        }
+        if(socket) {
+            const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
+            const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
+            battle[who].cardsToChoose = cardsToChoose
+            socket.emit("newCards", cardsToChoose);
+        }
+    }
 
     this.io.to(roomId).emit("turnStarted", {
         currentPlayerId: playerId,
@@ -274,6 +315,22 @@ static startTurn(roomId) {
     room.turnTimeout = setTimeout(() => {
         this.endTurn(roomId);
     }, 30000);   
+}
+
+static choosenCard(socket, cardId) {
+    const user = socket.handshake.session.user
+    const roomId = user.roomId;
+    const battle = this.battles.get(roomId);
+    const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+
+    cardId = Number(cardId);
+
+    if(battle[who].cardsToChoose.includes(cardId)) {
+        console.log("choosenCard");
+        battle[who].cardsToChoose = [];
+        battle[who].handCards.push(cardId);
+        socket.emit("newHandCard", cardId);
+    }
 }
 
 static endTurn(roomId) {
@@ -333,7 +390,7 @@ static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
         battle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
     }
 
-    this.battles.set(roomId, battle);
+    // this.battles.set(roomId, battle);
 
     this.io.to(roomId).emit('attackResult', {
         attackerInstanceId,

@@ -217,11 +217,54 @@ Socket.socket.on('attackResult', ({ attackerInstanceId, defenderInstanceId, newD
     }
 });
 
+Socket.socket.on('newCards', (cardsToChoose) => {
+    renderCardsToChoose(cardsToChoose);
+});
+
+const newCardsDiv = document.getElementById("newCards");
+function renderCardsToChoose(array) {
+    console.log(array);
+    if(array.length > 0) {
+            array.forEach(cardId => {
+            const cardData = allCards.find(card => card.id === cardId);
+
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.cardId = cardData.id;
+
+            card.innerHTML = `
+                <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
+                <div class="card-name">${cardData.name}</div>
+                <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
+            `;
+            card.addEventListener("click", () => {
+                Socket.socket.emit("choosenCard", card.dataset.cardId);
+                newCardsDiv.classList.remove('show');
+                setTimeout(() => {
+                    newCardsDiv.style.display = "none";
+                }, 500);
+                newCardsDiv.innerHTML = "";
+            })
+
+            newCardsDiv.appendChild(card);
+        });
+        newCardsDiv.style.display = "block";
+        newCardsDiv.classList.add('show');
+    }
+}
+
+Socket.socket.on('newHandCard', (cardId) => {
+    const cardData = allCards.find(card => card.id === cardId);
+    const cardElement = renderHandCard(cardData);
+    userCardsContainer.appendChild(cardElement);
+});
+
 // Initial render
 renderUserHand();
 renderOpponentHand();
 renderUserTable()
 renderOpponentTable()
+renderCardsToChoose(user.cardsToChoose);
 
 document.getElementById('giveUpButton').addEventListener('click', () => {
     if (confirm("Are you sure you want to give up this battle?")) {
