@@ -22,7 +22,7 @@ if (!userResponse.ok) {
     throw new Error('Failed to fetch user data');
 }
 const userAvatarPath = await userResponse.json();
-console.log(userAvatarPath)
+
 const opponentResponse = await fetch('/api/getAvatarPath', {
     method: 'POST',
     headers: {
@@ -35,8 +35,9 @@ if (!opponentResponse.ok) {
 }
 const opponentAvatarPath = await opponentResponse.json();
 
+const opponentAvatar = document.getElementById("opponentAvatar");
 document.getElementById("userAvatar").innerHTML = `<img src="${userAvatarPath.avatarPath}">`;
-document.getElementById("opponentAvatar").innerHTML = `<img src="${opponentAvatarPath.avatarPath}">`;
+opponentAvatar.innerHTML = `<img src="${opponentAvatarPath.avatarPath}">`;
 
 console.log(user);
 console.log(opponent);
@@ -119,6 +120,7 @@ function renderTableCard(cardData, cardInstanceId, isOpponent = false) {
         card.setAttribute('draggable', true);
         card.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('attackerInstanceId', card.dataset.instanceId);
+            e.dataTransfer.setData('cardId', cardData.id);
         });
     } 
     else {
@@ -181,7 +183,8 @@ userTable.addEventListener('drop', (e) => {
     e.preventDefault();
 
     const cardId = e.dataTransfer.getData('cardId');
-    Socket.socket.emit('cardPlaced', cardId);
+
+    Socket.socket.emit('cardPlaced', Number(cardId));
 });
 
 Socket.socket.on('cardPlaced', ({ by, cardId, cardInstanceId}) => {
@@ -274,7 +277,7 @@ function renderCardsToChoose(array) {
                 <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
             `;
             card.addEventListener("click", () => {
-                Socket.socket.emit("choosenCard", card.dataset.cardId);
+                Socket.socket.emit("choosenCard", Number(card.dataset.cardId));
             })
 
             newCardsDiv.appendChild(card);
@@ -292,6 +295,26 @@ Socket.socket.on('newHandCard', (cardId) => {
     const cardData = allCards.find(card => card.id === cardId);
     const cardElement = renderHandCard(cardData);
     userCardsContainer.appendChild(cardElement);
+});
+
+opponentAvatar.addEventListener("dragover", (e) => {
+    e.preventDefault();
+});
+
+opponentAvatar.addEventListener("drop", (e) => {
+    e.preventDefault();
+    if (!isMyTurn) return;
+    const cardId = e.dataTransfer.getData('cardId');
+    Socket.socket.emit('opponentAttacked', Number(cardId));
+});
+
+Socket.socket.on("userHpDecrease", ({defeanserId, newHp}) => {
+    if(userId === defeanserId) {
+        document.getElementById("userHP").innerText = `HP: ${newHp}`;
+    }
+    else {
+        document.getElementById("opponentHP").innerText = `HP: ${newHp}`;
+    }
 });
 
 // Initial render

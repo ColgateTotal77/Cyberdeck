@@ -70,8 +70,8 @@ class Socket {
 
             socket.on('cardPlaced', (cardId) => this.cardPlaced(socket, cardId));
             socket.on('cardAttack', ({ attackerInstanceId, defenderInstanceId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
+            socket.on('opponentAttacked', (cardId) => this.opponentAttacked(socket, cardId));
             socket.on('choosenCard', (cardId) => this.choosenCard(socket, cardId));
-
             socket.on('endTurn', (roomId) => {
                 const battle = this.battles.get(roomId);
                 if(battle && socket.handshake.session.user.id === battle.current_turn_player_id) {
@@ -256,7 +256,6 @@ class Socket {
             console.log("!user || !cardId");
             return;
         }
-        cardId = Number(cardId);
         const battle = this.battles.get(roomId);
         if(!battle) {
             console.log("battle is undefined")
@@ -275,14 +274,14 @@ class Socket {
             console.log("cardIndex === -1");
             return;
         }
-
-        const newMana = battle[who].mana - (this.allCards.get(cardId)).cost;
+        const card = this.allCards.get(cardId);
+        const newMana = battle[who].mana - card.cost;
         if(newMana < 0) {
             return;
         }
 
         battle[who].handCards.splice(cardIndex, 1);
-        let cardToPush = Object.assign({}, this.allCards.get(cardId));
+        let cardToPush = Object.assign({}, card);
         const cardInstanceId = Math.random().toString(36).substr(2, 9)
         cardToPush.instanceId = cardInstanceId;
         battle[who].tableCards.push(cardToPush);
@@ -347,8 +346,6 @@ static choosenCard(socket, cardId) {
     const battle = this.battles.get(roomId);
     const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
 
-    cardId = Number(cardId);
-
     if(battle[who].cardsToChoose.includes(cardId)) {
         console.log("choosenCard");
         battle[who].cardsToChoose = [];
@@ -357,68 +354,102 @@ static choosenCard(socket, cardId) {
     }
 }
 
-static endTurn(roomId) {
-    const room = this.rooms.get(roomId);
+    static endTurn(roomId) {
+        const room = this.rooms.get(roomId);
 
-    if(!room || !room.turnTimeout) {
-        return;
+        if(!room || !room.turnTimeout) {
+            return;
+        }
+
+        clearTimeout(room.turnTimeout);
+        const battle = this.battles.get(roomId);
+        const nextPlayerId = battle.player1.userData.id === battle.current_turn_player_id ? battle.player2.userData.id : battle.player1.userData.id;
+
+        battle.current_turn_player_id = nextPlayerId;
+        this.startTurn(roomId);
     }
 
-    clearTimeout(room.turnTimeout);
-    const battle = this.battles.get(roomId);
-    const nextPlayerId = battle.player1.userData.id === battle.current_turn_player_id ? battle.player2.userData.id : battle.player1.userData.id;
+    static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
+        const user = socket.handshake.session.user;
+        const roomId = user.roomId;
+        console.log("cardAttack");
+        if (!user || !roomId) {
+            console.log("!user || !roomId");
+            return;
+        }
 
-    battle.current_turn_player_id = nextPlayerId;
-    this.startTurn(roomId);
-}
+        const battle = this.battles.get(roomId);
+        if (!battle) {
+            console.log("Battle not found");
+            return;
+        }
 
-static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
-    const user = socket.handshake.session.user;
-    const roomId = user.roomId;
-    console.log("cardAttack");
-    if (!user || !roomId) {
-        console.log("!user || !roomId");
-        return;
+        if (battle.current_turn_player_id !== user.id) {
+            console.log("Not this player's turn");
+            return;
+        }
+
+        const attackerPlayer = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+        const defenderPlayer = attackerPlayer === 'player1' ? 'player2' : 'player1';
+
+        const attackerCard = battle[attackerPlayer].tableCards.find(card => card.instanceId === attackerInstanceId);
+        const defenderCard = battle[defenderPlayer].tableCards.find(card => card.instanceId === defenderInstanceId);
+
+        if (!attackerCard || !defenderCard) {
+            console.log("!attackerCard || !defenderCard");
+            return;
+        }
+
+        defenderCard.hp -= attackerCard.attack;
+        console.log("hp rest:", defenderCard.hp);
+        if (defenderCard.hp <= 0) {
+            battle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
+        }
+
+        // this.battles.set(roomId, battle);
+
+        this.io.to(roomId).emit('attackResult', {
+            attackerInstanceId,
+            defenderInstanceId,
+            newDefenderHp: defenderCard.hp,
+            isDefenderDead: defenderCard.hp <= 0,
+            by: user.id
+        });
     }
 
-    const battle = this.battles.get(roomId);
-    if (!battle) {
-        console.log("Battle not found");
-        return;
+    static opponentAttacked(socket, cardId) {
+        const user = socket.handshake.session.user;
+        const roomId = user.roomId;
+        if (!user || !roomId) {
+            console.log("!user || !roomId");
+            return;
+        }
+
+        const battle = this.battles.get(roomId);
+        if (!battle) {
+            console.log("Battle not found");
+            return;
+        }
+
+        if (battle.current_turn_player_id !== user.id) {
+            console.log("Not this player's turn");
+            return;
+        }
+
+        const player1 = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+        const player2 = battle.player1.userData.id !== user.id ? 'player1' : 'player2';
+
+        if(battle[player1].tableCards.find(card => card.id === cardId)) {
+            const card = this.allCards.get(cardId);
+            const hpRest = battle[player2].hp - card.attack
+            if(hpRest <= 0) {
+                this.destroyRoom(roomId);
+            }
+
+            battle[player2].hp = hpRest;
+            this.io.to(roomId).emit('userHpDecrease', {defeanserId: battle[player2].userData.id, newHp: hpRest});
+        }
     }
-
-    if (battle.current_turn_player_id !== user.id) {
-        console.log("Not this player's turn");
-        return;
-    }
-
-    const attackerPlayer = battle.player1.userData.id === user.id ? 'player1' : 'player2';
-    const defenderPlayer = attackerPlayer === 'player1' ? 'player2' : 'player1';
-
-    const attackerCard = battle[attackerPlayer].tableCards.find(card => card.instanceId === attackerInstanceId);
-    const defenderCard = battle[defenderPlayer].tableCards.find(card => card.instanceId === defenderInstanceId);
-
-    if (!attackerCard || !defenderCard) {
-        console.log("!attackerCard || !defenderCard");
-        return;
-    }
-
-    defenderCard.hp -= attackerCard.attack;
-    console.log("hp remain:", defenderCard.hp);
-    if (defenderCard.hp <= 0) {
-        battle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
-    }
-
-    // this.battles.set(roomId, battle);
-
-    this.io.to(roomId).emit('attackResult', {
-        attackerInstanceId,
-        defenderInstanceId,
-        newDefenderHp: defenderCard.hp,
-        isDefenderDead: defenderCard.hp <= 0,
-        by: user.id
-    });
-}
 
 
     static deleteUserFromTree(curRating, socket_id) {
