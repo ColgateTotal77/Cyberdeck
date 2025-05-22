@@ -44,7 +44,7 @@
          <div id="sidebar">
         <div id="rightSidebar">
             <div class="sidebarTop">
-                <div class="avatar"></div>
+                <div id="avatar"></div>
                 <div id="login"></div>
                 <div class="settingButton">
                     <img src="/image/settings.svg" alt="Settings" class="settingIcon">
@@ -84,6 +84,10 @@
                         <div id="accountSettings" class="settingsSection">
                             <h2>Account Settings</h2>
                             <p>Here you can manage your account.</p>
+                            <form action="/uploadAvatar" method="POST" enctype="multipart/form-data">
+                                <input type="file" name="avatar" accept="image/*" required>
+                                <button type="submit">Upload Avatar</button>
+                            </form>
                         </div>
                         <div id="soundSettings" class="settingsSection">
                             <h2>Sound Settings</h2>

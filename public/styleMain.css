@@ -325,13 +325,24 @@ body {
     object-fit: contain;
 }
 
-.avatar {
+#avatar {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     background-color: #ccc;
     border: 2px solid #999;
     margin: 20px 0;
+    overflow: hidden; /* Ensures the image is clipped */
+    display: flex; /* Optional: helps with image centering */
+    align-items: center;
+    justify-content: center;
+}
+
+#avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crop the image nicely */
+    display: block;
 }
 
 .ratingBox {

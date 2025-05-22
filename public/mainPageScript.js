@@ -21,6 +21,25 @@ fetch('/userData', { method: 'POST' })
         document.getElementById("login").innerHTML = data.login;
         // document.getElementById("userData").innerHTML = html;
         document.querySelector(".ratingBox").textContent = data.rating;
+
+        fetch('/api/getAvatarPath', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: data.id })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // Notifications.showNotification("Network response was not ok", true);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("avatar").innerHTML = `<img src="${data.avatarPath}">`;
+            })
+            .catch(error => {
+                console.log(error);
+                // Notifications.showNotification('There was a problem with the fetch operation: ' + error, true);
+            });
     })
     .catch(error => {
         console.log(error);
@@ -329,6 +348,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             throw new Error('Failed to fetch cards');
         }
         
+
+
         // Store all cards from the database
         allCards = await response.json();
         console.log('Loaded cards from database:', allCards);

@@ -1,5 +1,6 @@
 const Card = require('../models/Card.js');
 const Socket = require('../Socket.js');
+const User = require('../models/User.js');
 
 class APIController {
     constructor() {
@@ -23,6 +24,16 @@ class APIController {
             return res.status(401).json({ error: 'No battle info' });
         }
         res.json({battleInfo: Socket.battles.get(req.session.user.roomId), userId: req.session.user.id});
+    }
+
+    async getAvatarPath(req, res) {
+        const id = req.body.id;
+        if (!id, !req.session || !req.session.user) {
+            return res.status(401).json({ error: 'No user found' });
+        }
+        const userData = new User();
+        await userData.find(id);
+        res.json({"avatarPath": userData.avatar_path});
     }
 }
 

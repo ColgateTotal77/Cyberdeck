@@ -1,4 +1,5 @@
 const path = require('path');
+const User = require('../models/User.js');
 
 class MainPageController {
     
@@ -19,6 +20,33 @@ class MainPageController {
         res.sendFile(path.join(__dirname, "../views/mainPage.html"));
     };
     
+    static async uploadAvatar (req, res) {
+        try {
+            const user = req.session?.user;
+            if (!user || !req.file) {
+                return res.status(400).send('Missing user session or file');
+            }
+
+            const avatarPath = '/avatars/' + req.file.filename;
+
+            const userData = new User();
+            await userData.find(user.id);
+
+            userData.avatar_path = avatarPath;
+            await userData.save();
+
+            // res.send('Avatar uploaded successfully!');
+            res.status(200);
+            console.log("Avatar uploaded successfully!");
+        } 
+        catch (err) {
+            console.error(err);
+            // res.status(500).send('Server error while uploading avatar');
+            res.status(500);
+            console.log("Server error while uploading avatar");
+        }
+    }
+
     static logOut(req, res) {
         req.session.destroy((err) => {
             if (err) {

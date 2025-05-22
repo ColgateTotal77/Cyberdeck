@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     login VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
+    avatar_path VARCHAR(255) DEFAULT "/avatars/default.jpeg",
     rating INT NOT NULL DEFAULT 100
 );
 
@@ -32,7 +33,7 @@ CREATE TABLE IF NOT EXISTS cards (
     attack INT,
     hp INT,
     cost INT,
-    image_url TEXT DEFAULT NULL
+    card_img_path VARCHAR(255)
 );
 
 INSERT INTO cards (id, name, description, attack, hp, cost) VALUES

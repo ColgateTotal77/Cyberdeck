@@ -1,5 +1,7 @@
 const express = require('express');
 const session = require('express-session');
+const multer = require('multer');
+const path = require('path');
 
 const RegisterController = require('./controllers/RegisterController.js');
 const AuthController = require('./controllers/AuthController.js');
@@ -29,6 +31,19 @@ const sessionMiddleware = session({
     }
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/avatars');
+  },
+  filename: (req, file, cb) => {
+    const username = req.session?.user?.login || 'anonymous';
+    const ext = path.extname(file.originalname);
+    cb(null, username + ext);
+  },
+});
+
+const upload = multer({ storage });
+
 (async () => {
     await Socket.loadCards();
     const server = Socket.inicialization(app, sessionMiddleware);
@@ -54,7 +69,8 @@ const sessionMiddleware = session({
     app.get('/battle/:roomId', (req, res) => BattleController.BattlePage(req, res));
     app.get('/api/getBattleInfo', (req, res) => apiController.getBattleInfo(req, res));
     app.get('/api/getAllCards', (req, res) => apiController.getAllCards(req, res));
-
+    app.post('/uploadAvatar', upload.single('avatar'), async (req, res) => { await MainPageController.uploadAvatar(req, res); });
+    app.post('/api/getAvatarPath', (req, res) => apiController.getAvatarPath(req, res));
     app.use((req, res) => {
         res.status(404).sendFile(__dirname + '/views/404.html');
     });

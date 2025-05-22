@@ -10,6 +10,34 @@ const user = battleInfo.player1.userData.id === userId ? battleInfo.player1 : ba
 const opponent = battleInfo.player2.userData.id === userId ? battleInfo.player1 : battleInfo.player2;
 let isMyTurn = user.userData.id === battleInfo.current_turn_player_id;
 
+console.log( user.userData.id);
+const userResponse = await fetch('/api/getAvatarPath', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id: user.userData.id })
+});
+if (!userResponse.ok) {
+    throw new Error('Failed to fetch user data');
+}
+const userAvatarPath = await userResponse.json();
+console.log(userAvatarPath)
+const opponentResponse = await fetch('/api/getAvatarPath', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id: opponent.userData.id })
+});
+if (!opponentResponse.ok) {
+    throw new Error('Failed to fetch opponent data');
+}
+const opponentAvatarPath = await opponentResponse.json();
+
+document.getElementById("userAvatar").innerHTML = `<img src="${userAvatarPath.avatarPath}">`;
+document.getElementById("opponentAvatar").innerHTML = `<img src="${opponentAvatarPath.avatarPath}">`;
+
 console.log(user);
 console.log(opponent);
 console.log(allCards);
