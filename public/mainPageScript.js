@@ -368,3 +368,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         Notifications.showNotification('Failed to load cards. Please refresh the page.', true);
     }
 });
+
+document.getElementById('avatarForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const fileInput = form.querySelector('input[type="file"]');
+    const file = fileInput.files[0];
+
+    if (!file || !file.type.startsWith('image/')) {
+        e.preventDefault();
+        alert('Please upload a valid image file.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/uploadAvatar', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log(data.avatarPath)
+            document.getElementById("avatar").innerHTML = `<img src="${data.avatarPath}">`;
+        } else {
+            console.error('Upload error:', data.error || 'Unknown error');
+        }
+    } catch (error) {
+        console.error('Network error:', error);
+    }
+});
