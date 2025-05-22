@@ -1,86 +1,165 @@
-html,
-body {
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
     height: 100vh;
     padding: 0;
     margin: 0;
-    background-color: #1f1f1f;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 25%, #0a1a1a  50%, #1a1a0a 75%, #0a0a0a 100%);
     position: relative;
-    color: white;
+    color: #00ffff;
+    font-family: 'Rajdhani', sans-serif;
+    overflow: hidden;
 }
 
-#giveUpButton {
-    cursor: pointer;
-
+body::before {
+    content: '';
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(45deg, rgba(255, 0, 255, 0.02) 0%, rgba(0, 255, 255, 0.02) 100%);
+    pointer-events: none;
+    z-index: -1;
 }
 
-#endTurn {
-    cursor: pointer;
-
+body::after {
+    content: '';
     position: fixed;
-    bottom: 50px;
-    right: 20px;    
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 255, 0.03) 2px,
+        rgba(0, 255, 255, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+    animation: scanlines 0.1s linear infinite;
+}
+
+@keyframes scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
 }
 
 #mainContainer {
     display: grid;
     grid-template-rows: 50% 50%;
     height: 100%;
+    position: relative;
+    z-index: 2;
 }
 
-#opponentSide{
+#opponentSide {
     display: grid;
     grid-template-rows: 65% 35%;
     height: 100%;
+    background: linear-gradient(180deg, rgba(255, 0, 128, 0.05) 0%, transparent 100%);
+    border-bottom: 2px solid rgba(255, 0, 128, 0.3);
+    position: relative;
+}
+
+#opponentSide::before {
+    content: 'OPPONENT ZONE';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    color: #ff0080;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 #userSide {
     display: grid;
     grid-template-rows: 35% 65%;
     height: 100%;
+    background: linear-gradient(0deg, rgba(0, 255, 128, 0.05) 0%, transparent 100%);
+    border-top: 2px solid rgba(0, 255, 128, 0.3);
+    position: relative;
 }
 
-#opponentInfo{
-    display: grid;
-    grid-template-rows: 40% 60%;
-    width: fit-content; 
-    margin: 0 auto;
+#userSide::before {
+    content: 'PLAYER ZONE';
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    color: #00ff80;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
- #userInfo {
+#opponentInfo, #userInfo {
     display: grid;
     grid-template-rows: 40% 60%;
-    width: fit-content; 
+    width: fit-content;
     margin: 0 auto;
 }
 
 #userData, #opponentData {
     display: flex;
     flex-direction: row;
+    gap: 15px;
+    align-items: center;
+}
+
+#opponentHand, #userHand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
 }
 
 #opponentHand {
     height: 150px;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 128, 0.1), transparent);
 }
 
 #userHand {
     height: 160px;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 128, 0.1), transparent);
 }
 
-#opponent {
-    display: grid;
-    grid-template-rows: 80% 20%;
-}
-
-#user {
+#opponent, #user {
     display: grid;
     grid-template-rows: 80% 20%;
 }
 
 #userTable, #opponentTable {
+    background: radial-gradient(ellipse at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    margin: 10px;
+    position: relative;
+}
 
+#userTable::before, #opponentTable::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.1) 49%, rgba(0, 255, 255, 0.1) 51%, transparent 52%);
+    pointer-events: none;
 }
 
 .card, .card-back{
@@ -100,69 +179,233 @@ body {
     text-align: center;
 }
 
+/* Cyberpunk Buttons */
+button {
+    background: linear-gradient(45deg, #ff0080, #ff8000);
+    border: 2px solid transparent;
+    color: #ffffff;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    padding: 12px 24px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 0;
+    box-shadow: 
+        0 0 20px rgba(255, 0, 128, 0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
 
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+button:hover {
+    box-shadow: 
+        0 0 30px rgba(255, 0, 128, 0.6),
+        0 0 60px rgba(255, 128, 0, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+button:hover::before {
+    left: 100%;
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+ #giveUpButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: linear-gradient(45deg, #ff0040, #ff4000);
+}
+
+#endTurn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1000;
+    background: linear-gradient(45deg, #00ff80, #0080ff);
+}
+
+/* Turn Status and Timer */
+#turnStatus {
+    position: fixed;
+    top: 40px;
+    left: 9%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #00ffff;
+    padding: 10px 20px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 18px;
+    color: #00ffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.5),
+        inset 0 0 10px rgba(0, 255, 255, 0.1);
+    z-index: 1000;
+}
+
+#turnTimer {
+    position: fixed;
+    top: 100px;
+    left: 9%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, #ff0080, #8000ff);
+    border: 3px solid #ff00ff;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 24px;
+    color: #ffffff;
+    box-shadow: 
+        0 0 30px rgba(255, 0, 255, 0.8),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.1); }
+}
+
+/* Announcements */
 #turnAnnouncement {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.85);
-    color: white;
-    padding: 20px 40px;
-    border-radius: 12px;
-    font-size: 2rem;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 0, 40, 0.9));
+    color: #00ffff;
+    padding: 30px 60px;
+    border: 3px solid #ff00ff;
+    font-size: 2.5rem;
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
     z-index: 2000;
     opacity: 0;
     transition: opacity 0.5s ease;
     text-align: center;
     pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    box-shadow: 
+        0 0 50px rgba(255, 0, 255, 0.8),
+        inset 0 0 30px rgba(0, 255, 255, 0.1);
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
 }
 
 #turnAnnouncement.show {
     opacity: 1;
+    animation: glitch 0.3s ease-in-out;
+}
+
+@keyframes glitch {
+    0%, 100% { transform: translate(-50%, -50%); }
+    20% { transform: translate(-52%, -50%); }
+    40% { transform: translate(-48%, -50%); }
+    60% { transform: translate(-50%, -52%); }
+    80% { transform: translate(-50%, -48%); }
 }
 
 #turnAnnouncement.hidden {
     display: none;
 }
 
+/* Music Controls */
 .musicControlContainer {
-    position: fixed;         /* Make it fixed to always stay in the corner */
-    top: 20px;               /* Distance from top */
-    right: 20px;             /* Distance from right */
+    position: fixed;
+    top: 20px;
+    right: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    z-index: 1000;           /* Ensure it's above other elements */
+    z-index: 1000;
 }
 
 .music-button {
-    font-size: 24px;
+    font-size: 28px;
     cursor: pointer;
-    background: none;
-    border: none;
+    background: linear-gradient(45deg, #ff0080, #8000ff);
+    border: 2px solid #00ffff;
     color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 0 20px rgba(255, 0, 128, 0.5),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.music-button:hover {
+    box-shadow: 
+        0 0 30px rgba(255, 0, 128, 0.8),
+        0 0 50px rgba(128, 0, 255, 0.6);
+    transform: scale(1.1);
 }
 
 .volume-popup {
-    margin-top: 8px;
-    background-color: #444;
-    padding: 6px;
-    border-radius: 6px;
+    margin-top: 12px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 0, 40, 0.9));
+    padding: 12px;
+    border: 2px solid #00ffff;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.5),
+        inset 0 0 10px rgba(0, 255, 255, 0.1);
 }
 
 .volume-popup input[type="range"] {
-    appearance: slider-vertical;    /* Firefox */
-    writing-mode: vertical-lr;      /* Chrome, Edge, Safari */
+    appearance: slider-vertical;
+    writing-mode: vertical-lr;
     height: 100px;
     width: 8px;
     margin: 0;
     cursor: pointer;
-    transform: rotate(180deg); /* Flip it to make higher value at the top */
+    transform: rotate(180deg);
+    background: linear-gradient(to top, #ff0080, #8000ff, #0080ff);
+    border-radius: 4px;
+}
+
+.volume-popup input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+    cursor: pointer;
 }
 
 #newCards {
@@ -171,16 +414,24 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.85);
-    color: white;
-    padding: 20px 40px;
-    border-radius: 12px;
-    font-size: 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(0, 40, 20, 0.9));
+    color: #00ff80;
+    padding: 30px 50px;
+    border: 3px solid #00ff80;
+    font-size: 1.2rem;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
     z-index: 2000;
     opacity: 0;
     transition: opacity 0.5s ease;
     text-align: center;
     pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 
+        0 0 40px rgba(0, 255, 128, 0.6),
+        inset 0 0 20px rgba(0, 255, 128, 0.1);
+    text-shadow: 0 0 15px rgba(0, 255, 128, 0.8);
 }
 
 #newCards.show {
@@ -193,35 +444,83 @@ body {
     display: none !important;
 }
 
+
+ /* Player Info */
 .player-info {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    margin-bottom: 10px; /* Pushes cards down */
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 15px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
 .player-hp {
-    color: red;
+    color: #ff0040;
     font-size: 18px;
     font-weight: bold;
+    font-family: 'Orbitron', monospace;
+    text-shadow: 0 0 10px rgba(255, 0, 64, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.player-hp::before {
+    content: 'HP: ';
+    color: #ff8080;
 }
 
 .player-mana {
-    color: blue;
+    color: #0080ff;
     font-size: 18px;
     font-weight: bold;
+    font-family: 'Orbitron', monospace;
+    text-shadow: 0 0 10px rgba(0, 128, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.player-mana::before {
+    content: 'MANA: ';
+    color: #80c0ff;
 }
 
 .avatar {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    border: 2px solid #fff;
-    margin-bottom: 5px;
+    border: 3px solid #00ffff;
+    margin-bottom: 0;
     overflow: hidden;
-    display: flex; 
+    display: flex;
     align-items: center;
     justify-content: center;
+    background: radial-gradient(circle, #ff0080, #8000ff);
+    box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.6),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #ff0080, #8000ff, #0080ff, #00ff80, #ff0080);
+    z-index: -1;
+    animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .avatar img {
@@ -229,4 +528,32 @@ body {
     height: 100%;
     object-fit: cover;
     display: block;
+    filter: saturate(1.2) contrast(1.1);
+}
+
+/* Login names */
+#userLogin, #opponentLogin {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 16px;
+    color: #00ffff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+/* Cyberpunk Grid Overlay */
+.grid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
 }

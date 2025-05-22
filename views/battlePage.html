@@ -60,96 +60,102 @@
     </audio>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-        const music = document.getElementById("bgMusic");
-        const toggleBtn = document.getElementById("musicToggle");
-        const volumeSlider = document.getElementById("volumeSlider");
-        const volumePopup = document.getElementById("volumePopup");
+            const music = document.getElementById("bgMusic");
+            const toggleBtn = document.getElementById("musicToggle");
+            const volumeSlider = document.getElementById("volumeSlider");
+            const volumePopup = document.getElementById("volumePopup");
 
-        let savedVolume = localStorage.getItem("musicVolume") || "0.5";
-        let savedPlaying = localStorage.getItem("musicPlaying") || "true";
+            // Music controls (using in-memory storage instead of localStorage)
+            let savedVolume = 0.5;
+            let savedPlaying = true;
 
-        music.volume = parseFloat(savedVolume);
-        volumeSlider.value = savedVolume;
+            music.volume = parseFloat(savedVolume);
+            volumeSlider.value = savedVolume;
 
-        let isMuted = savedPlaying === "false";
+            let isMuted = !savedPlaying;
 
-        const updateIcon = () => {
-            toggleBtn.textContent = isMuted ? "🔈" : (music.volume == 0 ? "🔈" : "🔊");
-        };
+            const updateIcon = () => {
+                toggleBtn.textContent = isMuted ? "🔈" : (music.volume == 0 ? "🔈" : "🔊");
+            };
 
-        // Variables to track hover state for button and popup
-        let isOverButton = false;
-        let isOverPopup = false;
+            let isOverButton = false;
+            let isOverPopup = false;
 
-        // Show popup when hovering the button
-        toggleBtn.addEventListener("mouseenter", () => {
-            isOverButton = true;
-            volumePopup.classList.remove("hidden");
-        });
+            toggleBtn.addEventListener("mouseenter", () => {
+                isOverButton = true;
+                volumePopup.classList.remove("hidden");
+            });
 
-        // Hide popup when leaving the button (if not over popup)
-        toggleBtn.addEventListener("mouseleave", () => {
-            isOverButton = false;
-            setTimeout(() => {
-                if (!isOverPopup && !isOverButton) {
-                    volumePopup.classList.add("hidden");
+            toggleBtn.addEventListener("mouseleave", () => {
+                isOverButton = false;
+                setTimeout(() => {
+                    if (!isOverPopup && !isOverButton) {
+                        volumePopup.classList.add("hidden");
+                    }
+                }, 100);
+            });
+
+            volumePopup.addEventListener("mouseenter", () => {
+                isOverPopup = true;
+                volumePopup.classList.remove("hidden");
+            });
+
+            volumePopup.addEventListener("mouseleave", () => {
+                isOverPopup = false;
+                setTimeout(() => {
+                    if (!isOverPopup && !isOverButton) {
+                        volumePopup.classList.add("hidden");
+                    }
+                }, 100);
+            });
+
+            toggleBtn.addEventListener("click", () => {
+                isMuted = !isMuted;
+                if (isMuted) {
+                    music.pause();
+                    savedPlaying = false;
+                } else {
+                    music.play().catch(err => console.warn("Playback failed:", err));
+                    savedPlaying = true;
                 }
-            }, 100);
-        });
+                updateIcon();
+            });
 
-        // Keep popup visible if mouse is over it
-        volumePopup.addEventListener("mouseenter", () => {
-            isOverPopup = true;
-            volumePopup.classList.remove("hidden");
-        });
+            volumeSlider.addEventListener("input", () => {
+                const volume = parseFloat(volumeSlider.value);
+                music.volume = volume;
+                savedVolume = volume;
+                updateIcon();
+            });
 
-        // Hide popup when leaving popup (if not over button)
-        volumePopup.addEventListener("mouseleave", () => {
-            isOverPopup = false;
-            setTimeout(() => {
-                if (!isOverPopup && !isOverButton) {
-                    volumePopup.classList.add("hidden");
+            const unlockAudio = () => {
+                if (savedPlaying) {
+                    music.play().catch(err => console.warn("Autoplay blocked:", err));
                 }
-            }, 100);
-        });
+                document.removeEventListener("click", unlockAudio);
+            };
+            document.addEventListener("click", unlockAudio, { once: true });
 
-        // Toggle mute/unmute on button click
-        toggleBtn.addEventListener("click", () => {
-            isMuted = !isMuted;
-            if (isMuted) {
-                music.pause();
-                localStorage.setItem("musicPlaying", "false");
-            } else {
-                music.play().catch(err => console.warn("Playback failed:", err));
-                localStorage.setItem("musicPlaying", "true");
+            if (!isMuted && savedPlaying) {
+                music.play().catch(() => {});
             }
+
             updateIcon();
+
+            // Demo turn announcement
+            setTimeout(() => {
+                const announcement = document.getElementById("turnAnnouncement");
+                announcement.textContent = "YOUR TURN";
+                announcement.classList.remove("hidden");
+                announcement.classList.add("show");
+                setTimeout(() => {
+                    announcement.classList.remove("show");
+                    setTimeout(() => {
+                        announcement.classList.add("hidden");
+                    }, 500);
+                }, 2000);
+            }, 2000);
         });
-
-        // Change volume on slider input
-        volumeSlider.addEventListener("input", () => {
-            const volume = parseFloat(volumeSlider.value);
-            music.volume = volume;
-            localStorage.setItem("musicVolume", volume);
-            updateIcon();
-        });
-
-        // Try to autoplay music if allowed
-        const unlockAudio = () => {
-            if (localStorage.getItem("musicPlaying") === "true") {
-                music.play().catch(err => console.warn("Autoplay blocked:", err));
-            }
-            document.removeEventListener("click", unlockAudio);
-        };
-        document.addEventListener("click", unlockAudio, { once: true });
-
-        if (!isMuted && savedPlaying === "true") {
-            music.play().catch(() => {}); // Silent fail on autoplay block
-        }
-
-        updateIcon();
-    });
-
     </script>
 </body>
 </html>
