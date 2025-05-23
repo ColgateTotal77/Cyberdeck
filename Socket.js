@@ -327,7 +327,9 @@ static startTurn(roomId) {
     if(room.turn > 2) {
         const arrayLen = (battle[who].cardsToChoose).length;
         if(arrayLen > 0) {
-            socket.emit("newHandCard", battle[who].cardsToChoose[Math.floor(Math.random() * arrayLen)]);
+            const newRandomCardID = battle[who].cardsToChoose[Math.floor(Math.random() * arrayLen)]
+            battle[who].handCards.push(newRandomCardID);
+            socket.emit("newHandCard", newRandomCardID);
             battle[who].cardsToChoose = [];
         }
 

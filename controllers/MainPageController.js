@@ -3,9 +3,12 @@ const User = require('../models/User.js');
 
 class MainPageController {
     
-    static userData(req, res) {
-        if (req.session.user) {
-            res.json(req.session.user);
+    static async userData(req, res) {
+        const user = new User();
+        await user.find(req.session.user.id);
+        if (user.login) {
+            console.log(user);
+            res.json({avatarPath: user.avatar_path, login: user.login, rating: user.rating});
         } 
         else {
             res.status(401).json({ error: "Unauthorized" });
@@ -42,7 +45,6 @@ static async uploadAvatar(req, res) {
         return res.status(500).json({ error: 'Server error while uploading avatar' });
     }
 }
-
 
     static logOut(req, res) {
         req.session.destroy((err) => {

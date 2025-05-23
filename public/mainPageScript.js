@@ -13,34 +13,10 @@ fetch('/userData', { method: 'POST' })
         return response.json();
     })
     .then(data => {
-        const html = 
-            `<div>Login: ${data.login}</div>
-            <div>Full name: ${data.fullName}</div>
-            <div>Is Admin: <span style="color:${data.isAdmin ? 'green' : 'red'};">${data.isAdmin ? "Yes" : "No"}</span></div>
-            <div>Email: ${data.email}</div>`;
         document.getElementById("login").innerHTML = data.login;
-        // document.getElementById("userData").innerHTML = html;
         console.log(data)
         document.querySelector(".ratingBox").textContent = data.rating;
-
-        fetch('/api/getAvatarPath', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: data.id })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    // Notifications.showNotification("Network response was not ok", true);
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById("avatar").innerHTML = `<img src="${data.avatarPath}">`;
-            })
-            .catch(error => {
-                console.log(error);
-                // Notifications.showNotification('There was a problem with the fetch operation: ' + error, true);
-            });
+        document.getElementById("avatar").innerHTML = `<img src="${data.avatarPath}">`;
     })
     .catch(error => {
         console.log(error);
