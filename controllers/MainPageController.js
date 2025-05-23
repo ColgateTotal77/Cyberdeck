@@ -7,7 +7,6 @@ class MainPageController {
         const user = new User();
         await user.find(req.session.user.id);
         if (user.login) {
-            console.log(user);
             res.json({avatarPath: user.avatar_path, login: user.login, rating: user.rating});
         } 
         else {

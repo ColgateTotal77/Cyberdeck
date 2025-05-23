@@ -213,12 +213,16 @@ function startCountdown(seconds) {
 document.getElementById("endTurn").addEventListener("click", () => {
     Socket.endTurn(roomId);
 });
+const turnStatus = document.getElementById("turnStatus");
+
+function startTurn(isMyTurn, timeLimit) {
+    turnStatus.innerText = isMyTurn ? "Your Turn!" : "Opponent's Turn...";
+    startCountdown(timeLimit);
+}
 
 Socket.socket.on('turnStarted', ({ currentPlayerId, timeLimit}) => {
     isMyTurn = user.userData.id === currentPlayerId;
-    document.getElementById("turnStatus").innerText = isMyTurn ? "Your Turn!" : "Opponent's Turn...";
-
-    startCountdown(timeLimit);
+    startTurn(isMyTurn, timeLimit);
 });
 
 Socket.socket.on('attackResult', ({ attackerInstanceId, defenderInstanceId, newDefenderHp, isDefenderDead, by }) => {
@@ -321,6 +325,7 @@ renderOpponentHand();
 renderUserTable()
 renderOpponentTable()
 renderCardsToChoose(user.cardsToChoose);
+startTurn(isMyTurn, 30);
 
 document.getElementById('giveUpButton').addEventListener('click', () => {
     if (confirm("Are you sure you want to give up this battle?")) {

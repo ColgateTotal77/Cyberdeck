@@ -60,7 +60,7 @@ class Socket {
 
             user.socket_id = socket.id;
 
-            console.log('A user connected:', user);
+            console.log('A user connected:', user.login);
 
             socket.handshake.session.user.socket_id = socket.id;
             socket.handshake.session.save();
@@ -404,7 +404,7 @@ static choosenCard(socket, cardId) {
     const roomId = user.roomId;
     const battle = this.battles.get(roomId);
 
-    if(!battle || !room) {
+    if(!battle) {
         console.log("battle not found");
         return;
     }
