@@ -70,6 +70,7 @@ body::after {
     background: linear-gradient(180deg, rgba(255, 0, 128, 0.05) 0%, transparent 100%);
     border-bottom: 2px solid rgba(255, 0, 128, 0.3);
     position: relative;
+    margin-bottom: 10px;
 }
 
 #opponentSide::before {
@@ -83,6 +84,7 @@ body::after {
     opacity: 0.6;
     text-transform: uppercase;
     letter-spacing: 2px;
+    margin-bottom: 10px;
 }
 
 #userSide {
@@ -92,6 +94,7 @@ body::after {
     background: linear-gradient(0deg, rgba(0, 255, 128, 0.05) 0%, transparent 100%);
     border-top: 2px solid rgba(0, 255, 128, 0.3);
     position: relative;
+    margin-bottom: 10px;
 }
 
 #userSide::before {
@@ -105,6 +108,7 @@ body::after {
     opacity: 0.6;
     text-transform: uppercase;
     letter-spacing: 2px;
+    margin-bottom: 10px;
 }
 
 #opponentInfo, #userInfo {
@@ -121,34 +125,35 @@ body::after {
     align-items: center;
 }
 
-#opponentHand, #userHand {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 20px;
-}
-
-#opponentHand {
-    height: 150px;
-    background: linear-gradient(90deg, transparent, rgba(255, 0, 128, 0.1), transparent);
-}
-
-#userHand {
-    height: 160px;
-    background: linear-gradient(90deg, transparent, rgba(0, 255, 128, 0.1), transparent);
-}
-
-#opponent, #user {
-    display: grid;
-    grid-template-rows: 80% 20%;
-}
-
+/* Enhanced table card styling - aligned to green border */
 #userTable, #opponentTable {
     background: radial-gradient(ellipse at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
     border: 1px solid rgba(0, 255, 255, 0.2);
-    margin: 10px;
+    margin: 0;
     position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
+    min-height: 180px;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+/* Make user table align perfectly with the green border */
+#userTable {
+    border-top: none;
+    margin-top: -2px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+/* Make opponent table align perfectly with the pink border */
+#opponentTable {
+    border-bottom: none;
+    margin-bottom: -2px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 #userTable::before, #opponentTable::before {
@@ -162,21 +167,126 @@ body::after {
     pointer-events: none;
 }
 
-.card, .card-back{
+/* Card styling for both hand and table cards */
+.card, .card-back {
     display: inline-block;
+    width: 120px;
     height: 150px;
-    margin: 0 10px;
-        
+    margin: 0;
+    position: relative;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(20, 0, 40, 0.8));
+    border: 2px solid rgba(0, 255, 255, 0.4);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 
+        0 0 15px rgba(0, 255, 255, 0.3),
+        inset 0 0 10px rgba(0, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 0 25px rgba(0, 255, 255, 0.6),
+        0 10px 20px rgba(0, 0, 0, 0.3),
+        inset 0 0 15px rgba(0, 255, 255, 0.2);
+    border-color: rgba(0, 255, 255, 0.8);
 }
 
 .card-img {
-    height: 100%;
+    width: 100%;
+    height: 80%;
     object-fit: cover;
+    display: block;
+    border-radius: 6px 6px 0 0;
 }
 
 .card-name {
     font-weight: bold;
     text-align: center;
+    font-size: 10px;
+    color: #00ffff;
+    padding: 2px 4px;
+    font-family: 'Orbitron', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(0, 0, 0, 0.7);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.card-hp {
+    font-size: 9px;
+    color: #ff0080;
+    text-align: center;
+    padding: 1px 4px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.8);
+    margin: 0;
+    line-height: 1.1;
+}
+
+/* Specific styling for table cards */
+#userTable .card,
+#opponentTable .card {
+    border-color: rgba(0, 255, 128, 0.4);
+    box-shadow: 
+        0 0 15px rgba(0, 255, 128, 0.3),
+        inset 0 0 10px rgba(0, 255, 128, 0.1);
+}
+
+#userTable .card:hover,
+#opponentTable .card:hover {
+    box-shadow: 
+        0 0 25px rgba(0, 255, 128, 0.6),
+        0 10px 20px rgba(0, 0, 0, 0.3),
+        inset 0 0 15px rgba(0, 255, 128, 0.2);
+    border-color: rgba(0, 255, 128, 0.8);
+}
+
+/* Hand container adjustments */
+#opponentHand, #userHand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+#opponentHand {
+    height: 180px;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 128, 0.1), transparent);
+}
+
+#userHand {
+    height: 180px;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 128, 0.1), transparent);
+}
+
+/* Draggable state */
+.card[draggable="true"]:active {
+    opacity: 0.7;
+    transform: rotate(5deg);
+}
+
+/* Card back styling */
+.card-back {
+    border-color: rgba(255, 0, 128, 0.4);
+    box-shadow: 
+        0 0 15px rgba(255, 0, 128, 0.3),
+        inset 0 0 10px rgba(255, 0, 128, 0.1);
+}
+
+.card-back:hover {
+    box-shadow: 
+        0 0 25px rgba(255, 0, 128, 0.6),
+        0 10px 20px rgba(0, 0, 0, 0.3),
+        inset 0 0 15px rgba(255, 0, 128, 0.2);
+    border-color: rgba(255, 0, 128, 0.8);
 }
 
 /* Cyberpunk Buttons */
