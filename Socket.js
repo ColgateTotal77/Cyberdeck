@@ -329,41 +329,52 @@ class Socket {
 static startTurn(roomId) {
     const room = this.rooms.get(roomId);
     const battle = this.battles.get(roomId);
+
+    if(!battle || !room) {
+        console.log("battle not found");
+        return;
+    }
+
     const playerId = battle.current_turn_player_id;
     const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
-    let socket = null;
 
     battle[who].tableCards.forEach(card => {
         card.canAttack = true;
     });
 
+    let userSocket = null;
+    let opponentSocket = null;
     for (const socketId of room.socketIds) {
-        socket = this.io.sockets.sockets.get(socketId);
-
-        if (socket?.handshake.session.user.id === playerId) {
-            break;
+        let socket = this.io.sockets.sockets.get(socketId);
+        if(socket) {
+            if (socket?.handshake.session.user.id === playerId) {
+                userSocket = socket;
+            }
+            else {
+                opponentSocket = socket;
+            }
         }
     }
 
     room.turn++;
-    if(room.turn > 2) {
+
+    if(room.turn > 2 && userSocket && opponentSocket) {
         const arrayLen = (battle[who].cardsToChoose).length;
         if(arrayLen > 0) {
             const newRandomCardID = battle[who].cardsToChoose[Math.floor(Math.random() * arrayLen)]
             battle[who].handCards.push(newRandomCardID);
-            socket.emit("newHandCard", newRandomCardID);
+            userSocket.emit("newHandCard", newRandomCardID);
+            opponentSocket.emit("newOpponentHandCard");
             battle[who].cardsToChoose = [];
         }
 
-        if(socket) {
-            const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
-            battle[who].cardsToChoose = cardsToChoose;
-            socket.emit("newCards", cardsToChoose);
+        const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
+        battle[who].cardsToChoose = cardsToChoose;
+        userSocket.emit("newCards", cardsToChoose);
 
-            const supposeMana = battle[who].mana + Math.floor(room.turn / 2) + 4;
-            battle[who].mana = supposeMana > 10 ? 10 : supposeMana;
-            socket.emit("newMana", battle[who].mana);     
-        }
+        const supposeMana = battle[who].mana + Math.floor(room.turn / 2) + 4;
+        battle[who].mana = supposeMana > 10 ? 10 : supposeMana;
+        userSocket.emit("newMana", battle[who].mana);     
     }
 
     this.io.to(roomId).emit("turnStarted", {
@@ -372,6 +383,11 @@ static startTurn(roomId) {
     });
 
     console.log("turn started!");
+
+    if (room.turnTimeout) {
+        clearTimeout(room.turnTimeout);
+    }
+
     room.turnTimeout = setTimeout(() => {
         this.endTurn(roomId);
     }, 30000);   
@@ -379,8 +395,20 @@ static startTurn(roomId) {
 
 static choosenCard(socket, cardId) {
     const user = socket.handshake.session.user
+
+    if(!user) {
+        console.log("user not found");
+        return;
+    }
+
     const roomId = user.roomId;
     const battle = this.battles.get(roomId);
+
+    if(!battle || !room) {
+        console.log("battle not found");
+        return;
+    }
+
     const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
 
     if(battle[who].cardsToChoose.includes(cardId)) {
@@ -393,13 +421,14 @@ static choosenCard(socket, cardId) {
 
     static endTurn(roomId) {
         const room = this.rooms.get(roomId);
+        const battle = this.battles.get(roomId);
 
-        if(!room || !room.turnTimeout) {
+        if(!battle || !room) {
+            console.log("battle not found");
             return;
         }
 
         clearTimeout(room.turnTimeout);
-        const battle = this.battles.get(roomId);
         const nextPlayerId = battle.player1.userData.id === battle.current_turn_player_id ? battle.player2.userData.id : battle.player1.userData.id;
 
         battle.current_turn_player_id = nextPlayerId;
@@ -444,7 +473,7 @@ static choosenCard(socket, cardId) {
         attackerCard.canAttack = false;
 
         defenderCard.hp -= attackerCard.attack;
-        console.log("hp rest:", defenderCard.hp);
+
         if (defenderCard.hp <= 0) {
             battle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
         }
@@ -519,7 +548,7 @@ static choosenCard(socket, cardId) {
         const user = socket.handshake.session.user;
         const roomId = user.roomId;
         if (!user){
-            console.log("!user || !cardId");
+            console.log("!user");
             return;
         }
         const battle = this.battles.get(roomId);
@@ -561,8 +590,6 @@ static choosenCard(socket, cardId) {
         console.log("destroyRoom");
         const roomSocket = this.io.sockets.adapter.rooms.get(roomId);
         const room = this.rooms.get(roomId);
-        console.log(room.socketIds)
-        console.log(roomSocket);
 
         if (!roomSocket || !room) {
             console.warn(`No room found with ID ${roomId}`);
@@ -570,14 +597,11 @@ static choosenCard(socket, cardId) {
         }
 
         for (const socketId of roomSocket) {
-            console.log("aboba")
             const socket = this.io.sockets.sockets.get(socketId);
             if (!socket) continue;
 
             const user = socket.handshake.session?.user;
-            console.log(user);
             if (user) {
-                console.log("user!!!!")
                 if (user.id === winnerId) {
                     user.rating += ratingForWinner;
                 } else {
@@ -624,8 +648,3 @@ function checkDeckBeforeStart(deck, allCardsId) {
 }
 
 module.exports = Socket;
-
-//need:
-//check rating before start match
-//update rating after match
-//

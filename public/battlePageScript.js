@@ -278,6 +278,13 @@ Socket.socket.on('newHandCard', (cardId) => {
     userCardsContainer.appendChild(cardElement);
 });
 
+Socket.socket.on("newOpponentHandCard", () => {
+    const cardBack = document.createElement('div');
+    cardBack.classList.add('card-back');
+    cardBack.innerHTML = `<img src="/image/cardBack.jpg" alt="cardBack" class="card-img" />`;
+    opponentCardsContainer.appendChild(cardBack);
+});
+
 opponentAvatar.addEventListener("dragover", (e) => {
     e.preventDefault();
 });
