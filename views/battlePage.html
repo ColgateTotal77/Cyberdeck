@@ -142,20 +142,6 @@
             }
 
             updateIcon();
-
-            // Demo turn announcement
-            setTimeout(() => {
-                const announcement = document.getElementById("turnAnnouncement");
-                announcement.textContent = "YOUR TURN";
-                announcement.classList.remove("hidden");
-                announcement.classList.add("show");
-                setTimeout(() => {
-                    announcement.classList.remove("show");
-                    setTimeout(() => {
-                        announcement.classList.add("hidden");
-                    }, 500);
-                }, 2000);
-            }, 2000);
         });
     </script>
 </body>

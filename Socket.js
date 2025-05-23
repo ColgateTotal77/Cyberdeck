@@ -141,30 +141,41 @@ class Socket {
             let curRating = this.waitingPlayers.find({ rating: user.rating });
 
             if(curRating) {
-                const opponent = Object.values(curRating.players).at(-1);
-                this.deleteUserFromTree(curRating, opponent.socket_id);
-                matched = true;
-                this.createRoom(socket, opponent);
-                console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                const availableOpponents = Object.values(curRating.players).filter(player => player.id !== user.id);
+                if(availableOpponents.length > 0) {
+                    const opponent = availableOpponents.at(-1);
+                    this.deleteUserFromTree(curRating, opponent.socket_id);
+                    matched = true;
+                    this.createRoom(socket, opponent);
+                    console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                }
             } 
-            else {
-                const { lower, higher } = this.getClosestOpponents(user.rating);
+            
+            if(!matched) {
+                const { lower, higher } = this.getClosestOpponents(user.rating, user.id);
                 
                 const lowerDiff = lower?.rating !== undefined ? user.rating - lower.rating : null;
                 const higherDiff = higher?.rating !== undefined ? higher.rating - user.rating : null;
+                
                 if (lowerDiff !== null && (higherDiff === null || lowerDiff < higherDiff) && lowerDiff < ratingBound) {
-                    const opponent = Object.values(lower.players).at(-1);
-                    this.deleteUserFromTree(lower, opponent.socket_id);
-                    matched = true;
-                    this.createRoom(socket, opponent);
-                    console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                    const availableOpponents = Object.values(lower.players).filter(player => player.id !== user.id);
+                    if(availableOpponents.length > 0) {
+                        const opponent = availableOpponents.at(-1);
+                        this.deleteUserFromTree(lower, opponent.socket_id);
+                        matched = true;
+                        this.createRoom(socket, opponent);
+                        console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                    }
                 } 
                 else if (higherDiff !== null && (lowerDiff === null || higherDiff < lowerDiff) && higherDiff < ratingBound) {
-                    const opponent = Object.values(higher.players).at(-1);
-                    this.deleteUserFromTree(higher, opponent.socket_id);
-                    matched = true;
-                    this.createRoom(socket, opponent);
-                    console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                    const availableOpponents = Object.values(higher.players).filter(player => player.id !== user.id);
+                    if(availableOpponents.length > 0) {
+                        const opponent = availableOpponents.at(-1);
+                        this.deleteUserFromTree(higher, opponent.socket_id);
+                        matched = true;
+                        this.createRoom(socket, opponent);
+                        console.log(`${socket.id} matched with ${opponent.socket_id}`);
+                    }
                 }
             }
         }
@@ -183,11 +194,16 @@ class Socket {
         }
     }
 
-    static getClosestOpponents(rating) {
+    static getClosestOpponents(rating, excludeUserId) {
         let iter = this.waitingPlayers.iterator(), node;
         let lower = null, higher = null;
 
         while ((node = iter.next()) !== null) {
+            const availablePlayers = Object.values(node.players).filter(player => player.id !== excludeUserId);
+            if(availablePlayers.length === 0) {
+                continue; 
+            }
+
             if (node.rating <= rating) {
                 if (!lower || node.rating > lower.rating) lower = node;
             } 
@@ -295,6 +311,7 @@ class Socket {
 
         battle[who].handCards.splice(cardIndex, 1);
         let cardToPush = Object.assign({}, card);
+        cardToPush.canAttack = true;
         const cardInstanceId = Math.random().toString(36).substr(2, 9)
         cardToPush.instanceId = cardInstanceId;
         battle[who].tableCards.push(cardToPush);
@@ -315,6 +332,11 @@ static startTurn(roomId) {
     const playerId = battle.current_turn_player_id;
     const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
     let socket = null;
+
+    battle[who].tableCards.forEach(card => {
+        card.canAttack = true;
+    });
+
     for (const socketId of room.socketIds) {
         socket = this.io.sockets.sockets.get(socketId);
 
@@ -415,13 +437,17 @@ static choosenCard(socket, cardId) {
             return;
         }
 
+        if(!attackerCard.canAttack) {
+            console.log("Card has already attacked!");
+            return;
+        }
+        attackerCard.canAttack = false;
+
         defenderCard.hp -= attackerCard.attack;
         console.log("hp rest:", defenderCard.hp);
         if (defenderCard.hp <= 0) {
             battle[defenderPlayer].tableCards = battle[defenderPlayer].tableCards.filter(card => card.instanceId !== defenderInstanceId);
         }
-
-        // this.battles.set(roomId, battle);
 
         this.io.to(roomId).emit('attackResult', {
             attackerInstanceId,
@@ -432,7 +458,7 @@ static choosenCard(socket, cardId) {
         });
     }
 
-    static opponentAttacked(socket, cardId) {
+    static opponentAttacked(socket, cardInstanceId) {
         const user = socket.handshake.session.user;
         const roomId = user.roomId;
         if (!user || !roomId) {
@@ -454,8 +480,15 @@ static choosenCard(socket, cardId) {
         const player1 = battle.player1.userData.id === user.id ? 'player1' : 'player2';
         const player2 = battle.player1.userData.id !== user.id ? 'player1' : 'player2';
 
-        if(battle[player1].tableCards.find(card => card.id === cardId)) {
-            const card = this.allCards.get(cardId);
+        const card = battle[player1].tableCards.find(card => card.instanceId === cardInstanceId);
+
+        if(card) {
+            if(!card.canAttack) {
+                console.log("Card has already attacked!");
+                return;
+            }
+            card.canAttack = false;
+            
             let hpRest = battle[player2].hp - card.attack;
             hpRest = hpRest < 0 ? 0 : hpRest;
             battle[player2].hp = hpRest;

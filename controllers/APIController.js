@@ -23,7 +23,12 @@ class APIController {
         if (!req.session || !req.session.user || !req.session.user.roomId || !Socket.battles.has(req.session.user.roomId)) {
             return res.status(401).json({ error: 'No battle info' });
         }
-        res.json({battleInfo: Socket.battles.get(req.session.user.roomId), userId: req.session.user.id});
+        let battle = structuredClone(Socket.battles.get(req.session.user.roomId));
+        const userId = req.session.user.id;
+        const who = battle.player1.userData.id !== userId ? 'player1' : 'player2';
+        battle[who].mana = null;
+        console.log(battle);
+        res.json({battleInfo: battle, userId: userId});
     }
 
     async getAvatarPath(req, res) {

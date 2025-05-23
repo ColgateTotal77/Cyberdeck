@@ -66,27 +66,6 @@ const opponentCardsContainer = document.getElementById('opponentHand');
 const userTable = document.getElementById('userTable');
 const opponentTable = document.getElementById('opponentTable');
 
-// function renderCard(cardData) {
-//     const card = document.createElement('div');
-//     card.classList.add('card');
-//     card.setAttribute('draggable', true);
-//     card.dataset.cardId = cardData.id;
-//     card.dataset.instanceId = cardData.instanceId || null;
-
-//     card.innerHTML = `
-//         <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
-//         <div class="card-name">${cardData.name}</div>
-//         <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
-//     `;
-
-//     card.addEventListener('dragstart', (e) => {
-//         e.dataTransfer.setData('cardId', card.dataset.cardId);
-//         e.dataTransfer.setData('attackerInstanceId', card.dataset.instanceId);
-//     });
-
-//     return card;
-// }
-
 function renderHandCard(cardData) {
     const card = document.createElement('div');
     card.classList.add('card');
@@ -122,7 +101,7 @@ function renderTableCard(cardData, cardInstanceId, isOpponent = false) {
         card.setAttribute('draggable', true);
         card.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('attackerInstanceId', card.dataset.instanceId);
-            e.dataTransfer.setData('cardId', cardData.id);
+            // e.dataTransfer.setData('cardId', cardData.id);
         });
     } 
     else {
@@ -306,8 +285,8 @@ opponentAvatar.addEventListener("dragover", (e) => {
 opponentAvatar.addEventListener("drop", (e) => {
     e.preventDefault();
     if (!isMyTurn) return;
-    const cardId = e.dataTransfer.getData('cardId');
-    Socket.socket.emit('opponentAttacked', Number(cardId));
+    const cardInstanceId = e.dataTransfer.getData('attackerInstanceId');
+    Socket.socket.emit('opponentAttacked', cardInstanceId);
 });
 
 Socket.socket.on("userHpDecrease", ({defeanserId, newHp}) => {
