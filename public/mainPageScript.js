@@ -20,6 +20,7 @@ fetch('/userData', { method: 'POST' })
             <div>Email: ${data.email}</div>`;
         document.getElementById("login").innerHTML = data.login;
         // document.getElementById("userData").innerHTML = html;
+        console.log(data)
         document.querySelector(".ratingBox").textContent = data.rating;
 
         fetch('/api/getAvatarPath', {

@@ -1,8 +1,8 @@
 export class Socket {
     static socket = io();
 
-    static destroyRoom(roomId) { 
-        this.socket.emit('destroyRoom', roomId);
+    static giveUp() { 
+        this.socket.emit('giveUp');
     }
 
     static endTurn(roomId) { 

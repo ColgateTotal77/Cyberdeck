@@ -8,7 +8,9 @@ const userId = dataObj.userId;
 const roomId = battleInfo.roomId;
 const user = battleInfo.player1.userData.id === userId ? battleInfo.player1 : battleInfo.player2;
 const opponent = battleInfo.player2.userData.id === userId ? battleInfo.player1 : battleInfo.player2;
+
 let isMyTurn = user.userData.id === battleInfo.current_turn_player_id;
+document.getElementById("turnStatus").innerText = isMyTurn ? "Your Turn!" : "Opponent's Turn...";
 
 console.log( user.userData.id);
 const userResponse = await fetch('/api/getAvatarPath', {
@@ -55,9 +57,9 @@ document.getElementById("opponentLogin").innerHTML = opponent.userData.login;
 
 console.log(user.hp, opponent.hp, user.mana)
 
-document.getElementById("userHP").innerText = `HP: ${user.hp}`;
-document.getElementById("opponentHP").innerText = `HP: ${opponent.hp}`;
-document.getElementById("userMana").innerText = `Mana: ${user.mana}`;
+document.getElementById("userHP").innerText = `${user.hp}`;
+document.getElementById("opponentHP").innerText = `${opponent.hp}`;
+document.getElementById("userMana").innerText = `${user.mana}`;
 
 const userCardsContainer = document.getElementById('userHand');
 const opponentCardsContainer = document.getElementById('opponentHand');
@@ -211,7 +213,7 @@ Socket.socket.on('cardPlaced', ({ by, cardId, cardInstanceId}) => {
 });
 
 Socket.socket.on('newMana', (mana) => {
-    document.getElementById("userMana").innerText = `Mana: ${mana}`;
+    document.getElementById("userMana").innerText = `${mana}`;
 });
 
 let timerInterval;
@@ -310,10 +312,20 @@ opponentAvatar.addEventListener("drop", (e) => {
 
 Socket.socket.on("userHpDecrease", ({defeanserId, newHp}) => {
     if(userId === defeanserId) {
-        document.getElementById("userHP").innerText = `HP: ${newHp}`;
+        document.getElementById("userHP").innerText = `${newHp}`;
     }
     else {
-        document.getElementById("opponentHP").innerText = `HP: ${newHp}`;
+        document.getElementById("opponentHP").innerText = `${newHp}`;
+    }
+});
+
+const endGameWindow = document.getElementById("endGameWindow");
+Socket.socket.on("matchEnded", ({winnerData, loserData}) => {
+    if(winnerData.userId === userId) {
+        endGameWindow.innerHTML = `<div>You win! Rating: ${winnerData.plusRating} </div>  <div id="back" onclick="window.location.href = '/mainPage'">Back</div>`
+    }
+    else {
+        endGameWindow.innerHTML = `<div>You lose! Rating: ${loserData.plusRating} </div>  <div id="back" onclick="window.location.href = '/mainPage'">Back</div>`
     }
 });
 
@@ -326,7 +338,7 @@ renderCardsToChoose(user.cardsToChoose);
 
 document.getElementById('giveUpButton').addEventListener('click', () => {
     if (confirm("Are you sure you want to give up this battle?")) {
-        Socket.destroyRoom(roomId);
+        Socket.giveUp();
     }
 })
 

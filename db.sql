@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS games (
     start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     end_time DATETIME DEFAULT NULL,
     winner_id INT DEFAULT NULL,
+    rating_for_winner INT DEFAULT NULL,
+    rating_for_loser INT DEFAULT NULL,
 
     FOREIGN KEY (player1_id) REFERENCES users(id),
     FOREIGN KEY (player2_id) REFERENCES users(id),

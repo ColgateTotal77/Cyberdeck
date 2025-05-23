@@ -6,8 +6,7 @@ const sharedsession = require("express-socket.io-session");
 
 const Game = require('./models/Game.js');
 const Card = require('./models/Card.js');
-const { Console } = require('console');
-const session = require('express-session');
+const User = require('./models/User.js');
 
 class Socket {
     static io = null;
@@ -81,7 +80,7 @@ class Socket {
 
             socket.on('cancelMatch', () => this.cancelMatch(socket));
             
-            socket.on('destroyRoom', (roomId) => this.destroyRoom(roomId));
+            socket.on('giveUp', () => this.giveUp(socket));
             socket.on('disconnect', () => {
                 console.log(socket.id, 'disconnect');
                 const user = socket.handshake.session.user;
@@ -149,12 +148,10 @@ class Socket {
                 console.log(`${socket.id} matched with ${opponent.socket_id}`);
             } 
             else {
-                const lower = this.waitingPlayers.lower({ rating: user.rating });
-                const higher = this.waitingPlayers.upper({ rating: user.rating });
-
+                const { lower, higher } = this.getClosestOpponents(user.rating);
+                
                 const lowerDiff = lower?.rating !== undefined ? user.rating - lower.rating : null;
                 const higherDiff = higher?.rating !== undefined ? higher.rating - user.rating : null;
-
                 if (lowerDiff !== null && (higherDiff === null || lowerDiff < higherDiff) && lowerDiff < ratingBound) {
                     const opponent = Object.values(lower.players).at(-1);
                     this.deleteUserFromTree(lower, opponent.socket_id);
@@ -184,6 +181,22 @@ class Socket {
                 this.waitingPlayers.insert({ rating: user.rating, players: { [socket.id]: user } });
             }
         }
+    }
+
+    static getClosestOpponents(rating) {
+        let iter = this.waitingPlayers.iterator(), node;
+        let lower = null, higher = null;
+
+        while ((node = iter.next()) !== null) {
+            if (node.rating <= rating) {
+                if (!lower || node.rating > lower.rating) lower = node;
+            } 
+            else {
+                if (!higher || node.rating < higher.rating) higher = node;
+            }
+        }
+
+        return { lower, higher };
     }
 
     static async createRoom(user_socket, opponent) {
@@ -441,13 +454,14 @@ static choosenCard(socket, cardId) {
 
         if(battle[player1].tableCards.find(card => card.id === cardId)) {
             const card = this.allCards.get(cardId);
-            const hpRest = battle[player2].hp - card.attack
-            if(hpRest <= 0) {
-                this.destroyRoom(roomId);
-            }
-
+            let hpRest = battle[player2].hp - card.attack;
+            hpRest = hpRest < 0 ? 0 : hpRest;
             battle[player2].hp = hpRest;
             this.io.to(roomId).emit('userHpDecrease', {defeanserId: battle[player2].userData.id, newHp: hpRest});
+         
+            if(hpRest <= 0) {
+                this.matchEnded(roomId, battle[player1].userData, battle[player2].userData);
+            }
         }
     }
 
@@ -466,9 +480,54 @@ static choosenCard(socket, cardId) {
         }
     }
 
-    static destroyRoom(roomId) {
+    static giveUp(socket) {
+        const user = socket.handshake.session.user;
+        const roomId = user.roomId;
+        if (!user){
+            console.log("!user || !cardId");
+            return;
+        }
+        const battle = this.battles.get(roomId);
+        if(!battle) {
+            console.log("battle is undefined")
+            return;
+        }
+
+        const player1 = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+        const player2 = battle.player1.userData.id !== user.id ? 'player1' : 'player2';
+
+
+        this.matchEnded(roomId, battle[player2].userData, battle[player1].userData);
+    }
+
+    static async matchEnded(roomId, winner, loser) {
+        const ratingForWinner = calculateRatingChange(winner.rating, loser.rating, true);
+        const ratingForLoser = calculateRatingChange(loser.rating, winner.rating, false);
+
+        this.io.to(roomId).emit('matchEnded', {
+            winnerData: { userId: winner.id, plusRating: ratingForWinner }, 
+            loserData: { userId: loser.id, plusRating: ratingForLoser }
+        });  
+
+        const winnerData = new User();
+        await winnerData.find(winner.id);
+        winnerData.rating += ratingForWinner;
+        await winnerData.save();
+
+        const loserData = new User();
+        await loserData.find(loser.id);
+        loserData.rating += ratingForLoser;
+        await loserData.save();
+
+        this.destroyRoom(roomId, winner.id, ratingForWinner, ratingForLoser);
+    }
+
+    static destroyRoom(roomId, winnerId, ratingForWinner, ratingForLoser) {
+        console.log("destroyRoom");
         const roomSocket = this.io.sockets.adapter.rooms.get(roomId);
         const room = this.rooms.get(roomId);
+        console.log(room.socketIds)
+        console.log(roomSocket);
 
         if (!roomSocket || !room) {
             console.warn(`No room found with ID ${roomId}`);
@@ -476,20 +535,28 @@ static choosenCard(socket, cardId) {
         }
 
         for (const socketId of roomSocket) {
+            console.log("aboba")
             const socket = this.io.sockets.sockets.get(socketId);
             if (!socket) continue;
 
             const user = socket.handshake.session?.user;
+            console.log(user);
             if (user) {
+                console.log("user!!!!")
+                if (user.id === winnerId) {
+                    user.rating += ratingForWinner;
+                } else {
+                    user.rating += ratingForLoser;
+                }
+                
                 delete user.roomId;
                 socket.handshake.session.save();
             }
             socket.leave(roomId);
-            socket.emit('roomEnded');
         }
 
-        Game.setEndTime(room.gameId);
-
+        Game.setEndGame(room.gameId, winnerId, ratingForWinner, ratingForLoser);
+        this.io.to(roomId).socketsLeave(roomId); 
         this.rooms.delete(roomId);
         this.battles.delete(roomId);
         console.log(`${roomId} has been closed.`);
