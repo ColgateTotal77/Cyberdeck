@@ -215,6 +215,7 @@ body::after {
     background: rgba(0, 0, 0, 0.7);
     margin: 0;
     line-height: 1.2;
+    transform: translate(-50%, -50%);
 }
 
 .card-hp {
@@ -265,6 +266,7 @@ body::after {
 #userHand {
     height: 180px;
     background: linear-gradient(90deg, transparent, rgba(0, 255, 128, 0.1), transparent);
+    transform: translateY(-20px);
 }
 
 /* Draggable state */

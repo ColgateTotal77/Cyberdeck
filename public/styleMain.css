@@ -169,6 +169,175 @@ body {
     z-index: 2001;
 }
 
+@font-face {
+  font-family: 'FatCatRegular';
+  src: url('/fonts/FatCatRegular.ttf') format('truetype');
+}
+
+.cardName{
+  font-family: 'FatCatRegular', sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  color: #f65351;
+  text-align: center;        /* Horizontally center text */
+  width: 100%;               /* Make it span the card width */
+  margin: 10px 0;            /* Some spacing above and below */
+  text-transform: uppercase;
+}
+
+.cardStats {
+  position: absolute;
+  top: 57%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.cardDescription{
+  position: absolute;
+  top: 79%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+}
+
+.cardDescriptionStyle{
+  font-family: 'FatCatRegular', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  color: #f65351;
+  text-align: center;        /* Horizontally center text */
+  width: 100%;               /* Make it span the card width */
+  margin: 10px 0;            /* Some spacing above and below */
+}
+
+.cardAttack{
+  font-size: 20px;
+  position: absolute;
+  top: 92%;
+  left: 15%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  color: white;
+}
+.cardCost{
+  font-size: 20px;
+  position: absolute;
+  top: 6%;
+  left: 12%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  color: white;
+}
+.cardHp{
+  font-size: 20px;
+  position: absolute;
+  top: 92%;
+  left: 85%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  color: white;
+}
+.cardNameinDeck{
+  font-family: 'FatCatRegular', sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  color: #f65351;
+  text-align: center;        /* Horizontally center text */
+  width: 100%;               /* Make it span the card width */
+  margin: 10px 0;            /* Some spacing above and below */
+  text-transform: uppercase;
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+}
+
+.cardDescriptioninDeck{
+  position: absolute;
+  top: 63%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  padding: 3px 8px;
+  font-family: 'FatCatRegular', sans-serif;
+  font-size: 6px;
+  font-weight: bold;
+  color: #f65351;
+  text-align: center;
+  width: 80%;                /* Reduced from 100% to leave margins */
+  max-width: 80%;            /* Ensure it doesn't exceed card width */
+  height: auto;              /* Allow height to adjust */
+  max-height: 25%;           /* Limit height to prevent overflow */
+  line-height: 1.1;          /* Tighter line spacing */
+  overflow: hidden;          /* Hide overflow text */
+  word-wrap: break-word;     /* Break long words */
+  hyphens: auto;             /* Add hyphens for better word breaks */
+  box-sizing: border-box;    /* Include padding in width calculation */
+}
+
+.cardCostinDeck{
+  font-size: 15px;
+  position: absolute;
+  top: 9%;
+  left: 14%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  color: white;
+}
+
+.cardAttackinDeck{
+  font-size: 15px;
+  position: absolute;
+  top: 75%;
+  left: 16%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  color: white;
+}
+
+.cardHpinDeck{
+  font-size: 15px;
+  position: absolute;
+  top: 75%;
+  left: 84%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  color: white;
+}
+
 .deckHeader {
     display: flex;
     justify-content: space-between;

@@ -52,7 +52,7 @@ INSERT INTO cards (id, name, description, attack, hp, cost, card_img_path) VALUE
 (11, 'Evelyn Parker', 'Passes through enemies and fires energy beams.', 7, 7, 4, "/image/cards/Evelyn_Parker.png"),
 (12, 'Yorinobu Arasaka', 'Shrinks to dodge and surprise enemies.', 5, 5, 3, "/image/cards/Yorinobu_Arasaka.png"),
 (13, 'Hanako Arasaka', 'Small, fast, and delivers precise stings.', 4, 4, 2, "/image/cards/Hanako_Arasaka.png"),
-(14, 'Placide', 'Attacks from above using wings and tech.', 6, 4, 3, "/image/cards/Placide.png"),
+(14, 'Placid', 'Attacks from above using wings and tech.', 6, 4, 3, "/image/cards/Placid.png"),
 (15, 'Maman Brigitte', 'Expert fighter with a bionic arm.', 7, 5, 4, "/image/cards/Maman_Brigitte.png"),
 (16, 'Kerry Eurodyne', 'Unleashes cosmic energy blasts.', 9, 6, 5, "/image/cards/Kerry_Eurodyne.png"),
 (17, 'Rogue Amendiares', 'Tricks and weakens enemies with illusions.', 5, 5, 3, "/image/cards/Rogue_Amendiares.png"),
