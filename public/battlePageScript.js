@@ -319,6 +319,13 @@ Socket.socket.on("matchEnded", ({winnerData, loserData}) => {
     }
 });
 
+const randomCard = document.getElementById("randomCard");
+
+randomCard.addEventListener("click", () => {
+    console.log("click");
+    Socket.socket.emit("giveRandomCard");
+}) 
+
 // Initial render
 renderUserHand();
 renderOpponentHand();

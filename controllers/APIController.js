@@ -25,8 +25,9 @@ class APIController {
         }
         let battle = structuredClone(Socket.battles.get(req.session.user.roomId));
         const userId = req.session.user.id;
-        const who = battle.player1.userData.id !== userId ? 'player1' : 'player2';
-        battle[who].mana = null;
+        const opponent = battle.player1.userData.id !== userId ? 'player1' : 'player2';
+        battle[opponent].mana = null;
+        battle[opponent].handCards = battle[opponent].handCards.map(() => 0);
         res.json({battleInfo: battle, userId: userId});
     }
 

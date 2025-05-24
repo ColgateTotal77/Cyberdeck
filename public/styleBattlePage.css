@@ -694,3 +694,10 @@ button:active {
     margin: 5px;
     transition: background-color 0.3s ease;
 }
+
+#randomCard {
+    position: absolute;
+    bottom: 50px;
+    left: 30px;  
+    z-index: 1000
+}
