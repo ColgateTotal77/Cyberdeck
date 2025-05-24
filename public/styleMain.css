@@ -288,15 +288,15 @@ body {
   font-weight: bold;
   color: #f65351;
   text-align: center;
-  width: 80%;                /* Reduced from 100% to leave margins */
-  max-width: 80%;            /* Ensure it doesn't exceed card width */
-  height: auto;              /* Allow height to adjust */
-  max-height: 25%;           /* Limit height to prevent overflow */
-  line-height: 1.1;          /* Tighter line spacing */
-  overflow: hidden;          /* Hide overflow text */
-  word-wrap: break-word;     /* Break long words */
-  hyphens: auto;             /* Add hyphens for better word breaks */
-  box-sizing: border-box;    /* Include padding in width calculation */
+  width: 80%;         
+  max-width: 80%;           
+  height: auto;              
+  max-height: 25%;          
+  line-height: 1.1;     
+  overflow: hidden;
+  word-wrap: break-word;    
+  hyphens: auto;          
+  box-sizing: border-box;
 }
 
 .cardCostinDeck{
