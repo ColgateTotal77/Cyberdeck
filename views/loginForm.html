@@ -1,30 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/cyberpunk.css" />
     <title>Login</title>
 </head>
-<body>
-    <div id="notificationContainer"></div>
-    <div id="loginContainer">
-        <form action="/login" method="post" id="loginForm">
-            <h1>Login form</h1>
 
-            <label for="login">Login:</label>
-            <input type="text" name="login" id="login" placeholder="Enter login">
+<body class="bg-black fg-yellow" style="display:flex;align-items:center;justify-content:center;height:100vh;">
+    <form action="/login" method="post" id="loginForm" class="cyber-tile bg-red fg-black"
+        style="width:320px; text-align:center; padding: 2rem;">
 
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" placeholder="Enter password">
+        <h3 class="cyber-font cyber-h">Welcome, choom!</h3>
 
-            <button type="submit">Submit</button>
-        </form>
-        <div class="redirectField">
-            <div class="redirectButton" onclick="window.location.href = '/restorePasswordForm'">Forgot password</div>
-            <div class="redirectButton" onclick="window.location.href = '/registerForm'">Register</div>
+        <div class="cyber-input-full" style="margin: 1rem 0;">
+            <input type="text" name="login" id="login" placeholder="Enter login" required />
         </div>
-    </div>
+
+        <div class="cyber-input-full" style="margin: 1rem 0;">
+            <input type="password" name="password" id="password" placeholder="Enter password" required />
+        </div>
+
+        <button type="submit" class="cyber-button fg-black">Login</button>
+
+        <div style="margin-top:1.5rem; display:flex; justify-content:space-around;">
+            <div class="cyber-button-small bg-black fg-red" onclick="window.location.href='/restorePasswordForm'">
+                Forgot?</div>
+            <div class="cyber-button-small bg-black fg-red" onclick="window.location.href='/registerForm'">Register
+            </div>
+        </div>
+    </form>
+
     <script type="module" src="/loginFormScript.js"></script>
 </body>
+
 </html>
