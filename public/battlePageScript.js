@@ -71,17 +71,71 @@ function renderHandCard(cardData) {
     card.classList.add('card');
     card.setAttribute('draggable', true);
     card.dataset.cardId = cardData.id;
-
-    card.innerHTML = `
-        <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
-        <div class="card-name">${cardData.name}</div>
-        <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
+    
+    // Create the main card image
+    const cardImg = document.createElement('img');
+    cardImg.src = cardData.card_img_path || '/image/exampleCard.png';
+    cardImg.alt = cardData.name;
+    cardImg.classList.add('card-img');
+    
+    // Create overlay container for all text elements
+    const cardOverlay = document.createElement("div");
+    cardOverlay.className = "card-overlay";
+    
+    // Stats container
+    const cardStats = document.createElement("div");
+    cardStats.className = "cardStats";
+    cardStats.innerHTML = `
+        <div class="cardName">${cardData.name}</div>
     `;
-
+    
+    // Description container
+    const cardDescription = document.createElement("div");
+    cardDescription.className = "cardDescription";
+    cardDescription.innerHTML = `
+        <div class="cardDescriptionStyle">${cardData.description}</div>
+    `;
+    
+    // Cost container
+    const cardCost = document.createElement("div");
+    cardCost.className = "cardCost";
+    cardCost.innerHTML = `
+        <div class="cardCost">${cardData.cost}</div>
+    `;
+    
+    // Attack container
+    const cardAttack = document.createElement("div");
+    cardAttack.className = "cardAttack";
+    cardAttack.innerHTML = `
+        <div class="cardAttack">${cardData.attack}</div>
+    `;
+    
+    // HP container
+    const cardHp = document.createElement("div");
+    cardHp.className = "cardHp";
+    cardHp.innerHTML = `
+        <div class="cardHp">${cardData.hp}</div>
+    `;
+    
+    // Append all text elements to overlay
+    cardOverlay.appendChild(cardStats);
+    cardOverlay.appendChild(cardDescription);
+    cardOverlay.appendChild(cardCost);
+    cardOverlay.appendChild(cardAttack);
+    cardOverlay.appendChild(cardHp);
+    
+    // Append image and overlay to card
+    card.appendChild(cardImg);
+    card.appendChild(cardOverlay);
+    
+    // Set tooltip
+    card.title = `${cardData.name}: ${cardData.description}`;
+    
+    // Add drag event listener
     card.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('cardId', cardData.id);
     });
-
+    
     return card;
 }
 
@@ -90,18 +144,71 @@ function renderTableCard(cardData, cardInstanceId, isOpponent = false) {
     card.classList.add('card');
     card.dataset.cardId = cardData.id;
     card.dataset.instanceId = cardInstanceId;
-
-    card.innerHTML = `
-        <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
-        <div class="card-name">${cardData.name}</div>
-        <div class="card-hp">HP: ${cardData.hp} ATK: ${cardData.attack}</div>
+    
+    // Create the card image element (background layer)
+    const cardImg = document.createElement('img');
+    cardImg.src = cardData.card_img_path || '/image/exampleCard.png';
+    cardImg.alt = cardData.name;
+    cardImg.classList.add('card-img');
+    
+    // Create overlay container for all text elements
+    const cardOverlay = document.createElement("div");
+    cardOverlay.className = "card-overlay";
+    
+    // Stats container
+    const cardStats = document.createElement("div");
+    cardStats.className = "cardStats";
+    cardStats.innerHTML = `
+        <div class="cardName">${cardData.name}</div>
     `;
-
+    
+    // Description container
+    const cardDescription = document.createElement("div");
+    cardDescription.className = "cardDescription";
+    cardDescription.innerHTML = `
+        <div class="cardDescriptionStyle">${cardData.description}</div>
+    `;
+    
+    // Cost container
+    const cardCost = document.createElement("div");
+    cardCost.className = "cardCost";
+    cardCost.innerHTML = `
+        <div class="cardCost">${cardData.cost}</div>
+    `;
+    
+    // Attack container
+    const cardAttack = document.createElement("div");
+    cardAttack.className = "cardAttack";
+    cardAttack.innerHTML = `
+        <div class="cardAttack">${cardData.attack}</div>
+    `;
+    
+    // HP container
+    const cardHp = document.createElement("div");
+    cardHp.className = "cardHp";
+    cardHp.innerHTML = `
+        <div class="cardHp">${cardData.hp}</div>
+    `;
+    
+    // Append all text elements to overlay
+    cardOverlay.appendChild(cardStats);
+    cardOverlay.appendChild(cardDescription);
+    cardOverlay.appendChild(cardCost);
+    cardOverlay.appendChild(cardAttack);
+    cardOverlay.appendChild(cardHp);
+    
+    // Append image and overlay to card
+    card.appendChild(cardImg);
+    card.appendChild(cardOverlay);
+    
+    // Set tooltip
+    card.title = `${cardData.name}: ${cardData.description}`;
+    
+    // Handle drag and drop logic
     if (!isOpponent) {
         card.setAttribute('draggable', true);
         card.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('attackerInstanceId', card.dataset.instanceId);
-            // e.dataTransfer.setData('cardId', cardData.id);
         });
     } 
     else {
@@ -117,7 +224,7 @@ function renderTableCard(cardData, cardInstanceId, isOpponent = false) {
             }
         });
     }
-
+    
     return card;
 }
 
@@ -246,25 +353,80 @@ Socket.socket.on('newCards', (cardsToChoose) => {
 });
 
 const newCardsDiv = document.getElementById("newCards");
+
 function renderCardsToChoose(array) {
     console.log(array);
     if(array.length > 0) {
-            array.forEach(cardId => {
+        array.forEach(cardId => {
             const cardData = allCards.find(card => card.id === cardId);
-
             const card = document.createElement('div');
             card.classList.add('card');
             card.dataset.cardId = cardData.id;
-
-            card.innerHTML = `
-                <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
-                <div class="card-name">${cardData.name}</div>
-                <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
+            
+            // Create the main card image
+            const cardImg = document.createElement('img');
+            cardImg.src = cardData.card_img_path || '/image/exampleCard.png';
+            cardImg.alt = cardData.name;
+            cardImg.classList.add('card-img');
+            
+            // Create overlay container for all text elements
+            const cardOverlay = document.createElement("div");
+            cardOverlay.className = "card-overlay";
+            
+            // Stats container
+            const cardStats = document.createElement("div");
+            cardStats.className = "cardStatsChoosen";
+            cardStats.innerHTML = `
+                <div class="cardNameChoosen">${cardData.name}</div>
             `;
+            
+            // Description container
+            const cardDescription = document.createElement("div");
+            cardDescription.className = "cardDescriptionChoosen";
+            cardDescription.innerHTML = `
+                <div class="cardDescriptionStyleChoosen">${cardData.description}</div>
+            `;
+            
+            // Cost container
+            const cardCost = document.createElement("div");
+            cardCost.className = "cardCostChoosen";
+            cardCost.innerHTML = `
+                <div class="cardCostChoosen">${cardData.cost}</div>
+            `;
+            
+            // Attack container
+            const cardAttack = document.createElement("div");
+            cardAttack.className = "cardAttackChoosen";
+            cardAttack.innerHTML = `
+                <div class="cardAttackChoosen">${cardData.attack}</div>
+            `;
+            
+            // HP container
+            const cardHp = document.createElement("div");
+            cardHp.className = "cardHpChoosen";
+            cardHp.innerHTML = `
+                <div class="cardHpChoosen">${cardData.hp}</div>
+            `;
+            
+            // Append all text elements to overlay
+            cardOverlay.appendChild(cardStats);
+            cardOverlay.appendChild(cardDescription);
+            cardOverlay.appendChild(cardCost);
+            cardOverlay.appendChild(cardAttack);
+            cardOverlay.appendChild(cardHp);
+            
+            // Append image and overlay to card
+            card.appendChild(cardImg);
+            card.appendChild(cardOverlay);
+            
+            // Set tooltip
+            card.title = `${cardData.name}: ${cardData.description}`;
+            
+            // Add click event listener
             card.addEventListener("click", () => {
                 Socket.socket.emit("choosenCard", Number(card.dataset.cardId));
-            })
-
+            });
+            
             newCardsDiv.appendChild(card);
         });
         newCardsDiv.style.display = "block";
@@ -318,6 +480,13 @@ Socket.socket.on("matchEnded", ({winnerData, loserData}) => {
         endGameWindow.innerHTML = `<div>You lose! Rating: ${loserData.plusRating} </div>  <div id="back" onclick="window.location.href = '/mainPage'">Back</div>`
     }
 });
+
+const randomCard = document.getElementById("randomCard");
+
+randomCard.addEventListener("click", () => {
+    console.log("click");
+    Socket.socket.emit("giveRandomCard");
+}) 
 
 // Initial render
 renderUserHand();

@@ -12,6 +12,7 @@
     <div id="turnTimer">30</div>
     <button id="endTurn">End Turn</button>
     <button id="giveUpButton">Give Up</button>
+    <div id='randomCard' class="card"><img src="/image/exampleCard.png" alt="" class="card-img"/></div>
     <div class="musicControlContainer">
     <button id="musicToggle" class="music-button">🔊</button>
     <div id="newCards"></div>
@@ -65,28 +66,39 @@
             const toggleBtn = document.getElementById("musicToggle");
             const volumeSlider = document.getElementById("volumeSlider");
             const volumePopup = document.getElementById("volumePopup");
-
-            // Music controls (using in-memory storage instead of localStorage)
-            let savedVolume = 0.5;
-            let savedPlaying = true;
-
+            
+            // Load settings from localStorage or use defaults
+            let savedVolume = localStorage.getItem("musicVolume");
+            let savedPlaying = localStorage.getItem("musicPlaying");
+            
+            if (savedVolume === null) {
+                savedVolume = "0.05"; // default volume
+                localStorage.setItem("musicVolume", savedVolume);
+            }
+            if (savedPlaying === null) {
+                savedPlaying = "true"; 
+                localStorage.setItem("musicPlaying", savedPlaying);
+            }
+            
+            // Initialize music settings
+            music.load();
             music.volume = parseFloat(savedVolume);
             volumeSlider.value = savedVolume;
-
-            let isMuted = !savedPlaying;
-
+            let isMuted = savedPlaying !== "true";
+            
             const updateIcon = () => {
                 toggleBtn.textContent = isMuted ? "🔈" : (music.volume == 0 ? "🔈" : "🔊");
             };
-
+            
+            // Hover popup functionality
             let isOverButton = false;
             let isOverPopup = false;
-
+            
             toggleBtn.addEventListener("mouseenter", () => {
                 isOverButton = true;
                 volumePopup.classList.remove("hidden");
             });
-
+            
             toggleBtn.addEventListener("mouseleave", () => {
                 isOverButton = false;
                 setTimeout(() => {
@@ -95,12 +107,12 @@
                     }
                 }, 100);
             });
-
+            
             volumePopup.addEventListener("mouseenter", () => {
                 isOverPopup = true;
                 volumePopup.classList.remove("hidden");
             });
-
+            
             volumePopup.addEventListener("mouseleave", () => {
                 isOverPopup = false;
                 setTimeout(() => {
@@ -109,38 +121,48 @@
                     }
                 }, 100);
             });
-
+            
+            // Toggle music on/off
             toggleBtn.addEventListener("click", () => {
                 isMuted = !isMuted;
                 if (isMuted) {
                     music.pause();
-                    savedPlaying = false;
+                    localStorage.setItem("musicPlaying", "false");
                 } else {
                     music.play().catch(err => console.warn("Playback failed:", err));
-                    savedPlaying = true;
+                    localStorage.setItem("musicPlaying", "true");
                 }
                 updateIcon();
             });
-
+            
+            // Volume control
             volumeSlider.addEventListener("input", () => {
                 const volume = parseFloat(volumeSlider.value);
                 music.volume = volume;
-                savedVolume = volume;
+                localStorage.setItem("musicVolume", volume.toString());
                 updateIcon();
             });
-
+            
+            // Audio unlock for autoplay restrictions
             const unlockAudio = () => {
-                if (savedPlaying) {
-                    music.play().catch(err => console.warn("Autoplay blocked:", err));
+                if (localStorage.getItem("musicPlaying") === "true") {
+                    music.play().then(() => {
+                        isMuted = false;
+                        updateIcon();
+                    }).catch(err => {
+                        console.warn("Autoplay blocked:", err);
+                    });
                 }
                 document.removeEventListener("click", unlockAudio);
             };
+            
             document.addEventListener("click", unlockAudio, { once: true });
-
-            if (!isMuted && savedPlaying) {
+            
+            // Initialize music playback
+            if (!isMuted && localStorage.getItem("musicPlaying") === "true") {
                 music.play().catch(() => {});
             }
-
+            
             updateIcon();
         });
     </script>

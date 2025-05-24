@@ -122,32 +122,60 @@ let inactiveCards = [];
 function renderMainGrid() {
     const cardsGrid = document.getElementById("cardsGrid");
     cardsGrid.innerHTML = ""; // Clear existing cards
-    
-    // Add active cards to the main grid
+
     activeCards.forEach((card) => {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card";
-        cardDiv.style.backgroundImage = card.image_url ? 
-            `url('${card.image_url}')` : 
-            `url('/image/exampleCard.png')`;
+        if (card.card_img_path) {
+            cardDiv.style.backgroundImage = `url('${card.card_img_path}')`;
+        }
         cardDiv.dataset.cardId = card.id;
-        
-        // Add card stats overlay
+
+        // Stats container
         const cardStats = document.createElement("div");
         cardStats.className = "cardStats";
         cardStats.innerHTML = `
             <div class="cardName">${card.name}</div>
+        `;
+
+        // Description container
+        const cardDescription = document.createElement("div");
+        cardDescription.className = "cardDescription";
+        cardDescription.innerHTML = `
+            <div class="cardDescriptionStyle">${card.description}</div>
+        `;
+
+        const cardCost = document.createElement("div");
+        cardCost.className = "cardCost";
+        cardCost.innerHTML = `
             <div class="cardCost">${card.cost}</div>
+        `;
+
+        const cardAttack = document.createElement("div");
+        cardAttack.className = "cardAttack";
+        cardAttack.innerHTML = `
             <div class="cardAttack">${card.attack}</div>
+        `;
+
+        const cardHp = document.createElement("div");
+        cardHp.className = "cardHp";
+        cardHp.innerHTML = `
             <div class="cardHp">${card.hp}</div>
         `;
+
+        // Append to card
         cardDiv.appendChild(cardStats);
-        
+        cardDiv.appendChild(cardDescription);
+        cardDiv.appendChild(cardCost);
+        cardDiv.appendChild(cardAttack);
+        cardDiv.appendChild(cardHp);
+
+
         cardDiv.title = `${card.name}: ${card.description}`;
         cardsGrid.appendChild(cardDiv);
     });
-    
-    // If we have fewer than 12 active cards, fill with empty slots
+
+    // Fill up to 12 cards
     const emptySlots = 12 - activeCards.length;
     for (let i = 0; i < emptySlots; i++) {
         const emptyCard = document.createElement("div");
@@ -156,61 +184,107 @@ function renderMainGrid() {
     }
 }
 
+
 // Render both active and inactive cards in the deck modal
 function renderDeckModal() {
     const activeGrid = document.getElementById("activeCardGrid");
     const inactiveList = document.getElementById("inactiveCardList");
-
     // Clear previous content
     activeGrid.innerHTML = "";
     inactiveList.innerHTML = "";
-
+    
     // Render active cards
     activeCards.forEach((card, index) => {
         const cardElement = document.createElement("div");
         cardElement.className = "cardItem";
         cardElement.innerHTML = `
-            <img src="${card.image_url || '/image/exampleCard.png'}" alt="${card.name}">
+            <img src="${card.card_img_path || '/image/exampleCard.png'}" alt="${card.name}">
             <div class="cardDetails">
-                <span class="cardName">${card.name}</span>
-                <div class="cardStats">
-                    <span class="statItem cost">Cost: ${card.cost}</span>
-                    <span class="statItem attack">ATK: ${card.attack}</span>
-                    <span class="statItem hp">DEF: ${card.hp}</span>
-                </div>
-                <span class="cardDescription">${card.description}</span>
+                <span class="cardNameinDeck">${card.name}</span>
             </div>
             <button class="removeCard" data-index="${index}"${window.isDeckBlocked ? ' disabled' : ''}>✖</button>
         `;
+        
+        // Create and append description
+        const cardDescriptioninDeck = document.createElement("div");
+        cardDescriptioninDeck.className = "cardDescriptioninDeck";
+        cardDescriptioninDeck.innerHTML = `
+            <div class="cardDescriptionStyleinDeck">${card.description}</div>
+        `;
+        
+        // Create and append cost
+        const cardCostinDeck = document.createElement("div");
+        cardCostinDeck.className = "cardCostinDeck";
+        cardCostinDeck.innerHTML = `${card.cost}`;
+        
+        // Create and append attack
+        const cardAttackinDeck = document.createElement("div");
+        cardAttackinDeck.className = "cardAttackinDeck";
+        cardAttackinDeck.innerHTML = `${card.attack}`;
+        
+        // Create and append HP
+        const cardHpinDeck = document.createElement("div");
+        cardHpinDeck.className = "cardHpinDeck";
+        cardHpinDeck.innerHTML = `${card.hp}`;
+        
+        // Append all elements to the card element (not to the grid)
+        cardElement.appendChild(cardDescriptioninDeck);
+        cardElement.appendChild(cardCostinDeck);
+        cardElement.appendChild(cardAttackinDeck);
+        cardElement.appendChild(cardHpinDeck);
+        
+        // Now append the complete card to the grid
         activeGrid.appendChild(cardElement);
     });
-
+    
     // Render inactive cards
     inactiveCards.forEach((card, index) => {
         const cardElement = document.createElement("div");
         cardElement.className = "cardItem";
         cardElement.innerHTML = `
-            <img src="${card.image_url || '/image/exampleCard.png'}" alt="${card.name}">
+            <img src="${card.card_img_path || '/image/exampleCard.png'}" alt="${card.name}">
             <div class="cardDetails">
-                <span class="cardName">${card.name}</span>
-                <div class="cardStats">
-                    <span class="statItem cost">Cost: ${card.cost}</span>
-                    <span class="statItem attack">ATK: ${card.attack}</span>
-                    <span class="statItem hp">DEF: ${card.hp}</span>
-                </div>
-                <span class="cardDescription">${card.description}</span>
+                <span class="cardNameinDeck">${card.name}</span>
             </div>
             <button class="addCard" data-index="${index}"${window.isDeckBlocked ? ' disabled' : ''}>＋</button>
         `;
+        // Create and append description
+        const cardDescriptioninDeck = document.createElement("div");
+        cardDescriptioninDeck.className = "cardDescriptioninDeck";
+        cardDescriptioninDeck.innerHTML = `
+            <div class="cardDescriptionStyleinDeck">${card.description}</div>
+        `;
+        
+        // Create and append cost
+        const cardCostinDeck = document.createElement("div");
+        cardCostinDeck.className = "cardCostinDeck";
+        cardCostinDeck.innerHTML = `${card.cost}`;
+        
+        // Create and append attack
+        const cardAttackinDeck = document.createElement("div");
+        cardAttackinDeck.className = "cardAttackinDeck";
+        cardAttackinDeck.innerHTML = `${card.attack}`;
+        
+        // Create and append HP
+        const cardHpinDeck = document.createElement("div");
+        cardHpinDeck.className = "cardHpinDeck";
+        cardHpinDeck.innerHTML = `${card.hp}`;
+        
+        // Append all elements to the card element (not to the grid)
+        cardElement.appendChild(cardDescriptioninDeck);
+        cardElement.appendChild(cardCostinDeck);
+        cardElement.appendChild(cardAttackinDeck);
+        cardElement.appendChild(cardHpinDeck);
+        
         inactiveList.appendChild(cardElement);
     });
-
+    
     // Update the Clear Deck button state
     const clearDeckBtn = document.getElementById('clearDeck');
     if (clearDeckBtn) {
         clearDeckBtn.disabled = window.isDeckBlocked;
     }
-
+    
     // Save deck state to localStorage for persistence
     saveCardState();
 }

@@ -71,6 +71,7 @@ class Socket {
             socket.on('cardAttack', ({ attackerInstanceId, defenderInstanceId }) => this.cardAttack(socket, attackerInstanceId, defenderInstanceId));
             socket.on('opponentAttacked', (cardId) => this.opponentAttacked(socket, cardId));
             socket.on('choosenCard', (cardId) => this.choosenCard(socket, cardId));
+            socket.on('giveRandomCard', () => this.giveRandomCard(socket));
             socket.on('endTurn', (roomId) => {
                 const battle = this.battles.get(roomId);
                 if(battle && socket.handshake.session.user.id === battle.current_turn_player_id) {
@@ -89,9 +90,6 @@ class Socket {
                     if (room) {
                         room.socketIds = room.socketIds.filter(id => id !== socket.id);
                         socket.to(user.roomId).emit('opponentDisconnected');
-                        // room.disconnectTimeout = setTimeout(() => {
-                        //     this.destroyRoom(user.roomId);
-                        // }, 60000);
                     }
                 }
 
@@ -269,10 +267,6 @@ class Socket {
                 this.io.to(user.roomId).emit('userReconnected', { user });
                 const room = this.rooms.get(user.roomId);
                 room.socketIds.push(socket.id);
-                // if (room.disconnectTimeout) {
-                //     clearTimeout(room.disconnectTimeout);
-                //     delete room.disconnectTimeout;
-                // }
                 console.log(`${user.login} rejoined ${user.roomId}`);
             }
         }
@@ -326,98 +320,103 @@ class Socket {
         socket.emit("newMana", newMana);
     }
 
-static startTurn(roomId) {
-    const room = this.rooms.get(roomId);
-    const battle = this.battles.get(roomId);
+    static startTurn(roomId) {
+        const room = this.rooms.get(roomId);
+        const battle = this.battles.get(roomId);
 
-    if(!battle || !room) {
-        console.log("battle not found");
-        return;
-    }
+        if(!battle || !room) {
+            console.log("battle not found");
+            return;
+        }
 
-    const playerId = battle.current_turn_player_id;
-    const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
+        const playerId = battle.current_turn_player_id;
+        const who = battle.player1.userData.id === playerId ? 'player1' : 'player2';
 
-    battle[who].tableCards.forEach(card => {
-        card.canAttack = true;
-    });
+        battle[who].tableCards.forEach(card => {
+            card.canAttack = true;
+        });
 
-    let userSocket = null;
-    let opponentSocket = null;
-    for (const socketId of room.socketIds) {
-        let socket = this.io.sockets.sockets.get(socketId);
-        if(socket) {
-            if (socket?.handshake.session.user.id === playerId) {
-                userSocket = socket;
-            }
-            else {
-                opponentSocket = socket;
+        let userSocket = null;
+        let opponentSocket = null;
+        for (const socketId of room.socketIds) {
+            let socket = this.io.sockets.sockets.get(socketId);
+            if(socket) {
+                if (socket?.handshake.session.user.id === playerId) {
+                    userSocket = socket;
+                }
+                else {
+                    opponentSocket = socket;
+                }
             }
         }
+
+        room.turn++;
+
+        if(room.turn > 2 && userSocket && opponentSocket) {
+            const arrayLen = (battle[who].cardsToChoose).length;
+            if(arrayLen > 0) {
+                const newRandomCardID = battle[who].cardsToChoose[Math.floor(Math.random() * arrayLen)]
+                battle[who].handCards.push(newRandomCardID);
+                userSocket.emit("newHandCard", newRandomCardID);
+                opponentSocket.emit("newOpponentHandCard");
+                battle[who].cardsToChoose = [];
+            }
+
+            const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
+            battle[who].cardsToChoose = cardsToChoose;
+            userSocket.emit("newCards", cardsToChoose);
+
+            const supposeMana = battle[who].mana + Math.floor(room.turn / 2) + 4;
+            battle[who].mana = supposeMana > 10 ? 10 : supposeMana;
+            userSocket.emit("newMana", battle[who].mana);     
+        }
+
+        this.io.to(roomId).emit("turnStarted", {
+            currentPlayerId: playerId,
+            timeLimit: 30, 
+        });
+
+        console.log("turn started!");
+
+        if (room.turnTimeout) {
+            clearTimeout(room.turnTimeout);
+        }
+
+        room.turnTimeout = setTimeout(() => {
+            this.endTurn(roomId);
+        }, 30000);   
     }
 
-    room.turn++;
+    static choosenCard(socket, cardId) {
+        const user = socket.handshake.session.user
 
-    if(room.turn > 2 && userSocket && opponentSocket) {
-        const arrayLen = (battle[who].cardsToChoose).length;
-        if(arrayLen > 0) {
-            const newRandomCardID = battle[who].cardsToChoose[Math.floor(Math.random() * arrayLen)]
-            battle[who].handCards.push(newRandomCardID);
-            userSocket.emit("newHandCard", newRandomCardID);
-            opponentSocket.emit("newOpponentHandCard");
+        if(!user) {
+            console.log("user not found");
+            return;
+        }
+
+        const roomId = user.roomId;
+        const room = this.rooms.get(roomId);
+        const battle = this.battles.get(roomId);
+
+        if(!battle || !room) {
+            console.log("battle not found");
+            return;
+        }
+
+        const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+
+        if(battle[who].cardsToChoose.includes(cardId)) {
+            console.log("choosenCard");
             battle[who].cardsToChoose = [];
+            battle[who].handCards.push(cardId);
+            socket.emit("newHandCard", cardId);
+            const opponentSocketId = room.socketIds.find(socketId => socketId !== socket.id);
+            if (opponentSocketId) {
+                this.io.to(opponentSocketId).emit("newOpponentHandCard");
+            }
         }
-
-        const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
-        battle[who].cardsToChoose = cardsToChoose;
-        userSocket.emit("newCards", cardsToChoose);
-
-        const supposeMana = battle[who].mana + Math.floor(room.turn / 2) + 4;
-        battle[who].mana = supposeMana > 10 ? 10 : supposeMana;
-        userSocket.emit("newMana", battle[who].mana);     
     }
-
-    this.io.to(roomId).emit("turnStarted", {
-        currentPlayerId: playerId,
-        timeLimit: 30, 
-    });
-
-    console.log("turn started!");
-
-    if (room.turnTimeout) {
-        clearTimeout(room.turnTimeout);
-    }
-
-    room.turnTimeout = setTimeout(() => {
-        this.endTurn(roomId);
-    }, 30000);   
-}
-
-static choosenCard(socket, cardId) {
-    const user = socket.handshake.session.user
-
-    if(!user) {
-        console.log("user not found");
-        return;
-    }
-
-    const roomId = user.roomId;
-    const battle = this.battles.get(roomId);
-
-    if(!battle) {
-        console.log("battle not found");
-        return;
-    }
-
-    const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
-
-    if(battle[who].cardsToChoose.includes(cardId)) {
-        console.log("choosenCard");
-        battle[who].cardsToChoose = [];
-        battle[who].handCards.push(cardId);
-        socket.emit("newHandCard", cardId);
-    }
-}
 
     static endTurn(roomId) {
         const room = this.rooms.get(roomId);
@@ -433,6 +432,40 @@ static choosenCard(socket, cardId) {
 
         battle.current_turn_player_id = nextPlayerId;
         this.startTurn(roomId);
+    }
+
+    static giveRandomCard(socket) {
+        const user = socket.handshake.session.user
+
+        if(!user) {
+            console.log("user not found");
+            return;
+        }
+
+        const roomId = user.roomId;
+        const room = this.rooms.get(roomId);
+        const battle = this.battles.get(roomId);
+
+        if(!battle || !room) {
+            console.log("battle not found");
+            return;
+        }
+
+        const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+
+        if(battle[who].mana >= 3) {
+            battle[who].mana -= 3;
+            const newRandomCardID = battle[who].deck[Math.floor(Math.random() * battle[who].deck.length)];
+            battle[who].handCards.push(newRandomCardID);
+
+            socket.emit("newMana", battle[who].mana);
+            socket.emit("newHandCard", newRandomCardID);
+
+            const opponentSocketId = room.socketIds.find(socketId => socketId !== socket.id);
+            if (opponentSocketId) {
+                this.io.to(opponentSocketId).emit("newOpponentHandCard");
+            }
+        }
     }
 
     static cardAttack(socket, attackerInstanceId, defenderInstanceId) {
