@@ -72,12 +72,59 @@ function renderHandCard(cardData) {
     card.setAttribute('draggable', true);
     card.dataset.cardId = cardData.id;
 
-    card.innerHTML = `
-        <img src="${cardData.card_img_path || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
-        <div class="card-name">${cardData.name}</div>
-        <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
+    // Create card container with relative positioning
+    const cardContainer = document.createElement('div');
+    cardContainer.classList.add('card-container');
+
+    // Create the main card image
+    const cardImg = document.createElement('img');
+    cardImg.src = cardData.card_img_path || '/image/exampleCard.png';
+    cardImg.alt = cardData.name;
+    cardImg.classList.add('card-img');
+
+    // Create overlay elements
+    const overlayContainer = document.createElement('div');
+    overlayContainer.classList.add('card-overlay');
+
+    // Stats container
+    const cardStats = document.createElement("div");
+    cardStats.className = "cardStats";
+    cardStats.innerHTML = `
+        <div class="cardName">${card.name}</div>
     `;
 
+    // Description container
+    const cardDescription = document.createElement("div");
+    cardDescription.className = "cardDescription";
+    cardDescription.innerHTML = `
+        <div class="cardDescriptionStyle">${card.description}</div>
+    `;
+
+    const cardCost = document.createElement("div");
+    cardCost.className = "cardCost";
+    cardCost.innerHTML = `
+        <div class="cardCost">${card.cost}</div>
+    `;
+
+    const cardAttack = document.createElement("div");
+    cardAttack.className = "cardAttack";
+    cardAttack.innerHTML = `
+        <div class="cardAttack">${card.attack}</div>
+    `;
+
+    const cardHp = document.createElement("div");
+    cardHp.className = "cardHp";
+    cardHp.innerHTML = `
+        <div class="cardHp">${card.hp}</div>
+    `;
+
+    // Assemble the card
+    cardContainer.appendChild(cardImg);
+    cardContainer.appendChild(overlayContainer);
+    card.appendChild(cardContainer);
+    card.appendChild(cardStats);
+
+    // Add drag event listener
     card.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('cardId', cardData.id);
     });
