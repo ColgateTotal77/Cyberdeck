@@ -73,7 +73,7 @@ function renderHandCard(cardData) {
     card.dataset.cardId = cardData.id;
 
     card.innerHTML = `
-        <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
+        <img src="${cardData.card_img_path || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
         <div class="card-name">${cardData.name}</div>
         <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
     `;
@@ -92,7 +92,7 @@ function renderTableCard(cardData, cardInstanceId, isOpponent = false) {
     card.dataset.instanceId = cardInstanceId;
 
     card.innerHTML = `
-        <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
+        <img src="${cardData.card_img_path || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
         <div class="card-name">${cardData.name}</div>
         <div class="card-hp">HP: ${cardData.hp} ATK: ${cardData.attack}</div>
     `;
@@ -257,7 +257,7 @@ function renderCardsToChoose(array) {
             card.dataset.cardId = cardData.id;
 
             card.innerHTML = `
-                <img src="${cardData.image_url || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
+                <img src="${cardData.card_img_path || '/image/exampleCard.png'}" alt="${cardData.name}" class="card-img" />
                 <div class="card-name">${cardData.name}</div>
                 <div class="card-hp">HP: ${cardData.hp ?? 'N/A'}</div>
             `;

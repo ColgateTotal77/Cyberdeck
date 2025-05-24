@@ -127,8 +127,8 @@ function renderMainGrid() {
     activeCards.forEach((card) => {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card";
-        cardDiv.style.backgroundImage = card.image_url ? 
-            `url('${card.image_url}')` : 
+        cardDiv.style.backgroundImage = card.card_img_path ? 
+            `url('${card.card_img_path}')` : 
             `url('/image/exampleCard.png')`;
         cardDiv.dataset.cardId = card.id;
         
@@ -170,7 +170,7 @@ function renderDeckModal() {
         const cardElement = document.createElement("div");
         cardElement.className = "cardItem";
         cardElement.innerHTML = `
-            <img src="${card.image_url || '/image/exampleCard.png'}" alt="${card.name}">
+            <img src="${card.card_img_path || '/image/exampleCard.png'}" alt="${card.name}">
             <div class="cardDetails">
                 <span class="cardName">${card.name}</span>
                 <div class="cardStats">
@@ -190,7 +190,7 @@ function renderDeckModal() {
         const cardElement = document.createElement("div");
         cardElement.className = "cardItem";
         cardElement.innerHTML = `
-            <img src="${card.image_url || '/image/exampleCard.png'}" alt="${card.name}">
+            <img src="${card.card_img_path || '/image/exampleCard.png'}" alt="${card.name}">
             <div class="cardDetails">
                 <span class="cardName">${card.name}</span>
                 <div class="cardStats">
