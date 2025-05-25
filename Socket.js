@@ -77,6 +77,9 @@ class Socket {
                 if(battle && socket.handshake.session.user.id === battle.current_turn_player_id) {
                     this.endTurn(roomId);
                 }
+                else {
+                    socket.emit("notification", { message: "Not your turn", isError: true });
+                }
             });
 
             socket.on('cancelMatch', () => this.cancelMatch(socket));
@@ -126,6 +129,7 @@ class Socket {
         if(!checkDeckBeforeStart(deck, this.allCardsId)) {
             console.log("deck problems, matchCancelled");
             socket.emit('matchCancelled');
+            socket.emit("notification", { message: "Fill in the deck", isError: false });
             return;
         }
         
@@ -218,6 +222,7 @@ class Socket {
         const opponentSocket = this.io.sockets.sockets.get(opponent.socket_id);
         if (!opponentSocket) {
             console.warn(`Opponent socket not found: ${opponent.socket_id}`);
+            this.findMatch(user_socket, user_socket.handshake.session.deck);
             return;
         }
 
@@ -264,7 +269,6 @@ class Socket {
         if (user && user.roomId) {
             if(this.rooms.has(user.roomId)) {
                 socket.join(user.roomId);
-                this.io.to(user.roomId).emit('userReconnected', { user });
                 const room = this.rooms.get(user.roomId);
                 room.socketIds.push(socket.id);
                 console.log(`${user.login} rejoined ${user.roomId}`);
@@ -277,6 +281,7 @@ class Socket {
         const roomId = user.roomId;
         if (!user || !cardId){
             console.log("!user || !cardId");
+            socket.emit("notification", { message: "Card is not found", isError: true });
             return;
         }
         const battle = this.battles.get(roomId);
@@ -289,17 +294,20 @@ class Socket {
 
         if (battle.current_turn_player_id !== user.id){ 
             console.log("Not this player's turn");
+            socket.emit("notification", { message: "Not your turn", isError: true });
             return;
         }
 
         const cardIndex = battle[who].handCards.indexOf(cardId);
         if (cardIndex === -1) {
             console.log("cardIndex === -1");
+            socket.emit("notification", { message: "Card is not found", isError: true });
             return;
         }
         const card = this.allCards.get(cardId);
         const newMana = battle[who].mana - card.cost;
         if(newMana < 0) {
+            socket.emit("notification", { message: "Not enough mana", isError: true });
             return;
         }
 
@@ -400,7 +408,6 @@ class Socket {
         const battle = this.battles.get(roomId);
 
         if(!battle || !room) {
-            console.log("battle not found");
             return;
         }
 
@@ -423,7 +430,6 @@ class Socket {
         const battle = this.battles.get(roomId);
 
         if(!battle || !room) {
-            console.log("battle not found");
             return;
         }
 
@@ -447,7 +453,6 @@ class Socket {
         const battle = this.battles.get(roomId);
 
         if(!battle || !room) {
-            console.log("battle not found");
             return;
         }
 
@@ -479,12 +484,11 @@ class Socket {
 
         const battle = this.battles.get(roomId);
         if (!battle) {
-            console.log("Battle not found");
             return;
         }
 
         if (battle.current_turn_player_id !== user.id) {
-            console.log("Not this player's turn");
+            console.log("Not your turn");
             return;
         }
 
@@ -496,11 +500,12 @@ class Socket {
 
         if (!attackerCard || !defenderCard) {
             console.log("!attackerCard || !defenderCard");
+            socket.emit("notification", { message: "Cards not found", isError: true });
             return;
         }
 
         if(!attackerCard.canAttack) {
-            console.log("Card has already attacked!");
+            socket.emit("notification", { message: "Card has already attacked!", isError: true });
             return;
         }
         attackerCard.canAttack = false;
@@ -524,18 +529,16 @@ class Socket {
         const user = socket.handshake.session.user;
         const roomId = user.roomId;
         if (!user || !roomId) {
-            console.log("!user || !roomId");
             return;
         }
 
         const battle = this.battles.get(roomId);
         if (!battle) {
-            console.log("Battle not found");
             return;
         }
 
         if (battle.current_turn_player_id !== user.id) {
-            console.log("Not this player's turn");
+            socket.emit("notification", { message: "Not your turn", isError: true });
             return;
         }
 
@@ -546,7 +549,7 @@ class Socket {
 
         if(card) {
             if(!card.canAttack) {
-                console.log("Card has already attacked!");
+                socket.emit("notification", { message: "Card has already attacked!", isError: true });
                 return;
             }
             card.canAttack = false;
@@ -586,7 +589,6 @@ class Socket {
         }
         const battle = this.battles.get(roomId);
         if(!battle) {
-            console.log("battle is undefined")
             return;
         }
 
@@ -598,28 +600,32 @@ class Socket {
     }
 
     static async matchEnded(roomId, winner, loser) {
-        const ratingForWinner = calculateRatingChange(winner.rating, loser.rating, true);
-        const ratingForLoser = calculateRatingChange(loser.rating, winner.rating, false);
+        const winnerData = new User();
+        await winnerData.find(winner.id);
+
+        const loserData = new User();
+        await loserData.find(loser.id);
+
+        const ratingForWinner = calculateRatingChange(winnerData.rating, loserData.rating, true);
+        const ratingForLoser = calculateRatingChange(loserData.rating, winnerData.rating, false);
 
         this.io.to(roomId).emit('matchEnded', {
             winnerData: { userId: winner.id, plusRating: ratingForWinner }, 
             loserData: { userId: loser.id, plusRating: ratingForLoser }
         });  
 
-        const winnerData = new User();
-        await winnerData.find(winner.id);
-        winnerData.rating += ratingForWinner;
+        const newWinnerRating = winnerData.rating + ratingForWinner;
+        winnerData.rating = newWinnerRating;
         await winnerData.save();
 
-        const loserData = new User();
-        await loserData.find(loser.id);
-        loserData.rating += ratingForLoser;
+        const newLoserRating = loserData.rating + ratingForLoser;
+        loserData.rating = newLoserRating < 1 ? 1 : newLoserRating;
         await loserData.save();
 
         this.destroyRoom(roomId, winner.id, ratingForWinner, ratingForLoser);
     }
 
-    static destroyRoom(roomId, winnerId, ratingForWinner, ratingForLoser) {
+    static destroyRoom(roomId, winnerId, newWinnerRating, newLoserRating) {
         console.log("destroyRoom");
         const roomSocket = this.io.sockets.adapter.rooms.get(roomId);
         const room = this.rooms.get(roomId);
@@ -636,9 +642,9 @@ class Socket {
             const user = socket.handshake.session?.user;
             if (user) {
                 if (user.id === winnerId) {
-                    user.rating += ratingForWinner;
+                    user.rating = newWinnerRating;
                 } else {
-                    user.rating += ratingForLoser;
+                    user.rating = newLoserRating;
                 }
                 
                 delete user.roomId;
@@ -647,7 +653,7 @@ class Socket {
             socket.leave(roomId);
         }
 
-        Game.setEndGame(room.gameId, winnerId, ratingForWinner, ratingForLoser);
+        Game.setEndGame(room.gameId, winnerId, newWinnerRating, newLoserRating);
         this.io.to(roomId).socketsLeave(roomId); 
         this.rooms.delete(roomId);
         this.battles.delete(roomId);

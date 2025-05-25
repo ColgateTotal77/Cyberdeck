@@ -1,4 +1,5 @@
 import { Socket } from './battlePageClient.js'
+import { Notifications } from './Notifications.js';
 
 const dataObj = await fetch('/api/getBattleInfo').then(res => res.json());
 const allCards = await fetch('/api/getAllCards').then(res => res.json());
@@ -499,6 +500,10 @@ randomCard.addEventListener("click", () => {
     console.log("click");
     Socket.socket.emit("giveRandomCard");
 }) 
+
+Socket.socket.on("notification", ({message, isError}) => {
+    Notifications.showNotification(message, isError);
+});
 
 // Initial render
 renderUserHand();

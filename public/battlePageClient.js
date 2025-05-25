@@ -14,10 +14,6 @@ Socket.socket.on('connect', () => {
     Socket.socket.emit('reconnectToRoom');
 });
 
-Socket.socket.on('userReconnected', ({ user }) => {
-    console.log(`${user.login} has rejoined the room`);
-});
-
 Socket.socket.on('opponentDisconnected', () => {
     console.log('Your opponent has disconnected.');
 });
