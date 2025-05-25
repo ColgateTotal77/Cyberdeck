@@ -116,6 +116,7 @@ body::after {
     grid-template-rows: 40% 60%;
     width: fit-content;
     margin: 0 auto;
+    justify-items: center; 
 }
 
 #userData, #opponentData {
@@ -134,13 +135,12 @@ body::after {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
-    padding: 20px;
-    min-height: 180px;
-    align-items: flex-start;
-    justify-content: flex-start;
+    padding: 2px;
+    min-height: 166px;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Make user table align perfectly with the green border */
 #userTable {
     border-top: none;
     margin-top: -2px;
@@ -148,7 +148,6 @@ body::after {
     border-top-right-radius: 0;
 }
 
-/* Make opponent table align perfectly with the pink border */
 #opponentTable {
     border-bottom: none;
     margin-bottom: -2px;
@@ -422,16 +421,16 @@ body::after {
 
 .cardAttackChoosen{
     font-family: 'FatCatRegular', sans-serif;
-    font-size: 12px;
-    position: absolute;
-    top: 91%;
-    left: 16%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 5px 10px;
-    color: white;
+  font-size: 12px;
+  position: absolute;
+  top: 91%;
+  left: 16%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  color: white;
 }
 .cardCostChoosen{
     font-family: 'FatCatRegular', sans-serif;
@@ -822,7 +821,6 @@ button:active {
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 5px;
-    margin-left: 5px;
 }
 
 /* Cyberpunk Grid Overlay */
