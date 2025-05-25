@@ -176,7 +176,7 @@ body {
 
 .cardName{
   font-family: 'FatCatRegular', sans-serif;
-  font-size: 13px;
+  font-size: 0.85vw;
   font-weight: bold;
   color: #f65351;
   text-align: center;        /* Horizontally center text */
@@ -187,7 +187,7 @@ body {
 
 .cardStats {
   position: absolute;
-  top: 57%;
+  top: 57%; 
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -210,7 +210,7 @@ body {
 
 .cardDescriptionStyle{
   font-family: 'FatCatRegular', sans-serif;
-  font-size: 10px;
+  font-size: 0.5vw;
   font-weight: bold;
   color: #f65351;
   text-align: center;        /* Horizontally center text */
@@ -219,7 +219,7 @@ body {
 }
 
 .cardAttack{
-  font-size: 20px;
+  font-size: 1.5vw;
   position: absolute;
   top: 92%;
   left: 15%;
@@ -231,7 +231,7 @@ body {
   color: white;
 }
 .cardCost{
-  font-size: 20px;
+  font-size: 1.5vw;
   position: absolute;
   top: 6%;
   left: 12%;
@@ -243,7 +243,7 @@ body {
   color: white;
 }
 .cardHp{
-  font-size: 20px;
+  font-size: 1.5vw;
   position: absolute;
   top: 92%;
   left: 85%;
@@ -256,7 +256,7 @@ body {
 }
 .cardNameinDeck{
   font-family: 'FatCatRegular', sans-serif;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: bold;
   color: #f65351;
   text-align: center;        /* Horizontally center text */
@@ -300,7 +300,7 @@ body {
 }
 
 .cardCostinDeck{
-  font-size: 15px;
+  font-size: 18px;
   position: absolute;
   top: 9%;
   left: 14%;
@@ -313,7 +313,7 @@ body {
 }
 
 .cardAttackinDeck{
-  font-size: 15px;
+  font-size: 18px;
   position: absolute;
   top: 75%;
   left: 16%;
@@ -326,7 +326,7 @@ body {
 }
 
 .cardHpinDeck{
-  font-size: 15px;
+  font-size: 18px;
   position: absolute;
   top: 75%;
   left: 84%;
