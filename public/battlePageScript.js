@@ -472,13 +472,25 @@ Socket.socket.on("userHpDecrease", ({defeanserId, newHp}) => {
 });
 
 const endGameWindow = document.getElementById("endGameWindow");
-Socket.socket.on("matchEnded", ({winnerData, loserData}) => {
-    if(winnerData.userId === userId) {
-        endGameWindow.innerHTML = `<div>You win! Rating: ${winnerData.plusRating} </div>  <div id="back" onclick="window.location.href = '/mainPage'">Back</div>`
-    }
-    else {
-        endGameWindow.innerHTML = `<div>You lose! Rating: ${loserData.plusRating} </div>  <div id="back" onclick="window.location.href = '/mainPage'">Back</div>`
-    }
+endGameWindow.style.display = "none"; // hidden by default
+
+Socket.socket.on("matchEnded", ({ winnerData, loserData }) => {
+    const isWinner = winnerData.userId === userId;
+    const resultText = isWinner ? "YOU WIN" : "YOU LOSE";
+    const rating = isWinner ? winnerData.plusRating : loserData.plusRating;
+
+    endGameWindow.innerHTML = `
+        <div class="end-game-content">
+            <h1 class="cyber-title">${resultText}</h1>
+            <p class="cyber-rating">Rating: <span>${rating}</span></p>
+            <button id="backButton" class="cyber-btn">⬅ BACK TO MAIN</button>
+        </div>
+    `;
+    endGameWindow.style.display = "flex";
+
+    document.getElementById("backButton").addEventListener("click", () => {
+        window.location.href = "/mainPage";
+    });
 });
 
 const randomCard = document.getElementById("randomCard");
