@@ -325,6 +325,8 @@ body::after {
   justify-content: center;
   align-items: center;
   padding: 5px 10px;
+  height: 100px;
+  width: 100px;
 }
 
 .cardDescriptionStyle{
@@ -401,22 +403,25 @@ body::after {
 }
 
 .cardDescriptionChoosen {
-    position: absolute;
-    top: 66%;  /* Move up slightly */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 66%;
-    height: 20px;  /* Fixed height */
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  height: 100px;
+  width: 100px;
 }
 
 .cardDescriptionStyleChoosen{
   font-family: 'FatCatRegular', sans-serif;
-  font-size: 6px;
+  font-size: 4px;
   font-weight: bold;
   color: #f65351;
   text-align: center;        /* Horizontally center text */
-  width: 100%;               /* Make it span the card width */
-  margin: 10px 0;            /* Some spacing above and below */
+  width: 100%;               /* Make it span the card width */    
 }
 
 .cardAttackChoosen{

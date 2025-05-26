@@ -213,7 +213,7 @@ body {
 
 .cardDescription {
   position: absolute;
-  top: 79%;
+  top: 87%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -224,15 +224,12 @@ body {
 
 .cardDescriptionStyle {
   font-family: 'FatCatRegular', sans-serif;
-  font-size: 0.5vw;
+  font-size: 0.45vw;
   font-weight: bold;
   color: #f65351;
   text-align: center;
-  /* Horizontally center text */
-  width: 100%;
-  /* Make it span the card width */
-  margin: 10px 0;
-  /* Some spacing above and below */
+  height: 5vw;
+  width: 7.5vw;
 }
 
 .cardAttack{
