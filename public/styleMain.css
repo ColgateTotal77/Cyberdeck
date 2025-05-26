@@ -60,12 +60,13 @@ body {
 
 .change-button {
   position: absolute;
-  top: 110px;
+  top: 53px;
+
   /* Adjust vertical position as needed */
-  left: 50%;
+  left: 65%;
   transform: translateX(-50%);
 
-  width: 48px;
+  width: 12px;
   /* Size of the button */
   height: 48px;
 
@@ -182,13 +183,13 @@ body {
 
 @font-face {
   font-family: 'FatCatRegular';
-  src: url('/fonts/FatCatRegular.ttf') format('truetype');
+  src: url('/fonts/FatCatRegular.otf') format('truetype');
 }
 
 .cardName {
   font-family: 'FatCatRegular', sans-serif;
   font-size: 0.85vw;
-  font-weight: bold;
+  font-weight: normal;
   color: #f65351;
   text-align: center;
   /* Horizontally center text */
@@ -225,7 +226,7 @@ body {
 .cardDescriptionStyle {
   font-family: 'FatCatRegular', sans-serif;
   font-size: 0.45vw;
-  font-weight: bold;
+  font-weight: normal;
   color: #f65351;
   text-align: center;
   height: 4.5vw;
@@ -274,7 +275,7 @@ body {
 .cardNameinDeck {
   font-family: 'FatCatRegular', sans-serif;
   font-size: 8px;
-  font-weight: bold;
+  font-weight: normal;
   color: #f65351;
   text-align: center;
   /* Horizontally center text */
@@ -305,7 +306,7 @@ body {
   padding: 3px 8px;
   font-family: 'FatCatRegular', sans-serif;
   font-size: 6px;
-  font-weight: bold;
+  font-weight: normal;
   color: #f65351;
   text-align: center;
   width: 75%;
