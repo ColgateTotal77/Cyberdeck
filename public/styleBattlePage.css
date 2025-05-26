@@ -363,7 +363,7 @@ body::after {
   padding: 5px 10px;
   color: white;
 }
-.cardHp{
+.cardHp, .card-Hp{
     font-family: 'FatCatRegular', sans-serif;
     font-size: 20px;
     position: absolute;

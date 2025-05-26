@@ -456,6 +456,12 @@ class Socket {
             return;
         }
 
+        if (battle.current_turn_player_id !== user.id){ 
+            console.log("Not this player's turn");
+            socket.emit("notification", { message: "Not your turn", isError: true });
+            return;
+        }
+
         const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
 
         if(battle[who].mana >= 3) {

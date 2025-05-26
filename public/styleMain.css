@@ -670,6 +670,14 @@ body {
   display: block;
 }
 
+#volumeSlider {
+  padding: 3px 0;
+}
+
+#musicToggle {
+  margin-top: 10px;
+}
+
 .closeSettings {
   position: absolute;
   top: 10px;

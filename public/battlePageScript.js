@@ -188,7 +188,7 @@ function renderTableCard(cardData, cardInstanceId, isOpponent = false) {
     const cardHp = document.createElement("div");
     cardHp.className = "cardHp";
     cardHp.innerHTML = `
-        <div class="cardHp">${cardData.hp}</div>
+        <div class="card-Hp">${cardData.hp}</div>
     `;
     
     // Append all text elements to overlay
@@ -342,9 +342,9 @@ Socket.socket.on('attackResult', ({ attackerInstanceId, defenderInstanceId, newD
         card.remove();
     } 
     else {
-        const hpElement = card.querySelector('.card-hp');
+        const hpElement = card.querySelector('.card-Hp');
         if (hpElement) {
-            hpElement.innerText = `HP: ${newDefenderHp}`;
+            hpElement.innerText = `${newDefenderHp}`;
         }
     }
 });
