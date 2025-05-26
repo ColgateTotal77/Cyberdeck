@@ -228,14 +228,14 @@ body {
   font-weight: bold;
   color: #f65351;
   text-align: center;
-  height: 5vw;
-  width: 7.5vw;
+  height: 4.5vw;
+  width: 8vw;
 }
 
 .cardAttack{
-  font-size: 1.5vw;
+  font-size: 1.75vw;
   position: absolute;
-  top: 92%;
+  top: 91%;
   left: 15%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -246,10 +246,10 @@ body {
 }
 
 .cardCost{
-  font-size: 1.5vw;
+  font-size: 2vw;
   position: absolute;
-  top: 6%;
-  left: 12%;
+  top: 9%;
+  left: 14%;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
@@ -259,9 +259,9 @@ body {
 }
 
 .cardHp{
-  font-size: 1.5vw;
+  font-size: 1.75vw;
   position: absolute;
-  top: 92%;
+  top: 91%;
   left: 85%;
   transform: translate(-50%, -50%);
   display: flex;
