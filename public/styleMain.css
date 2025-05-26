@@ -802,6 +802,45 @@ body {
   z-index: -1;
 }
 
+#notificationContainer {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    pointer-events: none;
+}
+
+.notification {
+    padding: 10px 20px;
+    border: 2px solid;
+    border-radius: 6px;
+    font-family: Oxanium, monospace;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    animation: fadeInOutGlitch 4s ease-in-out forwards;
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 95% 100%, 5% 100%, 0 90%);
+    pointer-events: all;
+}
+
+.notification.error {
+    background-color: #ff003c;
+    border-color: #ff003c;
+    color: black;
+    text-shadow: 0 0 2px #000;
+}
+
+.notification.success {
+    background-color: #f8ef02;
+    border-color: #f8ef02;
+    color: black;
+    text-shadow: 0 0 2px #000;
+}
+
 @-webkit-keyframes glitch {
   0% {
     -webkit-clip-path: var(--clip-one);

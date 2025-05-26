@@ -28,22 +28,12 @@ export function showSearchingIndicator(isSearching) {
     const playButton = document.getElementById("playButton");
     if (isSearching) {
         playButton.classList.add("searching");
-        playButton.innerHTML = `
-            <div class="searching-indicator">
-                <span>Searching...</span>
-                <button id="cancelSearch">Cancel</button>
-            </div>
-        `;
-        // Add cancel search event listener
-        document.getElementById("cancelSearch").addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent triggering playButton's event
-            setDeckBlockedStatus(false);
-            cancelMatch();
-            showSearchingIndicator(false);
-        });
+        playButton.innerHTML = `<span>Cancel</span>`;
+        Notifications.showNotification('The search was started:', false);
     } else {
         playButton.classList.remove("searching");
         playButton.innerHTML = '<span aria-hidden>PLAY</span> <span aria-hidden class="cybr-btn__glitch">PLAY</span>';
+        Notifications.showNotification('The search was canceled:', true);
     }
 }
 
@@ -72,20 +62,32 @@ function setDeckBlockedStatus(isBlocked) {
     }
 }
 
+let isSearching = false;
+
 document.getElementById("playButton").addEventListener('click', () => {
+    if (isSearching) {
+        // Cancel the search
+        cancelMatch(); // Your function to cancel match search
+        setDeckBlockedStatus(false);
+        //showSearchingIndicator(false);
+        isSearching = false;
+        return;
+    }
+
     // Check if there are 12 cards in the active deck
     if (activeCards.length < 12) {
         Notifications.showNotification("You need exactly 12 cards in your deck to battle!", true);
         return;
     }
+
     console.log(activeCards);
 
-    startFindOpponent(activeCards.map((card) => {
-        return card.id;
-    }));
+    startFindOpponent(activeCards.map((card) => card.id));
     setDeckBlockedStatus(true);
     showSearchingIndicator(true);
-})
+    isSearching = true;
+});
+
 
 function setupClearDeckButton() {
     // Add clear deck button to deck modal
@@ -216,7 +218,7 @@ function renderDeckModal() {
             activeCards.splice(index, 1);
             renderDeckModal();
             renderMainGrid();
-            Notifications.showNotification("Card removed from deck", false);
+            //Notifications.showNotification("Card removed from deck", false);
         });
 
         activeGrid.appendChild(cardElement);
@@ -248,7 +250,7 @@ function renderDeckModal() {
             inactiveCards.splice(index, 1);
             renderDeckModal();
             renderMainGrid();
-            Notifications.showNotification("Card added to deck", false);
+            //Notifications.showNotification("Card added to deck", false);
         });
 
         inactiveList.appendChild(cardElement);
