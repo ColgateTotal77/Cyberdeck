@@ -298,6 +298,11 @@ class Socket {
             return;
         }
 
+        if(battle[who].tableCards.length >= 6) {
+            socket.emit("notification", { message: "Maximum number of cards is placed on the table", isError: true });
+            return;
+        }
+
         const cardIndex = battle[who].handCards.indexOf(cardId);
         if (cardIndex === -1) {
             console.log("cardIndex === -1");
@@ -360,7 +365,7 @@ class Socket {
 
         room.turn++;
 
-        if(room.turn > 2 && userSocket && opponentSocket) {
+        if(room.turn > 2 && userSocket && opponentSocket && battle[who].handCards.length < 6) {
             const arrayLen = (battle[who].cardsToChoose).length;
             if(arrayLen > 0) {
                 const newRandomCardID = battle[who].cardsToChoose[Math.floor(Math.random() * arrayLen)]
@@ -369,10 +374,11 @@ class Socket {
                 opponentSocket.emit("newOpponentHandCard");
                 battle[who].cardsToChoose = [];
             }
-
-            const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
-            battle[who].cardsToChoose = cardsToChoose;
-            userSocket.emit("newCards", cardsToChoose);
+            if(battle[who].handCards.length < 6 ) {
+                const cardsToChoose = [...battle[who].deck].sort(() => 0.5 - Math.random()).slice(0, 3);
+                battle[who].cardsToChoose = cardsToChoose;
+                userSocket.emit("newCards", cardsToChoose);
+            }
 
             const supposeMana = battle[who].mana + Math.floor(room.turn / 2) + 4;
             battle[who].mana = supposeMana > 10 ? 10 : supposeMana;
@@ -463,6 +469,11 @@ class Socket {
         }
 
         const who = battle.player1.userData.id === user.id ? 'player1' : 'player2';
+
+        if(battle[who].handCards.length >= 6 ) {
+            socket.emit("notification", { message: "Maximum number of cards in your hands", isError: true });
+            return;
+        }
 
         if(battle[who].mana >= 3) {
             battle[who].mana -= 3;
