@@ -92,7 +92,7 @@ function setupClearDeckButton() {
     const deckHeader = document.querySelector('.deckHeader');
     const clearButton = document.createElement('button');
     clearButton.id = 'clearDeck';
-    clearButton.className = 'clearDeckBtn';
+    clearButton.className = 'clearDeckBtn cyber-button-small bg-black fg-red';
     clearButton.textContent = 'Clear Deck';
     clearButton.style.marginLeft = 'auto';
     clearButton.style.marginRight = '60px'; // Space before close button
@@ -189,10 +189,10 @@ function renderMainGrid() {
 function renderDeckModal() {
     const activeGrid = document.getElementById("activeCardGrid");
     const inactiveList = document.getElementById("inactiveCardList");
-    // Clear previous content
+
     activeGrid.innerHTML = "";
     inactiveList.innerHTML = "";
-    
+
     // Render active cards
     activeCards.forEach((card, index) => {
         const cardElement = document.createElement("div");
@@ -202,41 +202,25 @@ function renderDeckModal() {
             <div class="cardDetails">
                 <span class="cardNameinDeck">${card.name}</span>
             </div>
-            <button class="removeCard" data-index="${index}"${window.isDeckBlocked ? ' disabled' : ''}>✖</button>
+            <div class="cardDescriptioninDeck"><div class="cardDescriptionStyleinDeck">${card.description}</div></div>
+            <div class="cardCostinDeck">${card.cost}</div>
+            <div class="cardAttackinDeck">${card.attack}</div>
+            <div class="cardHpinDeck">${card.hp}</div>
         `;
-        
-        // Create and append description
-        const cardDescriptioninDeck = document.createElement("div");
-        cardDescriptioninDeck.className = "cardDescriptioninDeck";
-        cardDescriptioninDeck.innerHTML = `
-            <div class="cardDescriptionStyleinDeck">${card.description}</div>
-        `;
-        
-        // Create and append cost
-        const cardCostinDeck = document.createElement("div");
-        cardCostinDeck.className = "cardCostinDeck";
-        cardCostinDeck.innerHTML = `${card.cost}`;
-        
-        // Create and append attack
-        const cardAttackinDeck = document.createElement("div");
-        cardAttackinDeck.className = "cardAttackinDeck";
-        cardAttackinDeck.innerHTML = `${card.attack}`;
-        
-        // Create and append HP
-        const cardHpinDeck = document.createElement("div");
-        cardHpinDeck.className = "cardHpinDeck";
-        cardHpinDeck.innerHTML = `${card.hp}`;
-        
-        // Append all elements to the card element (not to the grid)
-        cardElement.appendChild(cardDescriptioninDeck);
-        cardElement.appendChild(cardCostinDeck);
-        cardElement.appendChild(cardAttackinDeck);
-        cardElement.appendChild(cardHpinDeck);
-        
-        // Now append the complete card to the grid
+
+        // клік по карті — видалити з active і додати в inactive
+        cardElement.addEventListener("click", () => {
+            if (window.isDeckBlocked) return;
+            inactiveCards.push(activeCards[index]);
+            activeCards.splice(index, 1);
+            renderDeckModal();
+            renderMainGrid();
+            Notifications.showNotification("Card removed from deck", false);
+        });
+
         activeGrid.appendChild(cardElement);
     });
-    
+
     // Render inactive cards
     inactiveCards.forEach((card, index) => {
         const cardElement = document.createElement("div");
@@ -246,48 +230,36 @@ function renderDeckModal() {
             <div class="cardDetails">
                 <span class="cardNameinDeck">${card.name}</span>
             </div>
-            <button class="addCard" data-index="${index}"${window.isDeckBlocked ? ' disabled' : ''}>＋</button>
+            <div class="cardDescriptioninDeck"><div class="cardDescriptionStyleinDeck">${card.description}</div></div>
+            <div class="cardCostinDeck">${card.cost}</div>
+            <div class="cardAttackinDeck">${card.attack}</div>
+            <div class="cardHpinDeck">${card.hp}</div>
         `;
-        // Create and append description
-        const cardDescriptioninDeck = document.createElement("div");
-        cardDescriptioninDeck.className = "cardDescriptioninDeck";
-        cardDescriptioninDeck.innerHTML = `
-            <div class="cardDescriptionStyleinDeck">${card.description}</div>
-        `;
-        
-        // Create and append cost
-        const cardCostinDeck = document.createElement("div");
-        cardCostinDeck.className = "cardCostinDeck";
-        cardCostinDeck.innerHTML = `${card.cost}`;
-        
-        // Create and append attack
-        const cardAttackinDeck = document.createElement("div");
-        cardAttackinDeck.className = "cardAttackinDeck";
-        cardAttackinDeck.innerHTML = `${card.attack}`;
-        
-        // Create and append HP
-        const cardHpinDeck = document.createElement("div");
-        cardHpinDeck.className = "cardHpinDeck";
-        cardHpinDeck.innerHTML = `${card.hp}`;
-        
-        // Append all elements to the card element (not to the grid)
-        cardElement.appendChild(cardDescriptioninDeck);
-        cardElement.appendChild(cardCostinDeck);
-        cardElement.appendChild(cardAttackinDeck);
-        cardElement.appendChild(cardHpinDeck);
-        
+
+        // клік по карті — додати в active (якщо <12)
+        cardElement.addEventListener("click", () => {
+            if (window.isDeckBlocked) return;
+            if (activeCards.length >= 12) {
+                Notifications.showNotification("Maximum 12 active cards allowed!", true);
+                return;
+            }
+            activeCards.push(inactiveCards[index]);
+            inactiveCards.splice(index, 1);
+            renderDeckModal();
+            renderMainGrid();
+            Notifications.showNotification("Card added to deck", false);
+        });
+
         inactiveList.appendChild(cardElement);
     });
-    
-    // Update the Clear Deck button state
+
+    // Disable "Clear Deck" під час блоку
     const clearDeckBtn = document.getElementById('clearDeck');
-    if (clearDeckBtn) {
-        clearDeckBtn.disabled = window.isDeckBlocked;
-    }
-    
-    // Save deck state to localStorage for persistence
+    if (clearDeckBtn) clearDeckBtn.disabled = window.isDeckBlocked;
+
     saveCardState();
 }
+
 
 // Save card state to localStorage
 function saveCardState() {

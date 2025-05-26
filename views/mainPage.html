@@ -70,18 +70,18 @@
             <div id="settingsModal" class="modal hidden">
                 <div class="settingsWindow cyber-tile">
                     <div class="settingsSidebar cyber-tile-small">
-                        <button class="settingsTab cyber-button-small active" data-tab="general">
+                        <button class="settingsTab cyber-button-small active bg-black" data-tab="general">
                             General
                         </button>
-                        <button class="settingsTab cyber-button-small" data-tab="account">
+                        <button class="settingsTab cyber-button-small bg-black" data-tab="account">
                             Account
                         </button>
-                        <button class="settingsTab cyber-button-small" data-tab="sound">
+                        <button class="settingsTab cyber-button-small bg-black" data-tab="sound">
                             Sound
                         </button>
                     </div>
                     <div class="settingsContent">
-                        <button class="closeSettings cyber-button-small">✖</button>
+                        <button class="closeSettings cyber-button-small bg-black">✖</button>
                         <div id="generalSettings" class="settingsSection active">
                             <h2 class="cyber-h">General Settings</h2>
                             <p>In the future</p>
@@ -90,7 +90,7 @@
                             <h2 class="cyber-h">Account Settings</h2>
                             <form id="avatarForm" enctype="multipart/form-data" class="cyber-input-full">
                                 <input type="file" name="avatar" class="changeAvatar" accept="image/*" required>
-                                <button type="submit" class="cyber-button-small">Upload Avatar</button>
+                                <button type="submit" class="cyber-button-small avatar-submit">Upload Avatar</button>
                             </form>
                         </div>
                         <div id="soundSettings" class="settingsSection">
@@ -108,26 +108,27 @@
                 </div>
             </div>
             <div id="carddeckModal" class="modal hidden">
-                <div class="deckWindow">
-                    <div class="deckHeader">
-                        <h2>Your deck</h2>
-                        <button id="closeCarddeck" class="closedeckBtn">✖</button>
+                <div class="deckWindow cyber-tile" style="--tile-width: 80vw;">
+                    <div class="deckHeader cyber-razor-top">
+                        <h2 class="cyber-h">Your deck</h2>
+                        <button id="closeCarddeck" class="closedeckBtn cyber-button-small bg-black">✖</button>
                     </div>
                     <div class="cardsContainer">
                         <!-- Active Cards Grid -->
                         <div class="activeCards">
-                            <h3>Active Cards</h3>
+                            <h3 class="cyber-h cyber-h--small">Active Cards</h3>
                             <div class="cardGrid" id="activeCardGrid"></div>
                         </div>
 
                         <!-- Inactive Cards List -->
                         <div class="inactiveCards">
-                            <h3>Inactive Cards</h3>
+                            <h3 class="cyber-h cyber-h--small">Inactive Cards</h3>
                             <div class="inactiveList" id="inactiveCardList"></div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>

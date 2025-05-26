@@ -322,8 +322,8 @@ body {
 .cardCostinDeck{
   font-size: 18px;
   position: absolute;
-  top: 9%;
-  left: 14%;
+  top: 15%;
+  left: 21%;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
@@ -335,8 +335,8 @@ body {
 .cardAttackinDeck{
   font-size: 18px;
   position: absolute;
-  top: 75%;
-  left: 16%;
+  top: 81%;
+  left: 23%;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
@@ -348,8 +348,8 @@ body {
 .cardHpinDeck{
   font-size: 18px;
   position: absolute;
-  top: 75%;
-  left: 84%;
+  top: 81%;
+  left: 78%;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
@@ -374,6 +374,7 @@ body {
   position: absolute;
   top: 15px;
   right: 15px;
+  width: 30px;
   background: none;
   border: none;
   color: white;
