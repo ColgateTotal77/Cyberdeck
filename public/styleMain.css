@@ -1,96 +1,102 @@
 html,
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 
-    height: 100vh;
-    padding: 0;
-    margin: 0;
-    background-color: #1f1f1f;
-    position: relative;
-    color: white;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  background-color: #1f1f1f;
+  position: relative;
+  color: white;
 }
 
 
 
-#container {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
 }
 
-#mainContent {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #1e1e1e;
-    position: relative;
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1e1e1e;
+  position: relative;
 }
 
-#sidebar {
-    width: 17vw; /* or whatever fixed width */
-    background-color: #eee;
-    padding: 20px;
-    box-sizing: border-box;
+.sidebar {
+  width: 17vw;
+  /* or whatever fixed width */
+  background-color: #eee;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 #userData {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 #playButton {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #playButton:hover {
-    transform: translateX(-50%) scale(1.1);
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    cursor: pointer;
+  transform: translateX(-50%) scale(1.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
 }
 
-#changeButton {
+.change-button {
   position: absolute;
-  top: 110px; /* Adjust vertical position as needed */
+  top: 110px;
+  /* Adjust vertical position as needed */
   left: 50%;
   transform: translateX(-50%);
-  
-  width: 48px;  /* Size of the button */
+
+  width: 48px;
+  /* Size of the button */
   height: 48px;
-  
+
   cursor: pointer;
-  
-  background-color: rgba(255, 255, 255, 0.1); /* subtle translucent background */
+
+  background-color: rgba(255, 255, 255, 0.1);
+  /* subtle translucent background */
   border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   transition: background-color 0.3s ease, transform 0.2s ease;
-  z-index: 10; /* make sure it’s above other elements */
+  z-index: 10;
+  /* make sure it’s above other elements */
 }
 
-#changeButton img {
+.change-button img {
   width: 28px;
   height: 28px;
   user-select: none;
-  pointer-events: none; /* So clicks go to parent */
+  pointer-events: none;
+  /* So clicks go to parent */
 }
 
-#changeButton:hover {
+.change-button:hover {
   background-color: rgba(255, 255, 255, 0.25);
   transform: translateX(-50%) scale(1.1);
 }
 
-#cardsGrid {
+.cards-grid {
   transform: translateY(30px);
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -100,12 +106,12 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px 30px;
-  
+
   /* Background styles */
   background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-  
+
   /* Optional: add a subtle pattern or texture (using a semi-transparent overlay) */
   position: relative;
   overflow: hidden;
@@ -117,13 +123,15 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  
+
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  
-  width: 100%; /* fill the grid cell */
-  aspect-ratio: 3 / 4; /* adjust ratio if needed, e.g. 3:4 for card shape */
-  
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+
+  width: 100%;
+  /* fill the grid cell */
+  aspect-ratio: 3 / 4;
+  /* adjust ratio if needed, e.g. 3:4 for card shape */
+
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -135,38 +143,41 @@ body {
 
 /* Card sizing and layout adjustments */
 .cardItem {
-    position: relative;
-    background-color: #444;
-    padding: 8px;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    width: 120px;  /* Smaller fixed width */
-    display: inline-block;
-    margin-right: 10px;
-    vertical-align: top;
-    transition: transform 0.2s ease;
+  position: relative;
+  background-color: #444;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  width: 120px;
+  /* Smaller fixed width */
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: top;
+  transition: transform 0.2s ease;
 }
 
 .cardItem:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(255, 165, 0, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(255, 165, 0, 0.4);
 }
 
 .cardItem img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-    display: block; /* Only display first image */
-    margin-bottom: 5px;
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  display: block;
+  /* Only display first image */
+  margin-bottom: 5px;
 }
 
 /* Hide all images except the first one */
 .cardItem img:not(:first-child) {
-    display: none;
+  display: none;
 }
+
 /* Modal base */
 #carddeckModal {
-    z-index: 2001;
+  z-index: 2001;
 }
 
 @font-face {
@@ -174,14 +185,17 @@ body {
   src: url('/fonts/FatCatRegular.ttf') format('truetype');
 }
 
-.cardName{
+.cardName {
   font-family: 'FatCatRegular', sans-serif;
   font-size: 0.85vw;
   font-weight: bold;
   color: #f65351;
-  text-align: center;        /* Horizontally center text */
-  width: 100%;               /* Make it span the card width */
-  margin: 10px 0;            /* Some spacing above and below */
+  text-align: center;
+  /* Horizontally center text */
+  width: 100%;
+  /* Make it span the card width */
+  margin: 10px 0;
+  /* Some spacing above and below */
   text-transform: uppercase;
 }
 
@@ -197,7 +211,7 @@ body {
   white-space: nowrap;
 }
 
-.cardDescription{
+.cardDescription {
   position: absolute;
   top: 79%;
   left: 50%;
@@ -208,14 +222,17 @@ body {
   padding: 5px 10px;
 }
 
-.cardDescriptionStyle{
+.cardDescriptionStyle {
   font-family: 'FatCatRegular', sans-serif;
   font-size: 0.5vw;
   font-weight: bold;
   color: #f65351;
-  text-align: center;        /* Horizontally center text */
-  width: 100%;               /* Make it span the card width */
-  margin: 10px 0;            /* Some spacing above and below */
+  text-align: center;
+  /* Horizontally center text */
+  width: 100%;
+  /* Make it span the card width */
+  margin: 10px 0;
+  /* Some spacing above and below */
 }
 
 .cardAttack{
@@ -230,6 +247,7 @@ body {
   padding: 5px 10px;
   color: white;
 }
+
 .cardCost{
   font-size: 1.5vw;
   position: absolute;
@@ -242,6 +260,7 @@ body {
   padding: 5px 10px;
   color: white;
 }
+
 .cardHp{
   font-size: 1.5vw;
   position: absolute;
@@ -254,14 +273,18 @@ body {
   padding: 5px 10px;
   color: white;
 }
-.cardNameinDeck{
+
+.cardNameinDeck {
   font-family: 'FatCatRegular', sans-serif;
   font-size: 8px;
   font-weight: bold;
   color: #f65351;
-  text-align: center;        /* Horizontally center text */
-  width: 100%;               /* Make it span the card width */
-  margin: 10px 0;            /* Some spacing above and below */
+  text-align: center;
+  /* Horizontally center text */
+  width: 100%;
+  /* Make it span the card width */
+  margin: 10px 0;
+  /* Some spacing above and below */
   text-transform: uppercase;
   position: absolute;
   top: 44%;
@@ -273,7 +296,7 @@ body {
   padding: 5px 10px;
 }
 
-.cardDescriptioninDeck{
+.cardDescriptioninDeck {
   position: absolute;
   top: 63%;
   left: 50%;
@@ -288,14 +311,14 @@ body {
   font-weight: bold;
   color: #f65351;
   text-align: center;
-  width: 80%;         
-  max-width: 80%;           
-  height: auto;              
-  max-height: 25%;          
-  line-height: 1.1;     
+  width: 80%;
+  max-width: 80%;
+  height: auto;
+  max-height: 25%;
+  line-height: 1.1;
   overflow: hidden;
-  word-wrap: break-word;    
-  hyphens: auto;          
+  word-wrap: break-word;
+  hyphens: auto;
   box-sizing: border-box;
 }
 
@@ -339,316 +362,323 @@ body {
 }
 
 .deckHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: #1a1a1a;
-    color: white;
-    border-bottom: 1px solid #333;
-    position: relative; /* Add this for positioning the close button */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #1a1a1a;
+  color: white;
+  border-bottom: 1px solid #333;
+  position: relative;
+  /* Add this for positioning the close button */
 }
 
 .closedeckBtn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 5px;
-    z-index: 10; /* Ensure it's above other elements */
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 10;
+  /* Ensure it's above other elements */
 }
 
 /* Fix overall window structure */
 .deckWindow {
-    background-color: #2b2b2b;
-    color: white;
-    width: 80vw;
-    height: 70vh;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 10px #000;
-    display: flex;
-    flex-direction: column; /* Change to column layout */
+  background-color: #2b2b2b;
+  color: white;
+  width: 80vw;
+  height: 70vh;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px #000;
+  display: flex;
+  flex-direction: column;
+  /* Change to column layout */
 }
 
 /* Adjust the cards container to be in a row */
 .cardsContainer {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 /* Adjust active and inactive cards sections */
-.activeCards, .inactiveCards {
-    padding: 20px;
-    overflow-y: auto;
+.activeCards,
+.inactiveCards {
+  padding: 20px;
+  overflow-y: auto;
 }
 
 .activeCards {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
+  flex: 2;
+  display: flex;
+  flex-direction: column;
 }
 
 .inactiveCards {
-    flex: 1;
-    background-color: #1a1a1a;
+  flex: 1;
+  background-color: #1a1a1a;
 }
 
 #rightSidebar {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 17vw;
-    height: 100vh;
-    background-color: #f2f2f2;
-    border-left: 1px solid #ccc;
-    padding: 10px;
-    box-sizing: border-box;
-    z-index: 1000;
-    color: black;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 17vw;
+  height: 100vh;
+  background-color: #f2f2f2;
+  border-left: 1px solid #ccc;
+  padding: 10px;
+  box-sizing: border-box;
+  z-index: 1000;
+  color: black;
 
-    display: grid;
-    grid-template-rows: 30% 60% 10%;
-    gap: 10px;
+  display: grid;
+  grid-template-rows: 30% 60% 10%;
+  gap: 10px;
 }
 
-.sidebarTop {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
+.sidebar-top {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
 }
 
-.sidebarTop,
-.sidebarMiddle,
-.sidebarBottom {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.sidebar-top,
+.sidebar-middle,
+.sidebar-bottom {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Optional: add spacing or style to children */
 .sidebarTop {
-    justify-content: space-between;
+  justify-content: space-between;
 }
 
 .sidebarMiddle {
-    justify-content: center;
-    gap: 10px;
+  justify-content: center;
+  gap: 10px;
 }
 
 .sidebarBottom {
-    justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 .redirectButton {
-    cursor: pointer;
-    padding: 10px;
-    color: #007bff;
-    border-radius: 5px;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    margin-top: auto;
+  cursor: pointer;
+  padding: 10px;
+  color: #007bff;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  margin-top: auto;
 }
 
 .redirectButton:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 /* Remove manual positioning! */
 #logout {
-    position: static;
-    transform: none;
-    left: auto;
-    top: auto;
+  position: static;
+  transform: none;
+  left: auto;
+  top: auto;
 }
 
 .settingButton {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 4px;
-    border: none;
-    background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  border: none;
+  background: none;
 
-    position: absolute;
-    /* or 'fixed' if you want it to stay on scroll */
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-    /* make sure it's on top */
+  position: absolute;
+  /* or 'fixed' if you want it to stay on scroll */
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  /* make sure it's on top */
 }
 
-.settingIcon {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.setting-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 #avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background-color: #ccc;
-    border: 2px solid #999;
-    margin: 20px 0;
-    overflow: hidden; /* Ensures the image is clipped */
-    display: flex; /* Optional: helps with image centering */
-    align-items: center;
-    justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #ccc;
+  border: 2px solid #999;
+  margin: 20px 0;
+  overflow: hidden;
+  /* Ensures the image is clipped */
+  display: flex;
+  /* Optional: helps with image centering */
+  align-items: center;
+  justify-content: center;
 }
 
 #avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Crop the image nicely */
-    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Crop the image nicely */
+  display: block;
 }
 
 .ratingBox {
-    width: 100px;
-    height: 40px;
-    border: 2px solid gold;
-    border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: gold;
-    font-weight: bold;
-    font-size: 18px;
-    background-color: #222;
-    user-select: none;
-    margin-top: 10px;
+  width: 100px;
+  height: 40px;
+  border: 2px solid gold;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: gold;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #222;
+  user-select: none;
+  margin-top: 10px;
 }
 
 .friendsSection {
-    width: 100%;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 10px 0;
-    color: black;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  color: black;
 }
 
-#searchUser {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    margin-bottom: 8px;
-    font-size: 14px;
+.search-user {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 #searchResults,
 #friendsList {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 10px 0;
-    overflow-y: auto;
-    max-height: 150px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background: white;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  overflow-y: auto;
+  max-height: 150px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: white;
 }
 
 #searchResults li,
 #friendsList li {
-    padding: 6px 10px;
-    cursor: pointer;
+  padding: 6px 10px;
+  cursor: pointer;
 }
 
 #searchResults li:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 #friendsList li {
-    background-color: #e7e7e7;
-    margin-bottom: 4px;
-    border-radius: 4px;
+  background-color: #e7e7e7;
+  margin-bottom: 4px;
+  border-radius: 4px;
 }
 
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .settingsWindow {
-    background-color: #2b2b2b;
-    color: white;
-    display: flex;
-    width: 60vw;
-    height: 60vh;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 10px #000;
+  background-color: #2b2b2b;
+  color: white;
+  display: flex;
+  width: 68vw;
+  height: 60vh;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px #000;
 }
 
 .settingsSidebar {
-    width: 20%;
-    background-color: #1a1a1a;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
+  width: 20%;
+  background-color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
 }
 
 .settingsTab {
-    background: none;
-    border: none;
-    padding: 10px;
-    text-align: left;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
+  background: none;
+  border: none;
+  padding: 10px;
+  text-align: left;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
 .settingsTab:hover,
 .settingsTab.active {
-    background-color: #444;
+  background-color: #444;
 }
 
 .settingsContent {
-    flex-grow: 1;
-    padding: 20px;
-    position: relative;
+  flex-grow: 1;
+  padding: 20px;
+  position: relative;
 }
 
 .settingsSection {
-    display: none;
+  display: none;
 }
 
 .settingsSection.active {
-    display: block;
+  display: block;
 }
 
 .closeSettings {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 /* cyber button  play */
@@ -691,12 +721,15 @@ body {
   transition: background 0.2s;
   text-align: center;
 }
+
 .cybr-btn:hover {
   --primary: hsl(var(--primary-hue), 85%, calc(var(--primary-lightness, 50) * 0.8%));
 }
+
 .cybr-btn:active {
   --primary: hsl(var(--primary-hue), 85%, calc(var(--primary-lightness, 50) * 0.6%));
 }
+
 .cybr-btn:after,
 .cybr-btn:before {
   content: '';
@@ -706,16 +739,19 @@ body {
   right: 0;
   bottom: 0;
   -webkit-clip-path: var(--clip);
-          clip-path: var(--clip);
+  clip-path: var(--clip);
   z-index: -1;
 }
+
 .cybr-btn:before {
   background: var(--shadow-primary);
   transform: translate(var(--border), 0);
 }
+
 .cybr-btn:after {
   background: var(--primary);
 }
+
 .cybr-btn__tag {
   position: absolute;
   padding: 1px 4px;
@@ -737,14 +773,16 @@ body {
   background: var(--shadow-primary);
   text-shadow: 2px 2px var(--shadow-primary), -2px -2px var(--shadow-secondary);
   -webkit-clip-path: var(--clip);
-          clip-path: var(--clip);
+  clip-path: var(--clip);
   -webkit-animation: glitch 2s infinite;
-          animation: glitch 2s infinite;
+  animation: glitch 2s infinite;
   display: none;
 }
+
 .cybr-btn:hover .cybr-btn__glitch {
   display: block;
 }
+
 .cybr-btn__glitch:before {
   content: '';
   position: absolute;
@@ -753,157 +791,197 @@ body {
   bottom: calc(var(--border) * 1);
   left: calc(var(--border) * 1);
   -webkit-clip-path: var(--clip);
-          clip-path: var(--clip);
+  clip-path: var(--clip);
   background: var(--primary);
   z-index: -1;
 }
+
 @-webkit-keyframes glitch {
   0% {
     -webkit-clip-path: var(--clip-one);
-            clip-path: var(--clip-one);
+    clip-path: var(--clip-one);
   }
-  2%, 8% {
+
+  2%,
+  8% {
     -webkit-clip-path: var(--clip-two);
-            clip-path: var(--clip-two);
+    clip-path: var(--clip-two);
     transform: translate(calc(var(--shimmy-distance) * -1%), 0);
   }
+
   6% {
     -webkit-clip-path: var(--clip-two);
-            clip-path: var(--clip-two);
+    clip-path: var(--clip-two);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   9% {
     -webkit-clip-path: var(--clip-two);
-            clip-path: var(--clip-two);
+    clip-path: var(--clip-two);
     transform: translate(0, 0);
   }
+
   10% {
     -webkit-clip-path: var(--clip-three);
-            clip-path: var(--clip-three);
+    clip-path: var(--clip-three);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   13% {
     -webkit-clip-path: var(--clip-three);
-            clip-path: var(--clip-three);
+    clip-path: var(--clip-three);
     transform: translate(0, 0);
   }
-  14%, 21% {
+
+  14%,
+  21% {
     -webkit-clip-path: var(--clip-four);
-            clip-path: var(--clip-four);
+    clip-path: var(--clip-four);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   25% {
     -webkit-clip-path: var(--clip-five);
-            clip-path: var(--clip-five);
+    clip-path: var(--clip-five);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   30% {
     -webkit-clip-path: var(--clip-five);
-            clip-path: var(--clip-five);
+    clip-path: var(--clip-five);
     transform: translate(calc(var(--shimmy-distance) * -1%), 0);
   }
-  35%, 45% {
+
+  35%,
+  45% {
     -webkit-clip-path: var(--clip-six);
-            clip-path: var(--clip-six);
+    clip-path: var(--clip-six);
     transform: translate(calc(var(--shimmy-distance) * -1%));
   }
+
   40% {
     -webkit-clip-path: var(--clip-six);
-            clip-path: var(--clip-six);
+    clip-path: var(--clip-six);
     transform: translate(calc(var(--shimmy-distance) * 1%));
   }
+
   50% {
     -webkit-clip-path: var(--clip-six);
-            clip-path: var(--clip-six);
+    clip-path: var(--clip-six);
     transform: translate(0, 0);
   }
+
   55% {
     -webkit-clip-path: var(--clip-seven);
-            clip-path: var(--clip-seven);
+    clip-path: var(--clip-seven);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   60% {
     -webkit-clip-path: var(--clip-seven);
-            clip-path: var(--clip-seven);
+    clip-path: var(--clip-seven);
     transform: translate(0, 0);
   }
-  31%, 61%, 100% {
+
+  31%,
+  61%,
+  100% {
     -webkit-clip-path: var(--clip-four);
-            clip-path: var(--clip-four);
+    clip-path: var(--clip-four);
   }
 }
+
 @keyframes glitch {
   0% {
     -webkit-clip-path: var(--clip-one);
-            clip-path: var(--clip-one);
+    clip-path: var(--clip-one);
   }
-  2%, 8% {
+
+  2%,
+  8% {
     -webkit-clip-path: var(--clip-two);
-            clip-path: var(--clip-two);
+    clip-path: var(--clip-two);
     transform: translate(calc(var(--shimmy-distance) * -1%), 0);
   }
+
   6% {
     -webkit-clip-path: var(--clip-two);
-            clip-path: var(--clip-two);
+    clip-path: var(--clip-two);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   9% {
     -webkit-clip-path: var(--clip-two);
-            clip-path: var(--clip-two);
+    clip-path: var(--clip-two);
     transform: translate(0, 0);
   }
+
   10% {
     -webkit-clip-path: var(--clip-three);
-            clip-path: var(--clip-three);
+    clip-path: var(--clip-three);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   13% {
     -webkit-clip-path: var(--clip-three);
-            clip-path: var(--clip-three);
+    clip-path: var(--clip-three);
     transform: translate(0, 0);
   }
-  14%, 21% {
+
+  14%,
+  21% {
     -webkit-clip-path: var(--clip-four);
-            clip-path: var(--clip-four);
+    clip-path: var(--clip-four);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   25% {
     -webkit-clip-path: var(--clip-five);
-            clip-path: var(--clip-five);
+    clip-path: var(--clip-five);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   30% {
     -webkit-clip-path: var(--clip-five);
-            clip-path: var(--clip-five);
+    clip-path: var(--clip-five);
     transform: translate(calc(var(--shimmy-distance) * -1%), 0);
   }
-  35%, 45% {
+
+  35%,
+  45% {
     -webkit-clip-path: var(--clip-six);
-            clip-path: var(--clip-six);
+    clip-path: var(--clip-six);
     transform: translate(calc(var(--shimmy-distance) * -1%));
   }
+
   40% {
     -webkit-clip-path: var(--clip-six);
-            clip-path: var(--clip-six);
+    clip-path: var(--clip-six);
     transform: translate(calc(var(--shimmy-distance) * 1%));
   }
+
   50% {
     -webkit-clip-path: var(--clip-six);
-            clip-path: var(--clip-six);
+    clip-path: var(--clip-six);
     transform: translate(0, 0);
   }
+
   55% {
     -webkit-clip-path: var(--clip-seven);
-            clip-path: var(--clip-seven);
+    clip-path: var(--clip-seven);
     transform: translate(calc(var(--shimmy-distance) * 1%), 0);
   }
+
   60% {
     -webkit-clip-path: var(--clip-seven);
-            clip-path: var(--clip-seven);
+    clip-path: var(--clip-seven);
     transform: translate(0, 0);
   }
-  31%, 61%, 100% {
+
+  31%,
+  61%,
+  100% {
     -webkit-clip-path: var(--clip-four);
-            clip-path: var(--clip-four);
+    clip-path: var(--clip-four);
   }
 }

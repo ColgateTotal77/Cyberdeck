@@ -3,7 +3,7 @@ html, body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    
+
     height: 100vh;
     padding: 0;
     margin: 0;
@@ -19,7 +19,7 @@ html, body {
     flex-direction: column;
     margin: 10%;
     padding: 10%;
-    
+
     border: 1px solid #181818;
 }
 
@@ -92,7 +92,7 @@ html, body {
 }
 
 #remindPasswordContainer {
-    position: relative; 
+    position: relative;
 }
 
 #back {
@@ -106,7 +106,7 @@ html, body {
 }
 
 /* #rightSidebar {
-    position: fixed; 
+    position: fixed;
     right: 0;
     top: 0;
     width: 17vw;

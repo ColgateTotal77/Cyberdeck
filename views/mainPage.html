@@ -4,20 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/cyberpunk.css">
     <link rel="stylesheet" href="/styleMain.css">
     <title>MainPage</title>
 </head>
 
 <body>
-    <div id="container">
-        <div id="mainContent">
+    <div class="container">
+        <div class="main-content">
             <div class="cybr-btn" id="playButton">
                 <!-- <img src="/image/battle.png"> -->
                 <span aria-hidden>PLAY</span>
                 <span aria-hidden class="cybr-btn__glitch">PLAY</span>
                 <span aria-hidden class="cybr-btn__tag">R25</span>
             </div>
-            <div id="cardsGrid">
+            <div class="cards-grid" id="cardsGrid">
                 <div class="card"></div>
                 <div class="card"></div>
                 <div class="card"></div>
@@ -31,7 +32,7 @@
                 <div class="card"></div>
                 <div class="card"></div>
             </div>
-            <div id="changeButton">
+            <div class="change-button" id="changeButton">
                 <img src="/image/refresh.png">
             </div>
         </div>
@@ -41,60 +42,67 @@
 
         </div> -->
         <!-- <div id="playButton">Play</div> -->
-         <div id="sidebar">
-        <div id="rightSidebar">
-            <div class="sidebarTop">
-                <div id="avatar"></div>
-                <div id="login"></div>
-                <div class="settingButton">
-                    <img src="/image/settings.svg" alt="Settings" class="settingIcon">
+        <div class="sidebar" id="sidebar">
+            <div class="right-sidebar" id="rightSidebar">
+                <div class="sidebar-top">
+                    <div class="avatar" id="avatar"></div>
+                    <div class="login" id="login"></div>
+                    <div class="settingButton">
+                        <img src="/image/settings.svg" alt="Settings" class="setting-icon">
+                    </div>
+                    <div class="ratingBox"></div>
                 </div>
-                <div class="ratingBox"></div>
-            </div>
 
-            <div class="sidebarMiddle">
-                <div class="infoBox"></div>
-                <div class="friendsSection">
-                    <input type="text" id="searchUser" placeholder="Search users..." autocomplete="off" />
-                    <ul id="searchResults"></ul>
-                    <h3>Friends</h3>
-                    <ul id="friendsList"></ul>
+                <div class="sidebarMiddle">
+                    <div class="infoBox"></div>
+                    <div class="friendsSection">
+                        <input type="text" class="search-user" id="searchUser" placeholder="Search users..." autocomplete="off" />
+                        <ul id="searchResults"></ul>
+                        <h3>Friends</h3>
+                        <ul id="friendsList"></ul>
+                    </div>
                 </div>
-            </div>
 
-            <div class="sidebarBottom">
-                <form id="logoutForm" action="/logOut" method="POST" style="display:none;"></form>
-                <div class="redirectButton" id="logout" onclick="document.getElementById('logoutForm').submit()">Log Out
+                <div class="sidebarBottom">
+                    <form id="logoutForm" action="/logOut" method="POST" style="display:none;"></form>
+                    <div class="redirectButton" id="logout" onclick="document.getElementById('logoutForm').submit()">Log
+                        Out
+                    </div>
                 </div>
             </div>
-        </div>
             <div id="settingsModal" class="modal hidden">
-                <div class="settingsWindow">
-                    <div class="settingsSidebar">
-                        <button class="settingsTab active" data-tab="general">General</button>
-                        <button class="settingsTab" data-tab="account">Account</button>
-                        <button class="settingsTab" data-tab="sound">Sound</button>
+                <div class="settingsWindow cyber-tile">
+                    <div class="settingsSidebar cyber-tile-small">
+                        <button class="settingsTab cyber-button-small active" data-tab="general">
+                            General
+                        </button>
+                        <button class="settingsTab cyber-button-small" data-tab="account">
+                            Account
+                        </button>
+                        <button class="settingsTab cyber-button-small" data-tab="sound">
+                            Sound
+                        </button>
                     </div>
                     <div class="settingsContent">
-                        <button class="closeSettings">✖</button>
+                        <button class="closeSettings cyber-button-small">✖</button>
                         <div id="generalSettings" class="settingsSection active">
-                            <h2>General Settings</h2>
+                            <h2 class="cyber-h">General Settings</h2>
                             <p>Here you can change general preferences.</p>
                         </div>
                         <div id="accountSettings" class="settingsSection">
-                            <h2>Account Settings</h2>
-                            <form id="avatarForm" enctype="multipart/form-data">
+                            <h2 class="cyber-h">Account Settings</h2>
+                            <form id="avatarForm" enctype="multipart/form-data" class="cyber-input-full">
                                 <input type="file" name="avatar" accept="image/*" required>
-                                <button type="submit">Upload Avatar</button>
+                                <button type="submit" class="cyber-button-small">Upload Avatar</button>
                             </form>
                         </div>
                         <div id="soundSettings" class="settingsSection">
-                            <h2>Sound Settings</h2>
-                            <div class="musicControl">
+                            <h2 class="cyber-h">Sound Settings</h2>
+                            <div class="musicControl cyber-input">
                                 <label for="musicToggle">Background Music:</label>
-                                <button id="musicToggle">🔈 Off</button>
+                                <button id="musicToggle" class="cyber-button-small">🔈 Off</button>
                             </div>
-                            <div class="volumeControl">
+                            <div class="volumeControl cyber-input">
                                 <label for="volumeSlider">Volume:</label>
                                 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
                             </div>
@@ -145,7 +153,7 @@
                 localStorage.setItem("musicVolume", savedVolume);
             }
             if (savedPlaying === null) {
-                savedPlaying = "true"; 
+                savedPlaying = "true";
                 localStorage.setItem("musicPlaying", savedPlaying);
             }
 
@@ -201,7 +209,7 @@
 
             updateToggleText();
         });
-</script>
+    </script>
 </body>
 
 </html>
