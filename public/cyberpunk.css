@@ -1427,3 +1427,16 @@ label {
         filter: none;
     }
 }
+
+input::-webkit-input-placeholder {
+  color: lightgray;
+}
+input::-moz-placeholder {
+  color: lightgray;
+}
+input:-ms-input-placeholder {
+  color: lightgray;
+}
+input::placeholder {
+  color: lightgray;
+}
