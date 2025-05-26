@@ -1,6 +1,7 @@
 const Card = require('../models/Card.js');
 const Socket = require('../Socket.js');
 const User = require('../models/User.js');
+const Game = require('../models/Game.js');
 
 class APIController {
     constructor() {
@@ -39,6 +40,15 @@ class APIController {
         const userData = new User();
         await userData.find(id);
         res.json({"avatarPath": userData.avatar_path});
+    }
+
+    async getAllMatchHistory(req, res) {
+        if (!req.session || !req.session.user || !req.session.user.id) {
+            return res.status(401).json({ error: 'No user found' });
+        }
+        const userId = req.session.user.id;
+        const allMatches = await Game.getAllMatches(userId);
+        res.json({"allMatches": allMatches});
     }
 }
 
