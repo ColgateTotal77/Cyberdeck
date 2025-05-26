@@ -170,7 +170,7 @@ body::after {
 .card, .card-back {
     display: inline-block;
     width: 120px;
-    height: 150px;
+    height: 170px;
     margin: 0;
     position: relative;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(20, 0, 40, 0.8));
