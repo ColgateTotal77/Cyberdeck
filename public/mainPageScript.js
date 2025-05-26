@@ -392,11 +392,59 @@ document.addEventListener("DOMContentLoaded", async () => {
         setupClearDeckButton();
         // Setup modal listeners
         setupDeckModalListeners();
+        if (allMatchHistory && Array.isArray(allMatchHistory.allMatches)) {
+            renderMatchHistory();
+        }
     } catch (error) {
         console.error('Error initializing card data:', error);
         Notifications.showNotification('Failed to load cards. Please refresh the page.', true);
     }
 });
+
+function renderMatchHistory() {
+    const historyContainer = document.querySelector('.MatchHistory');
+
+    // Clear previous entries (but keep the <h3>)
+    historyContainer.querySelectorAll('.match-entry').forEach(el => el.remove());
+
+    const currentYear = new Date().getFullYear();
+
+    allMatchHistory.allMatches.forEach(match => {
+        if (!match || !match.end_time) return; // Skip unfinished matches
+
+        const { opponent_login, start_time, end_time, rating_change } = match;
+        if (!opponent_login || !start_time) return;
+
+        const start = new Date(start_time);
+        const end = new Date(end_time);
+
+        // Format date depending on year
+        const day = start.getDate().toString().padStart(2, '0');
+        const month = (start.getMonth() + 1).toString().padStart(2, '0');
+        const year = start.getFullYear();
+        const dateStr = (year === currentYear) ? `${day}.${month}` : `${day}.${month}.${year}`;
+
+        // Format times
+        const startTimeStr = `${start.getHours().toString().padStart(2, '0')}:${start.getMinutes().toString().padStart(2, '0')}`;
+        const endTimeStr = `${end.getHours().toString().padStart(2, '0')}:${end.getMinutes().toString().padStart(2, '0')}`;
+
+        // Determine result and rating
+        let result = '?';
+        let ratingStr = '-';
+        if (rating_change !== null) {
+            result = rating_change > 0 ? 'W' : 'L';
+            ratingStr = rating_change > 0 ? `+${rating_change}` : `${rating_change}`;
+        }
+
+        // Create match entry
+        const entry = document.createElement('div');
+        entry.classList.add('match-entry');
+        entry.textContent = `${result} ${opponent_login} ${ratingStr} | ${dateStr} ${startTimeStr} → ${endTimeStr}`;
+
+        historyContainer.appendChild(entry);
+    });
+}
+
 
 document.getElementById('avatarForm').addEventListener('submit', async function(e) {
     e.preventDefault();
