@@ -79,6 +79,8 @@ const upload = multer({ storage, fileFilter });
     app.get('/api/getAllCards', (req, res) => apiController.getAllCards(req, res));
     app.post('/uploadAvatar', upload.single('avatar'), async (req, res) => { await MainPageController.uploadAvatar(req, res); });
     app.post('/api/getAvatarPath', (req, res) => apiController.getAvatarPath(req, res));
+    app.get('/api/getAllMatchHistory', (req, res) => apiController.getAllMatchHistory(req, res));
+
     app.use((req, res) => {
         res.status(404).sendFile(__dirname + '/views/404.html');
     });

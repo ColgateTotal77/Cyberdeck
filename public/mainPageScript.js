@@ -117,6 +117,7 @@ function setupClearDeckButton() {
 let allCards = []; 
 let activeCards = []; 
 let inactiveCards = [];
+let allMatchHistory = [];
 
 // Initial render for main grid
 function renderMainGrid() {
@@ -365,17 +366,22 @@ document.querySelectorAll(".settingsTab").forEach(tab => {
 // Initialize everything when DOM is loaded
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // Fetch cards from API
-        const response = await fetch('/api/getAllCards');
+
+        let response = await fetch('/api/getAllCards');
         if (!response.ok) {
             throw new Error('Failed to fetch cards');
         }
-        
 
-
-        // Store all cards from the database
         allCards = await response.json();
         console.log('Loaded cards from database:', allCards);
+        
+        response = await fetch('/api/getAllMatchHistory');
+        if (!response.ok) {
+            throw new Error('Failed to fetch history');
+        }
+
+        allMatchHistory = await response.json();
+        console.log('Loaded cards from database:', allMatchHistory);
         
         // Load saved card state
         loadCardState();
