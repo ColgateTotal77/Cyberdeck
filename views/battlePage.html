@@ -90,7 +90,7 @@
             let isMuted = savedPlaying !== "true";
             
             const updateIcon = () => {
-                toggleBtn.textContent = isMuted ? "🔈" : (music.volume == 0 ? "🔈" : "🔊");
+                toggleBtn.textContent = isMuted ? "🔈" : (music.volume === 0 ? "🔈" : "🔊");
             };
             
             let isOverButton = false;

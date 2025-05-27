@@ -6,12 +6,8 @@ class MainPageController {
     static async userData(req, res) {
         const user = new User();
         await user.find(req.session.user.id);
-        if (user.login) {
-            res.json({avatarPath: user.avatar_path, login: user.login, rating: user.rating});
-        } 
-        else {
-            res.status(401).json({ error: "Unauthorized" });
-        }
+        if (user.login) res.json({avatarPath: user.avatar_path, login: user.login, rating: user.rating});
+        else res.status(401).json({error: "Unauthorized"});
     };
 
     static mainPage(req, res) {
@@ -25,9 +21,7 @@ class MainPageController {
 static async uploadAvatar(req, res) {
     try {
         const user = req.session?.user;
-        if (!user || !req.file) {
-            return res.status(400).json({ error: 'Missing user session or file' });
-        }
+        if (!user || !req.file) return res.status(400).json({error: 'Missing user session or file'});
 
         const avatarPath = '/avatars/' + req.file.filename;
 
@@ -46,9 +40,7 @@ static async uploadAvatar(req, res) {
 
     static logOut(req, res) {
         req.session.destroy((err) => {
-            if (err) {
-                return res.status(500).send("Logout error");
-            }
+            if (err) return res.status(500).send("Logout error");
             res.clearCookie('connect.sid');
             res.redirect('/loginForm');
         });

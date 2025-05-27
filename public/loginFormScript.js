@@ -14,7 +14,7 @@ document.getElementById('loginForm').addEventListener('submit', async(e) => {
         }
     });
 
-    if (Notifications.errorCount == 0) {
+    if (Notifications.errorCount === 0) {
         let urlParams = new URLSearchParams(formData);
 
         const response = await fetch('/login', {

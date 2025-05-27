@@ -404,9 +404,7 @@ class Socket {
         }
 
         clearTimeout(room.turnTimeout);
-        const nextPlayerId = battle.player1.userData.id === battle.current_turn_player_id ? battle.player2.userData.id : battle.player1.userData.id;
-
-        battle.current_turn_player_id = nextPlayerId;
+        battle.current_turn_player_id = battle.player1.userData.id === battle.current_turn_player_id ? battle.player2.userData.id : battle.player1.userData.id;
         this.startTurn(roomId);
     }
 
@@ -589,10 +587,9 @@ class Socket {
         this.io.to(roomId).emit('matchEnded', {
             winnerData: { userId: winner.id, plusRating: ratingForWinner }, 
             loserData: { userId: loser.id, plusRating: ratingForLoser }
-        });  
+        });
 
-        const newWinnerRating = winnerData.rating + ratingForWinner;
-        winnerData.rating = newWinnerRating;
+        winnerData.rating = winnerData.rating + ratingForWinner;
         await winnerData.save();
 
         const newLoserRating = loserData.rating + ratingForLoser;

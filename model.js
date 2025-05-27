@@ -12,9 +12,7 @@ class Model {
             Object.assign(this, rows[0]);
             return this;
         } 
-        else {
-            return null;
-        }
+        else return null;
     }
 
     async delete() {
@@ -22,9 +20,7 @@ class Model {
 
         const [rows] = await db.execute(`SELECT 1 FROM ${this.tableName} WHERE id = ?`, [this.id]);
 
-        if (rows.length === 0) {
-            return false;
-        }
+        if (rows.length === 0) return false;
 
         const [result] = await db.execute(`DELETE FROM ${this.tableName} WHERE id = ?`, [this.id]);
 
@@ -62,9 +58,7 @@ class Model {
             Object.assign(this, rows[0]);
             return this;
         } 
-        else {
-            return null;
-        }
+        else return null;
     }
 }
 

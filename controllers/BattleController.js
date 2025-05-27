@@ -7,7 +7,7 @@ class BattleController {
         const roomId = req.params.roomId;
         const user = req.session.user;
 
-        if(!user || !Socket.rooms.has(roomId) || user.roomId != roomId) {
+        if(!user || !Socket.rooms.has(roomId) || user.roomId !== roomId) {
             res.redirect('/mainPage');
         }
         else {

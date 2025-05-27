@@ -9,21 +9,12 @@ class Card extends Model {
     
     static async takeAllCards() {
         const [rows] = await db.execute(`SELECT * FROM cards`);
-        if (rows.length > 0) {
-            return rows;
-        } 
-        else {
-            return null;
-        }
+        return rows.length > 0 ? rows : null;
     }
 
     static async takeAllCardsId() {
         const [rows] = await db.execute(`SELECT id FROM cards`);
-        if (rows.length > 0) {
-            return new Set(rows.map(row => row.id));
-        } else {
-            return new Set();
-        }
+        return rows.length > 0 ? new Set(rows.map(row => row.id)) : new Set();
     }
 }
 

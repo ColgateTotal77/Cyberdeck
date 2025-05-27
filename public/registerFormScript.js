@@ -10,7 +10,7 @@ document.getElementById('registerForm').addEventListener('submit', async(e) => {
     });
 
     const confirmPassword = document.querySelector('input[name="confirmPassword"]');
-    if(formData.get("password") != formData.get("confirmPassword")) {
+    if(formData.get("password") !== formData.get("confirmPassword")) {
         Notifications.showNotification("Passwords don't match!", true);
         return;
     }
