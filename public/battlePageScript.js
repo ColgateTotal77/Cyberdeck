@@ -244,7 +244,10 @@ function renderOpponentHand() {
     opponent.handCards.forEach(() => {
         const cardBack = document.createElement('div');
         cardBack.classList.add('card-back');
-        cardBack.innerHTML = `<img src="/image/cardBack.gif" alt="cardBack" class="card-img" />`;
+        cardBack.innerHTML = `
+            <img src="/image/cardBack.png" alt="cardBack" class="card-img"/>
+            <img src="/image/cardBackAnim.gif" alt="anim" class="card-anim"/>
+        `;
         opponentCardsContainer.appendChild(cardBack);
     });
 }
@@ -448,7 +451,10 @@ Socket.socket.on('newHandCard', (cardId) => {
 Socket.socket.on("newOpponentHandCard", () => {
     const cardBack = document.createElement('div');
     cardBack.classList.add('card-back');
-    cardBack.innerHTML = `<img src="/image/cardBack.jpg" alt="cardBack" class="card-img" />`;
+    cardBack.innerHTML = `
+        <img src="/image/cardBack.png" alt="cardBack" class="card-img"/>
+        <img src="/image/cardBackAnim.gif" alt="anim" class="card-anim"/>
+    `;
     opponentCardsContainer.appendChild(cardBack);
 });
 
