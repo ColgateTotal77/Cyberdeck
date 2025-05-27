@@ -462,18 +462,21 @@ class Socket {
             return;
         }
 
-        if(battle[who].mana >= 3) {
-            battle[who].mana -= 3;
-            const newRandomCardID = battle[who].deck[Math.floor(Math.random() * battle[who].deck.length)];
-            battle[who].handCards.push(newRandomCardID);
+        if(battle[who].mana < 3) {
+            socket.emit("notification", { message: "Not enough mana", isError: true });
+            return;
+        }
 
-            socket.emit("newMana", battle[who].mana);
-            socket.emit("newHandCard", newRandomCardID);
+        battle[who].mana -= 3;
+        const newRandomCardID = battle[who].deck[Math.floor(Math.random() * battle[who].deck.length)];
+        battle[who].handCards.push(newRandomCardID);
 
-            const opponentSocketId = room.socketIds.find(socketId => socketId !== socket.id);
-            if (opponentSocketId) {
-                this.io.to(opponentSocketId).emit("newOpponentHandCard");
-            }
+        socket.emit("newMana", battle[who].mana);
+        socket.emit("newHandCard", newRandomCardID);
+
+        const opponentSocketId = room.socketIds.find(socketId => socketId !== socket.id);
+        if (opponentSocketId) {
+            this.io.to(opponentSocketId).emit("newOpponentHandCard");
         }
     }
 
@@ -670,10 +673,10 @@ function calculateRatingChange(userRating, opponentRating, didWin) {
     const k = 30;
     const expected = 1 / (1 + Math.pow(10, (opponentRating - userRating) / 400));
     const baseChange = k * (result - expected);
-    const randFactor = Math.random() * 2 + 1;
-    const totalChange = baseChange * randFactor;
+    // const randFactor = Math.random() * 2 + 1;
+    // const totalChange = baseChange * randFactor;
 
-    return Math.round(totalChange);
+    return Math.round(baseChange);
 }
 
 function checkDeckBeforeStart(deck, allCardsId) {
