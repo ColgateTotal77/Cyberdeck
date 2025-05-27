@@ -1,7 +1,7 @@
 const User = require('../models/User.js');
 const nodemailer = require("nodemailer");
 const path = require('path');
-
+const bcrypt = require('bcrypt');
 class RestoreController {
     static transporter = nodemailer.createTransport({
         service: "gmail",
