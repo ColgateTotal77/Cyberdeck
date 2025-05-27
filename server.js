@@ -26,7 +26,7 @@ const sessionMiddleware = session({
     rolling: true,
     cookie: {
         httpOnly: true,
-        secure: true,
+        secure: false,
         maxAge: 30 * 24 * 60 * 60 * 1000 * 12
     }
 });
@@ -87,6 +87,6 @@ const upload = multer({ storage, fileFilter });
 
     const port = 3001;
     server.listen(port, () => {
-        console.log(`Server running at https://localhost:${port}/loginForm`);
+        console.log(`Server running at http://localhost:${port}/loginForm`);
     });
 })();
