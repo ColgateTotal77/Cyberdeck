@@ -730,7 +730,7 @@ body {
 /* cyber button  play */
 
 .cybr-btn {
-  --primary: hsl(var(--primary-hue), 85%, calc(var(--primary-lightness, 50) * 1%));
+  --primary: #ff003c !important;
   --shadow-primary: hsl(var(--shadow-primary-hue), 90%, 50%);
   --primary-hue: 0;
   --primary-lightness: 50;
