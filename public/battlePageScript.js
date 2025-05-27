@@ -244,7 +244,7 @@ function renderOpponentHand() {
     opponent.handCards.forEach(() => {
         const cardBack = document.createElement('div');
         cardBack.classList.add('card-back');
-        cardBack.innerHTML = `<img src="/image/cardBack.jpg" alt="cardBack" class="card-img" />`;
+        cardBack.innerHTML = `<img src="/image/cardBack.gif" alt="cardBack" class="card-img" />`;
         opponentCardsContainer.appendChild(cardBack);
     });
 }
