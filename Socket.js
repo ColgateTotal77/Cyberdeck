@@ -1,5 +1,4 @@
-const fs = require('fs');
-const https = require('https');
+const http = require('http');
 const { Server } = require('socket.io');
 const { RBTree } = require('bintrees');
 const sharedsession = require("express-socket.io-session");
@@ -26,19 +25,7 @@ class Socket {
     }
 
     static inicialization(app, sessionMiddleware) {
-        let sslOptions = null;
-        try {
-            sslOptions = {
-                key: fs.readFileSync(__dirname + '/ssl/key.pem'),
-                cert: fs.readFileSync(__dirname + '/ssl/cert.pem')
-            };
-        } 
-        catch (err) {
-            console.error("Failed to load SSL certificate:", err.message);
-            process.exit(1);
-        }
-
-        const server = https.createServer(sslOptions, app);
+        const server = http.createServer(app);
         this.io = new Server(server);
 
         this.io.use(sharedsession(sessionMiddleware, {
