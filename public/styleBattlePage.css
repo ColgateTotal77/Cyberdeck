@@ -351,6 +351,11 @@ body::after {
   align-items: center;
   padding: 5px 10px;
   color: white;
+      text-shadow:
+     0 0 4px #ffa500,
+     0 0 8px #ffa500,
+     0 0 12px #ffa500,
+     0 0 16px #ffa500;
 }
 .cardCost{
     font-family: 'FatCatRegular', sans-serif;
@@ -364,6 +369,11 @@ body::after {
   align-items: center;
   padding: 5px 10px;
   color: white;
+    text-shadow:
+     0 0 4px #00ffd2,
+     0 0 8px #00ffd2,
+     0 0 12px #00ffd2,
+     0 0 16px #00ffd2;
 }
 .cardHp, .card-Hp{
     font-family: 'FatCatRegular', sans-serif;
@@ -377,6 +387,11 @@ body::after {
     align-items: center;
     padding: 5px 10px;
     color: white;
+          text-shadow:
+     0 0 4px green,
+     0 0 8px green,
+     0 0 12px green,
+     0 0 16px green;
 }
 
 .cardNameChoosen{
@@ -436,6 +451,11 @@ body::after {
   align-items: center;
   padding: 5px 10px;
   color: white;
+      text-shadow:
+     0 0 4px #ffa500,
+     0 0 8px #ffa500,
+     0 0 12px #ffa500,
+     0 0 16px #ffa500;
 }
 .cardCostChoosen{
     font-family: 'FatCatRegular', sans-serif;
@@ -449,6 +469,11 @@ body::after {
   align-items: center;
   padding: 5px 10px;
   color: white;
+    text-shadow:
+     0 0 4px #00ffd2,
+     0 0 8px #00ffd2,
+     0 0 12px #00ffd2,
+     0 0 16px #00ffd2;
 }
 .cardHpChoosen{
     font-family: 'FatCatRegular', sans-serif;
@@ -462,6 +487,11 @@ body::after {
   align-items: center;
   padding: 5px 10px;
   color: white;
+        text-shadow:
+     0 0 4px green,
+     0 0 8px green,
+     0 0 12px green,
+     0 0 16px green;
 }
 
 /* Cyberpunk Buttons */
@@ -937,6 +967,11 @@ button:active {
     align-items: center;
     padding: 5px 10px;
     color: white;
+    text-shadow:
+     0 0 4px #00ffd2,
+     0 0 8px #00ffd2,
+     0 0 12px #00ffd2,
+     0 0 16px #00ffd2;
 }
 
 #endGameWindow {
