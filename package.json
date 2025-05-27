@@ -10,7 +10,7 @@
     "author": "",
     "license": "ISC",
     "description": "",
-        "dependencies": {
+    "dependencies": {
         "bcrypt": "^6.0.0",
         "bintrees": "^1.0.2",
         "express": "^5.1.0",
