@@ -1,0 +1,21 @@
+First:
+    Install dependencies:
+        npm install
+Second:
+    Create the database:
+        sudo mysql -u root < db.sql 
+Third:
+    Launch the server:
+        node server.js
+
+
+List of features:
+    1. Match history
+    2. Matchmaking based on player rating
+    3. Avatars
+    4. Ability to choose one card from three during a match
+    5. Ability to take one random card for 3 mana during a match
+    6. Ability to create a own deck
+    7. Background music on the main and battle pages
+    8. Password recovery via a verification code sent to email
+    9. Ability to give up during a match
