@@ -72,12 +72,11 @@
             const volumeSlider = document.getElementById("volumeSlider");
             const volumePopup = document.getElementById("volumePopup");
             
-            // Load settings from localStorage or use defaults
             let savedVolume = localStorage.getItem("musicVolume");
             let savedPlaying = localStorage.getItem("musicPlaying");
             
             if (savedVolume === null) {
-                savedVolume = "0.05"; // default volume
+                savedVolume = "0.05";
                 localStorage.setItem("musicVolume", savedVolume);
             }
             if (savedPlaying === null) {
@@ -85,7 +84,6 @@
                 localStorage.setItem("musicPlaying", savedPlaying);
             }
             
-            // Initialize music settings
             music.load();
             music.volume = parseFloat(savedVolume);
             volumeSlider.value = savedVolume;
@@ -95,7 +93,6 @@
                 toggleBtn.textContent = isMuted ? "🔈" : (music.volume == 0 ? "🔈" : "🔊");
             };
             
-            // Hover popup functionality
             let isOverButton = false;
             let isOverPopup = false;
             
@@ -127,7 +124,6 @@
                 }, 100);
             });
             
-            // Toggle music on/off
             toggleBtn.addEventListener("click", () => {
                 isMuted = !isMuted;
                 if (isMuted) {
@@ -140,7 +136,6 @@
                 updateIcon();
             });
             
-            // Volume control
             volumeSlider.addEventListener("input", () => {
                 const volume = parseFloat(volumeSlider.value);
                 music.volume = volume;
@@ -148,7 +143,6 @@
                 updateIcon();
             });
             
-            // Audio unlock for autoplay restrictions
             const unlockAudio = () => {
                 if (localStorage.getItem("musicPlaying") === "true") {
                     music.play().then(() => {
@@ -163,7 +157,6 @@
             
             document.addEventListener("click", unlockAudio, { once: true });
             
-            // Initialize music playback
             if (!isMuted && localStorage.getItem("musicPlaying") === "true") {
                 music.play().catch(() => {});
             }

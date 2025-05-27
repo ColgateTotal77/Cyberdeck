@@ -126,7 +126,6 @@ body::after {
     align-items: center;
 }
 
-/* Enhanced table card styling - aligned to green border */
 #userTable, #opponentTable {
     background: radial-gradient(ellipse at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
     border: 1px solid rgba(0, 255, 255, 0.2);
@@ -166,7 +165,6 @@ body::after {
     pointer-events: none;
 }
 
-/* Card styling for both hand and table cards */
 .card, .card-back {
     display: inline-block;
     width: 120px;
@@ -232,7 +230,6 @@ body::after {
     line-height: 1.1;
 }
 
-/* Specific styling for table cards */
 #userTable .card,
 #opponentTable .card {
     border-color: rgba(0, 255, 128, 0.4);
@@ -250,7 +247,6 @@ body::after {
     border-color: rgba(0, 255, 128, 0.8);
 }
 
-/* Hand container adjustments */
 #opponentHand, #userHand {
     display: flex;
     justify-content: center;
@@ -271,13 +267,11 @@ body::after {
     transform: translateY(-20px);
 }
 
-/* Draggable state */
 .card[draggable="true"]:active {
     opacity: 0.7;
     transform: rotate(5deg);
 }
 
-/* Card back styling */
 .card-back {
     border-color: rgba(255, 0, 128, 0.4);
     box-shadow: 
@@ -325,9 +319,9 @@ body::after {
   font-size: 9px;
   font-weight: bold;
   color: #f65351;
-  text-align: center;        /* Horizontally center text */
-  width: 100%;               /* Make it span the card width */
-  margin: 10px 0;            /* Some spacing above and below */
+  text-align: center;
+  width: 100%;
+  margin: 10px 0;
   text-transform: uppercase;
 }
 
@@ -361,9 +355,9 @@ body::after {
   font-size: 6px;
   font-weight: bold;
   color: #f65351;
-  text-align: center;        /* Horizontally center text */
-  width: 100%;               /* Make it span the card width */
-  margin: 10px 0;            /* Some spacing above and below */
+  text-align: center;
+  width: 100%;
+  margin: 10px 0;
 }
 
 .cardAttack{
@@ -426,9 +420,9 @@ body::after {
   font-size: 7px;
   font-weight: bold;
   color: #f65351;
-  text-align: center;        /* Horizontally center text */
-  width: 100%;               /* Make it span the card width */
-  margin: 10px 0;            /* Some spacing above and below */
+  text-align: center;
+  width: 100%;
+  margin: 10px 0;
   text-transform: uppercase;
 }
 
@@ -462,8 +456,8 @@ body::after {
   font-size: 4px;
   font-weight: bold;
   color: #f65351;
-  text-align: center;        /* Horizontally center text */
-  width: 100%;               /* Make it span the card width */    
+  text-align: center;
+  width: 100%;  
 }
 
 .cardAttackChoosen{
@@ -521,7 +515,6 @@ body::after {
      0 0 16px green;
 }
 
-/* Cyberpunk Buttons */
 button {
     background: linear-gradient(45deg, #ff0080, #ff8000);
     border: 2px solid transparent;
@@ -584,7 +577,6 @@ button:active {
     background: linear-gradient(45deg, #00ff80, #0080ff);
 }
 
-/* Turn Status and Timer */
 #turnStatus {
     position: fixed;
     top: 40px;
@@ -634,7 +626,6 @@ button:active {
     50% { transform: translateX(-50%) scale(1.1); }
 }
 
-/* Announcements */
 #turnAnnouncement {
     position: fixed;
     top: 50%;
@@ -677,7 +668,6 @@ button:active {
     display: none;
 }
 
-/* Music Controls */
 .musicControlContainer {
     position: fixed;
     top: 20px;
@@ -786,8 +776,6 @@ button:active {
     display: none !important;
 }
 
-
- /* Player Info */
 .player-info {
     display: flex;
     flex-direction: row;
@@ -873,7 +861,6 @@ button:active {
     filter: saturate(1.2) contrast(1.1);
 }
 
-/* Login names */
 #userLogin, #opponentLogin {
     font-family: 'Orbitron', monospace;
     font-weight: 700;
@@ -885,7 +872,6 @@ button:active {
     margin-bottom: 5px;
 }
 
-/* Cyberpunk Grid Overlay */
 .grid-overlay {
     position: fixed;
     top: 0;
@@ -976,9 +962,9 @@ button:active {
     font-size: 11px;
     font-weight: bold;
     color: #f65351;
-    text-align: center;        /* Horizontally center text */
-    width: 100%;               /* Make it span the card width */
-    margin: 10px 0;            /* Some spacing above and below */
+    text-align: center;
+    width: 100%;
+    margin: 10px 0;
     text-transform: uppercase;
 }
 

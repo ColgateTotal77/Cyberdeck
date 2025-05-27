@@ -37,7 +37,6 @@ static async uploadAvatar(req, res) {
         userData.avatar_path = avatarPath;
         await userData.save();
 
-        console.log("Avatar uploaded successfully!");
         return res.status(200).json({ avatarPath: avatarPath });
     } catch (err) {
         console.error(err);

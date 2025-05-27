@@ -13,7 +13,6 @@ const opponent = battleInfo.player2.userData.id === userId ? battleInfo.player1 
 let isMyTurn = user.userData.id === battleInfo.current_turn_player_id;
 document.getElementById("turnStatus").innerText = isMyTurn ? "Your Turn!" : "Opponent's Turn...";
 
-console.log( user.userData.id);
 const userResponse = await fetch('/api/getAvatarPath', {
     method: 'POST',
     headers: {
@@ -42,21 +41,9 @@ const opponentAvatar = document.getElementById("opponentAvatar");
 document.getElementById("userAvatar").innerHTML = `<img src="${userAvatarPath.avatarPath}">`;
 opponentAvatar.innerHTML = `<img src="${opponentAvatarPath.avatarPath}">`;
 
-console.log(user);
-console.log(opponent);
-console.log(allCards);
-
-// document.getElementById("userInfo").innerHTML = user.userData.login;
-// document.getElementById("opponentInfo").innerHTML = opponent.userData.login;
-        //     player1: {userData: user, hp:30, mana: 4, handCards: userHandCards, tableCards: [], deck: userDeck},
-        //     player2: {userData: opponent, hp:30, mana: 4, handCards: opponentHandCards, tableCards: [], deck: opponentDeck},
-        //     roomId: roomId,
-        //     current_turn_player_id : current_turn_player_id
-
 document.getElementById("userLogin").innerHTML = user.userData.login;
 document.getElementById("opponentLogin").innerHTML = opponent.userData.login;
 
-console.log(user.hp, opponent.hp, user.mana)
 
 document.getElementById("userHP").innerText = `${user.hp}`;
 document.getElementById("opponentHP").innerText = `${opponent.hp}`;
@@ -359,7 +346,6 @@ Socket.socket.on('newCards', (cardsToChoose) => {
 const newCardsDiv = document.getElementById("newCards");
 
 function renderCardsToChoose(array) {
-    console.log(array);
     if(array.length > 0) {
         array.forEach(cardId => {
             const cardData = allCards.find(card => card.id === cardId);
@@ -479,7 +465,7 @@ Socket.socket.on("userHpDecrease", ({defeanserId, newHp}) => {
 });
 
 const endGameWindow = document.getElementById("endGameWindow");
-endGameWindow.style.display = "none"; // hidden by default
+endGameWindow.style.display = "none"; 
 
 Socket.socket.on("matchEnded", ({ winnerData, loserData }) => {
     const isWinner = winnerData.userId === userId;
@@ -503,7 +489,6 @@ Socket.socket.on("matchEnded", ({ winnerData, loserData }) => {
 const randomCard = document.getElementById("randomCard");
 
 randomCard.addEventListener("click", () => {
-    console.log("click");
     Socket.socket.emit("giveRandomCard");
 }) 
 
@@ -511,7 +496,6 @@ Socket.socket.on("notification", ({message, isError}) => {
     Notifications.showNotification(message, isError);
 });
 
-// Initial render
 renderUserHand();
 renderOpponentHand();
 renderUserTable()
@@ -525,7 +509,6 @@ document.getElementById('giveUpButton').addEventListener('click', () => {
     }
 })
 
-// Inside battlePageScript.js, after defining user and opponent
 const turnAnnouncement = document.getElementById("turnAnnouncement");
 
 if (battleInfo.current_turn_player_id === user.userData.id) {

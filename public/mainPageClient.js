@@ -19,6 +19,5 @@ socket.on('startGame', async (roomId) => {
 });
 
 socket.on('matchCancelled', () => {
-    console.log('Match search cancelled');
     showSearchingIndicator(false);
 });

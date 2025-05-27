@@ -15,7 +15,6 @@
     <div class="main-content">
         <div class="main-buttons">
             <div class="cybr-btn" id="playButton">
-                <!-- <img src="/image/battle.png"> -->
                 <span aria-hidden="false">PLAY</span>
                 <span aria-hidden="true" class="cybr-btn__glitch">PLAY</span>
             </div>
@@ -38,12 +37,6 @@
             <div class="card"></div>
         </div>
     </div>
-    <!-- <div id="notificationContainer"></div> -->
-    <!-- <div id="accauntContainer">
-        <div id="userData"></div>
-
-    </div> -->
-    <!-- <div id="playButton">Play</div> -->
     <div class="sidebar" id="sidebar">
         <div id="rightSidebar" class="right-sidebar bg-black ac-cyan fg-white">
             <div class="sidebar-top cyber-tile-small bg-green fg-black">
@@ -115,13 +108,11 @@
                     <button id="closeCarddeck" class="closedeckBtn cyber-button-small bg-black fg-red">✖</button>
                 </div>
                 <div class="cardsContainer">
-                    <!-- Active Cards Grid -->
                     <div class="activeCards">
                         <h3 class="cyber-h cyber-h--small">Active Cards</h3>
                         <div class="cardGrid" id="activeCardGrid"></div>
                     </div>
 
-                    <!-- Inactive Cards List -->
                     <div class="inactiveCards">
                         <h3 class="cyber-h cyber-h--small">Inactive Cards</h3>
                         <div class="inactiveList" id="inactiveCardList"></div>
@@ -147,7 +138,7 @@
         let savedPlaying = localStorage.getItem("musicPlaying");
 
         if (savedVolume === null) {
-            savedVolume = "0.05"; // default volume
+            savedVolume = "0.05";
             localStorage.setItem("musicVolume", savedVolume);
         }
         if (savedPlaying === null) {
@@ -159,15 +150,12 @@
         music.volume = parseFloat(savedVolume);
         volumeSlider.value = savedVolume;
 
-        // Fix: Initialize music playing status from saved data
         let isMusicPlaying = savedPlaying === "true";
 
-        // Update toggle button UI
         const updateToggleText = () => {
             toggleBtn.textContent = isMusicPlaying ? "🔊 On" : "🔈 Off";
         };
 
-        // Set initial button text immediately
         updateToggleText();
 
         toggleBtn.addEventListener("click", () => {
@@ -175,12 +163,12 @@
                 music.pause();
                 isMusicPlaying = false;
                 localStorage.setItem("musicPlaying", "false");
-                updateToggleText(); // ✅ safe to update immediately
+                updateToggleText();
             } else {
                 music.play().then(() => {
                     isMusicPlaying = true;
                     localStorage.setItem("musicPlaying", "true");
-                    updateToggleText(); // ✅ only update after music starts
+                    updateToggleText(); 
                 }).catch(err => {
                     console.warn("Playback failed:", err.message);
                 });

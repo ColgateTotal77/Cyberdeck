@@ -104,26 +104,3 @@ html, body {
 .hidden {
     display:none;
 }
-
-/* #rightSidebar {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 17vw;
-    height: 100vh;
-    background-color: #f2f2f2;
-    border-left: 1px solid #ccc;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    box-sizing: border-box;
-    z-index: 1000; 
-} */
-
-/* .sidebarTop {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
-} */
