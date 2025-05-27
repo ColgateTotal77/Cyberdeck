@@ -38,27 +38,32 @@ export function showSearchingIndicator(isSearching) {
 }
 
 // Add a new function to handle deck blocked status
+function hideChangeButton() {
+    const btn = document.getElementById('changeButton');
+    btn.classList.remove('fade-in');
+    btn.classList.add('fade-out');
+    btn.addEventListener('animationend', () => {
+        btn.style.display = 'none';
+        btn.classList.remove('fade-out');
+    }, { once: true });
+}
+
+function showChangeButton() {
+    const btn = document.getElementById('changeButton');
+    btn.style.display = 'flex';
+    btn.classList.remove('fade-out', 'fade-in');
+
+    void btn.offsetWidth;
+
+    btn.classList.add('fade-in');
+}
+
 function setDeckBlockedStatus(isBlocked) {
     window.isDeckBlocked = isBlocked;
-    const changeButton = document.getElementById('changeButton');
-    
     if (isBlocked) {
-        changeButton.classList.add('blocked');
-        // Add visual indication that deck is locked
-        const existingLock = changeButton.querySelector('.lockIcon');
-        if (!existingLock) {
-            const lockIcon = document.createElement('div');
-            lockIcon.className = 'lockIcon';
-            lockIcon.innerHTML = '🔒';
-            changeButton.appendChild(lockIcon);
-        }
+        hideChangeButton();
     } else {
-        changeButton.classList.remove('blocked');
-        // Remove lock icon if it exists
-        const lockIcon = changeButton.querySelector('.lockIcon');
-        if (lockIcon) {
-            changeButton.removeChild(lockIcon);
-        }
+        showChangeButton();
     }
 }
 

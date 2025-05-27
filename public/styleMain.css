@@ -76,12 +76,22 @@ body {
   /* subtle translucent background */
   border-radius: 8px;
   display: flex;
+  pointer-events: all;
   justify-content: center;
   align-items: center;
-
   transition: background-color 0.3s ease, transform 0.2s ease;
   z-index: 10;
   /* make sure it’s above other elements */
+}
+
+.change-button.fade-in {
+  pointer-events: all;
+  animation: fadeIn 0.4s forwards;
+}
+
+.change-button.fade-out {
+  pointer-events: none;
+  animation: fadeOut 0.4s forwards;
 }
 
 .change-button img {
@@ -95,6 +105,28 @@ body {
 .change-button:hover {
   background-color: rgba(255, 255, 255, 0.25);
   transform: translateX(-50%) scale(1.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0)      scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0)      scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.95);
+  }
 }
 
 .cards-grid {
@@ -213,6 +245,7 @@ body {
 }
 
 .cardDescription {
+  font-family: 'FatCatRegular', sans-serif;
   position: absolute;
   top: 87%;
   left: 50%;
@@ -302,7 +335,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5px 10px;
   padding: 3px 8px;
   font-family: 'FatCatRegular', sans-serif;
   font-size: 6px;
@@ -431,16 +463,14 @@ body {
   top: 0;
   width: 17vw;
   height: 100vh;
-  background-color: #f2f2f2;
-  border-left: 1px solid #ccc;
-  padding: 10px;
   box-sizing: border-box;
   z-index: 1000;
-  color: black;
-
-  display: grid;
-  grid-template-rows: 30% 60% 10%;
-  gap: 10px;
+  background: var(--bg) !important;
+  border-left: none !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr auto !important;
+  gap: 1rem !important;
+  padding: 1rem !important;
 }
 
 .sidebar-top {
@@ -451,12 +481,17 @@ body {
 }
 
 .sidebar-top,
-.sidebar-middle,
 .sidebar-bottom {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.sidebar-middle {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Optional: add spacing or style to children */
@@ -483,8 +518,10 @@ body {
   margin-top: auto;
 }
 
-.redirectButton:hover {
-  text-decoration: underline;
+.redirectButton.cyber-button-small {
+  position: relative !important;   /* <-- ключове */
+  display: inline-block !important; /* щоби фон малювався тільки за розмірами кнопки */
+  overflow: visible;                /* псевдоелементи можуть “визирати” за межі, якщо потрібно */
 }
 
 /* Remove manual positioning! */
@@ -500,8 +537,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   padding: 4px;
   border: none;
   background: none;
@@ -521,13 +558,10 @@ body {
 }
 
 #avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background-color: #ccc;
+  width: 100px;
+  height: 100px;
   border: 2px solid #999;
   margin: 20px 0;
-  overflow: hidden;
   /* Ensures the image is clipped */
   display: flex;
   /* Optional: helps with image centering */
@@ -536,8 +570,8 @@ body {
 }
 
 #avatar img {
-  width: 100%;
-  height: 100%;
+  width: 110%;
+  height: 120%;
   object-fit: cover;
   /* Crop the image nicely */
   display: block;
@@ -602,6 +636,11 @@ body {
   background-color: #e7e7e7;
   margin-bottom: 4px;
   border-radius: 4px;
+}
+
+.MatchHistory {
+  overflow-y: auto;
+  max-height: 18rem;
 }
 
 .modal {

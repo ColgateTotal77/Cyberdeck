@@ -16,8 +16,8 @@
         <div class="main-buttons">
             <div class="cybr-btn" id="playButton">
                 <!-- <img src="/image/battle.png"> -->
-                <span aria-hidden>PLAY</span>
-                <span aria-hidden class="cybr-btn__glitch">PLAY</span>
+                <span aria-hidden="false">PLAY</span>
+                <span aria-hidden="true" class="cybr-btn__glitch">PLAY</span>
             </div>
             <div class="change-button cyber-button-small" id="changeButton">
                 <img src="/image/refresh.png">
@@ -45,28 +45,27 @@
     </div> -->
     <!-- <div id="playButton">Play</div> -->
     <div class="sidebar" id="sidebar">
-        <div class="right-sidebar" id="rightSidebar">
-            <div class="sidebar-top">
-                <div class="avatar" id="avatar"></div>
-                <div class="login" id="login"></div>
-                <div class="settingButton">
-                    <img src="/image/settings.svg" alt="Settings" class="setting-icon">
-                </div>
-                <div class="ratingBox"></div>
+        <div id="rightSidebar" class="right-sidebar bg-black ac-cyan fg-white">
+            <div class="sidebar-top cyber-tile-small bg-green fg-black">
+                <div id="avatar" class="cyber-tile-small"></div>
+                <div id="login" class="cyber-h fg-yellow">Username</div>
+                <div class="ratingBox ">1234</div>
             </div>
 
-            <div class="sidebarMiddle">
-                <div class="infoBox"></div>
+            <div class="sidebar-middle">
                 <div class="MatchHistory">
-                    <h3>Match History</h3>
+                    <div class="cyber-h fg-yellow">Matches</div>
                 </div>
             </div>
 
             <div class="sidebarBottom">
                 <form id="logoutForm" action="/logOut" method="POST" style="display:none;"></form>
-                <div class="redirectButton" id="logout" onclick="document.getElementById('logoutForm').submit()">Log
+                <div class="redirectButton cyber-button-small bg-red fg-black" id="logout" onclick="document.getElementById('logoutForm').submit()">Log
                     Out
                 </div>
+            </div>
+            <div class="settingButton cyber-button-small bg-yellow fg-black">
+                <img src="/image/settings.svg" alt="Settings" class="setting-icon">
             </div>
         </div>
         <div id="settingsModal" class="modal hidden">
@@ -130,7 +129,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
