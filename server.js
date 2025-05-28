@@ -64,6 +64,7 @@ const upload = multer({ storage, fileFilter });
     app.use(express.json());
     app.use(express.static(__dirname + '/public'));
 
+    app.get('/', (req, res) => MainPageController.firstPage(req, res));
     app.get('/registerForm', (req, res) => RegisterController.registerForm(req, res));
     app.post('/register', (req, res) => RegisterController.register(req, res));
     app.get('/loginForm', (req, res) => AuthController.loginForm(req, res));
@@ -87,6 +88,6 @@ const upload = multer({ storage, fileFilter });
 
     const port = 3001;
     server.listen(port, () => {
-        console.log(`Server running at http://localhost:${port}/loginForm`);
+        console.log(`Server running at http://localhost:${port}/`);
     });
 })();

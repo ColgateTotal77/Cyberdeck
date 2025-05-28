@@ -18,25 +18,34 @@ class MainPageController {
         res.sendFile(path.join(__dirname, "../views/mainPage.html"));
     };
     
-static async uploadAvatar(req, res) {
-    try {
-        const user = req.session?.user;
-        if (!user || !req.file) return res.status(400).json({error: 'Missing user session or file'});
-
-        const avatarPath = '/avatars/' + req.file.filename;
-
-        const userData = new User();
-        await userData.find(user.id);
-
-        userData.avatar_path = avatarPath;
-        await userData.save();
-
-        return res.status(200).json({ avatarPath: avatarPath });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Server error while uploading avatar' });
+    static firstPage(req, res) {
+        if (!req.session.user) {
+            res.redirect('/loginForm');
+        }
+        else {
+            res.redirect('/mainPage');
+        } 
     }
-}
+
+    static async uploadAvatar(req, res) {
+        try {
+            const user = req.session?.user;
+            if (!user || !req.file) return res.status(400).json({error: 'Missing user session or file'});
+
+            const avatarPath = '/avatars/' + req.file.filename;
+
+            const userData = new User();
+            await userData.find(user.id);
+
+            userData.avatar_path = avatarPath;
+            await userData.save();
+
+            return res.status(200).json({ avatarPath: avatarPath });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Server error while uploading avatar' });
+        }
+    }
 
     static logOut(req, res) {
         req.session.destroy((err) => {
